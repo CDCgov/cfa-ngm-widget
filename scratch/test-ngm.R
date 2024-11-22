@@ -87,3 +87,32 @@ df <- list(
   RK = 0, RC = 0, RG = 0
 )
 nextgenR0(Istates = istates, Flist = flist, Vlist = vlist, parameters = params, dfe = df)
+
+
+####### SIR Model with 4 classes ######
+# K, C, G, T: kids, core, general, travelers
+istates <- c("IK", "IC", "IG", "IT")
+flist <- c(
+  dIKdt = quote(bKK * SK * IK + bKC * SK * IC + bKG * SK * IG + bKT * SK * IT),
+  dICdt = quote(bCK * SC * IK + bCC * SC * IC + bCG * SC * IG + bCT * SC * IT),
+  dIGdt = quote(bGK * SG * IK + bGC * SG * IC + bGG * SG * IG + bGT * SG * IT),
+  dITdt = quote(bTK * ST * IK + bTC * ST * IC + bTG * ST * IG + bTT * ST * IT)
+)
+V1 <- quote(gamma * IK)
+V2 <- quote(gamma * IC)
+V3 <- quote(gamma * IG)
+V4 <- quote(gamma * IT)
+vlist <- c(V1, V2, V3, V4)
+params <- list(
+  bKK = 10, bKC = 1, bKG = 1, bKT = 1,
+  bCK = 1, bCC = 10, bCG = 1, bCT = 1,
+  bGK = 1, bGC = 1, bGG = 1, bGT = 1,
+  bTK = 1, bTC = 1, bTG = 1, bTT = 1,
+  gamma = 1
+)
+df <- list(
+  SK = 0.1, SC = 0.1, SG = 0.8, ST = 0,
+  IK = 0, IC = 0, IG = 0, IT = 0,
+  RK = 0, RC = 0, RG = 0, RT = 0
+)
+nextgenR0(Istates = istates, Flist = flist, Vlist = vlist, parameters = params, dfe = df)
