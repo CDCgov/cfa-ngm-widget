@@ -9,6 +9,46 @@ vaccination allocation for a disease interactively via a
 [streamlit](https://streamlit.io/) app using a next generation matrix
 approach.
 
+
+## Model Description
+
+This repo contains code to apply the next-generation method of Diekman et al. (1990) to calculate R0 for an SIR model with 4 risk groups and flexible inputs for varying vaccine allocation to the 4 groups.
+
+Specifically we assume the 4 groups with the following assumptions:
+
+| Group | Probability of onward, within group transmission | Probability of being infected from outside group | Probability of severe outcome in group |
+|----------|----------|----------|----------|
+| Core      | High     | High     | Low     |
+| Children  | Low      | Low      | High    |
+| Travelers | Low      | High     | Low     |
+| General   | Low      | Low      | Low     |
+
+Vaccination is assumed to be all or nothing, with people starting in the S or R class based on the number of doses allocated to each group and the vaccination efficacy.
+
+Total infections are calculated based on the expected final size of an epidemic with the given R0 based on Andreasen (2011).
+
+Severe infections are calculated by multiplying the number of infections in each group by a group-specific probability of severe infection.
+
+Inputs:
+
+* Sizes of the groups
+* Vaccination efficacy and number of doses allocated to each group
+* Beta (transmission constant)
+* Factors by which to multiply the transmission constant for "high" and "low" transmission
+* Recovery rate
+* Factors to multiply expected infections by to estimate severe infections for "high" and "low" risk of severe infection groups
+
+Outputs:
+
+* Total number of infections
+* Total number of severe infections
+
+### References
+
+Andreasen, V. The Final Size of an Epidemic and Its Relation to the Basic Reproduction Number. Bull Math Biol 73, 2305–2321 (2011). https://doi.org/10.1007/s11538-010-9623-3
+
+Diekmann O, Heesterbeek JA, Metz JA. On the definition and the computation of the basic reproduction ratio R0 in models for infectious diseases in heterogeneous populations. J Math Biol. 1990;28(4):365-82. doi: 10.1007/BF00178324. PMID: 2117040.
+
 ## Authors
 
 - Paige Miller <yub1@cdc.gov>
