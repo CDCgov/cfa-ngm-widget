@@ -37,7 +37,7 @@ $$
 \mathbf{F}_{ij} = \frac{\beta_{ij} S_j}{N_j}
 $$
 
-while $\mathbf{V}$ is a diagonal matrix with $\mathbf{V}_{ii} = \gamma$ where the recovery rate is shared among all groups $g$. 
+while $\mathbf{V}$ is a diagonal matrix with $\mathbf{V}_{ii} = \gamma$ where the recovery rate is shared among all groups $g$.
 
 Since $\mathbf{V}$ is diagonal, its inverse is as well, with $(\mathbf{V}^{-1})_{ij} = 1 / \gamma_i$.
 
