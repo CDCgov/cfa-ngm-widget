@@ -1,43 +1,33 @@
 # function to calculate next generation for 4 group SIR model
-ngm_sir_4 <- function(N, V, b_mult, ve, gam) {
-  low <- 0.1
-  high <- b_mult * low
 
-  params <- list(
-    bKK = low, bKC = low, bKG = low, bKT = low,
-    bCK = b_mult, bCC = b_mult, bCG = b_mult, bCT = b_mult,
-    bGK = low, bGC = low, bGG = low, bGT = low,
-    bTK = low, bTC = b_mult, bTG = low, bTT = low,
-    gamma = gam, ve = ve
-  )
-  istates <- c("IK", "IC", "IG", "IT")
-  flist <- c(
-    dIKdt = quote(bKK * SK * IK + bKC * SK * IC + bKG * SK * IG + bKT * SK * IT),
-    dICdt = quote(bCK * SC * IK + bCC * SC * IC + bCG * SC * IG + bCT * SC * IT),
-    dIGdt = quote(bGK * SG * IK + bGC * SG * IC + bGG * SG * IG + bGT * SG * IT),
-    dITdt = quote(bTK * ST * IK + bTC * ST * IC + bTG * ST * IG + bTT * ST * IT)
-  )
-  V1 <- quote(gamma * IK)
-  V2 <- quote(gamma * IC)
-  V3 <- quote(gamma * IG)
-  V4 <- quote(gamma * IT)
-  vlist <- c(V1, V2, V3, V4)
-  df <- list(
-    SK = N[1] * (1 - V[1] * ve), SC = N[2] * (1 - V[2] * ve),
-    SG = N[3] * (1 - V[3] * ve), ST = N[4] * (1 - V[4] * ve),
-    IK = 0, IC = 0, IG = 0, IT = 0,
-    RK = V[1] * params$ve, RC = V[2] * params$ve, RG = V[3] * params$ve, RT = V[4] * params$ve
-  )
+ngm_sir <- function(N, V, R_between, R_within, VE, p_severe) {
+  stopifnot(all(N >= V))
+  stopifnot(length(N) == length(V))
+  n_groups <- length(N)
 
-  nextgenR0(Istates = istates, Flist = flist, Vlist = vlist, parameters = params, dfe = df)
+  S <- N - VE * V
+  K <- matrix(
+    R_between,
+    nrow = n_groups, ncol = n_groups
+  )
+  diag(K) <- R_within
+
+  K <- K * S / N
+
+  eigenvalues <- eigen(K)
+  r_effective <- max(eigenvalues$values)
+  infections <- eigenvalues$vectors[, which.max(eigenvalues$values)] * N
+  severe_infections <- infections * p_severe
+  return(list(r_e = r_effective, infections = infections, severe_infections = severe_infections))
 }
 
 # inputs
 
-N <- c(.100, .100, .800, 0)
-V <- c(0, 0, 0, 0)
-b_mult <- 3
-ve <- 0.7
-gam <- 1 / 7
+N <- c(100, 100, 10, 790) # pop size: kids, core, travelers, general
+V <- c(100, 0, 0, 0) # doses
+p_severe <- c(0.9, 0.3, 0.3, 0.3)
+R_within <- 3 # secondary infections # should be a matrix?
+R_between <- 1 # secondary infections # should be a matrix?
+VE <- 0.7 # vaccine efficacy
 
-ngm_sir_4(N = N, V = V, b_mult = b_mult, ve = ve, gam = gam)
+ngm_sir(N = N, V = V, R_between = R_between, R_within = R_within, VE = VE, p_severe = p_severe)
