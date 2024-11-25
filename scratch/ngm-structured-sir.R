@@ -22,9 +22,9 @@ K <- matrix(c(
   1, 1, 1, 1 # general
 ), nrow = 4, ncol = 4)
 
-N <- c(100, 100, 10, 790) # pop size: kids, core, travelers, general
+N <- c(100, 100, 10, 790) # pop size: core, kids, travelers, general
 V <- c(100, 0, 0, 0) # doses
-p_severe <- c(0.09, 0.03, 0.03, 0.03)
+p_severe <- c(0.03, 0.09, 0.03, 0.03)
 VE <- 0.7 # vaccine efficacy
 
 ngm_sir(N = N, V = V, K = K, VE = VE, p_severe = p_severe)
