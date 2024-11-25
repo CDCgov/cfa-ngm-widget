@@ -27,72 +27,65 @@ Vaccination is assumed to be all or nothing  -- each individual's immunity is de
 
 The next-generation matrix is calculated for a 4-Group Infectious Disease Model:
 
-\( S_i, I_i, R_i \): Susceptible, Infected, and Recovered compartments in group \( i \), where \( i = 1, 2, 3, 4 \).
+# Next Generation Matrix (NGM)
 
-With transmission dynamics for \( I_i \) in each group are:
-\[
-\frac{dI_i}{dt} = \sum_{j=1}^4 \beta_{ij} S_i \frac{I_j}{N_j} - \gamma_i I_i,
-\]
+The NGM for a 4-Group Infectious Disease Model with compartments `S_i`, `I_i`, `R_i`: Susceptible, Infected, and Recovered compartments in group `i`, where `i = 1, 2, 3, 4`. Transmission dynamics for `I_i` in each group given by:
+
+dI_i/dt = Σ (β_ij * S_i * I_j / N_j) - γ_i * I_i
+
 where:
-- \( \beta_{ij} \): Transmission rate from group \( j \) to group \( i \),
-- \( S_i \): Susceptible population in group \( i \),
-- \( N_j \): Total population in group \( j \),
-- \( \gamma_i \): Recovery rate in group \( i \).
+- `β_ij`: Transmission rate from group `j` to group `i`,
+- `S_i`: Susceptible population in group `i`,
+- `N_j`: Total population in group `j`,
+- `γ_i`: Recovery rate in group `i`.
 
-At the DFE:
-\[
-I_1 = I_2 = I_3 = I_4 = 0, \quad S_i = N_i \quad \text{(for all \( i \))}.
-\]
+The NGM is calculated at the disease free equilibrium (DFE) where
 
-F (new infections) and V (transitions between compartments) are used to calculate the NGM:
+I_1 = I_2 = I_3 = I_4 = 0
+S_i = N_i (for all i)
 
-\[
-F = \begin{bmatrix}
-\beta_{11} \frac{S_1}{N_1} & \beta_{12} \frac{S_1}{N_2} & \beta_{13} \frac{S_1}{N_3} & \beta_{14} \frac{S_1}{N_4} \\
-\beta_{21} \frac{S_2}{N_1} & \beta_{22} \frac{S_2}{N_2} & \beta_{23} \frac{S_2}{N_3} & \beta_{24} \frac{S_2}{N_4} \\
-\beta_{31} \frac{S_3}{N_1} & \beta_{32} \frac{S_3}{N_2} & \beta_{33} \frac{S_3}{N_3} & \beta_{34} \frac{S_3}{N_4} \\
-\beta_{41} \frac{S_4}{N_1} & \beta_{42} \frac{S_4}{N_2} & \beta_{43} \frac{S_4}{N_3} & \beta_{44} \frac{S_4}{N_4}
-\end{bmatrix},
-\]
-and
-\[
-V = \begin{bmatrix}
-\gamma_1 & 0 & 0 & 0 \\
-0 & \gamma_2 & 0 & 0 \\
-0 & 0 & \gamma_3 & 0 \\
-0 & 0 & 0 & \gamma_4
-\end{bmatrix}.
-\]
+---
 
-The NGM \( K \) is given by:
-\[
-K = F V^{-1}.
-\]
+And then the NGM `K` is given by:
 
-Since \( V \) is diagonal, its inverse is:
-\[
-V^{-1} = \begin{bmatrix}
-\frac{1}{\gamma_1} & 0 & 0 & 0 \\
-0 & \frac{1}{\gamma_2} & 0 & 0 \\
-0 & 0 & \frac{1}{\gamma_3} & 0 \\
-0 & 0 & 0 & \frac{1}{\gamma_4}
-\end{bmatrix}.
-\]
+K = F * V^-1
 
-Multiply \( F \) and \( V^{-1} \):
-\[
-K = \begin{bmatrix}
-\frac{\beta_{11} S_1}{\gamma_1 N_1} & \frac{\beta_{12} S_1}{\gamma_2 N_2} & \frac{\beta_{13} S_1}{\gamma_3 N_3} & \frac{\beta_{14} S_1}{\gamma_4 N_4} \\
-\frac{\beta_{21} S_2}{\gamma_1 N_1} & \frac{\beta_{22} S_2}{\gamma_2 N_2} & \frac{\beta_{23} S_2}{\gamma_3 N_3} & \frac{\beta_{24} S_2}{\gamma_4 N_4} \\
-\frac{\beta_{31} S_3}{\gamma_1 N_1} & \frac{\beta_{32} S_3}{\gamma_2 N_2} & \frac{\beta_{33} S_3}{\gamma_3 N_3} & \frac{\beta_{34} S_3}{\gamma_4 N_4} \\
-\frac{\beta_{41} S_4}{\gamma_1 N_1} & \frac{\beta_{42} S_4}{\gamma_2 N_2} & \frac{\beta_{43} S_4}{\gamma_3 N_3} & \frac{\beta_{44} S_4}{\gamma_4 N_4}
-\end{bmatrix}.
-\]
+where F is the matrix of new infections and V is the matrix of transitions between compartments, not representing new infections:
 
-- Each entry \( K_{ij} \) represents the expected number of secondary infections in group \( i \) caused by an infected individual in group \( j \).
-- The **basic reproduction number \( R_0 \)** is the dominant eigenvalue (largest absolute eigenvalue) of \( K \).
+F = [
+    [β_11 * S_1 / N_1, β_12 * S_1 / N_2, β_13 * S_1 / N_3, β_14 * S_1 / N_4],
+    [β_21 * S_2 / N_1, β_22 * S_2 / N_2, β_23 * S_2 / N_3, β_24 * S_2 / N_4],
+    [β_31 * S_3 / N_1, β_32 * S_3 / N_2, β_33 * S_3 / N_3, β_34 * S_3 / N_4],
+    [β_41 * S_4 / N_1, β_42 * S_4 / N_2, β_43 * S_4 / N_3, β_44 * S_4 / N_4]
+]
 
-The effective reproductive number is calculated as the dominant eigenvalue of the NGM (when the population has vaccination?).
+V = [
+    [γ_1,    0,    0,    0],
+    [   0, γ_2,    0,    0],
+    [   0,    0, γ_3,    0],
+    [   0,    0,    0, γ_4]
+]
+
+
+Since `V` is diagonal, its inverse is:
+
+V^-1 = [
+    [1/γ_1,     0,     0,     0],
+    [    0, 1/γ_2,     0,     0],
+    [    0,     0, 1/γ_3,     0],
+    [    0,     0,     0, 1/γ_4]
+]
+
+Multiplying `F` and `V^-1`:
+
+K = [
+    [β_11 * S_1 / (γ_1 * N_1), β_12 * S_1 / (γ_2 * N_2), β_13 * S_1 / (γ_3 * N_3), β_14 * S_1 / (γ_4 * N_4)],
+    [β_21 * S_2 / (γ_1 * N_1), β_22 * S_2 / (γ_2 * N_2), β_23 * S_2 / (γ_3 * N_3), β_24 * S_2 / (γ_4 * N_4)],
+    [β_31 * S_3 / (γ_1 * N_1), β_32 * S_3 / (γ_2 * N_2), β_33 * S_3 / (γ_3 * N_3), β_34 * S_3 / (γ_4 * N_4)],
+    [β_41 * S_4 / (γ_1 * N_1), β_42 * S_4 / (γ_2 * N_2), β_43 * S_4 / (γ_3 * N_3), β_44 * S_4 / (γ_4 * N_4)]
+]
+
+Note that each entry `K_ij` represents the expected number of secondary infections in group `i` caused by an infected individual in group `j`. The effective reproductive number is calculated as the dominant eigenvalue of the NGM (when the population has vaccination?).
 
 The distribution of infections is calculated from the dominant eigenvector of the NGM.
 
