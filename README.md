@@ -31,13 +31,13 @@ The next-generation matrix is calculated for a 4-Group Infectious Disease Model:
 
 The NGM for a 4-Group Infectious Disease Model with compartments `S_i`, `I_i`, `R_i`: Susceptible, Infected, and Recovered compartments in group `i`, where `i = 1, 2, 3, 4`. Transmission dynamics for `I_i` in each group given by:
 
-dI_i/dt = Σ (β_ij * S_i * I_j / N_j) - γ_i * I_i
+dI_i/dt = Σ (β_ij * S_i * I_j / N_j) - γ * I_i
 
 where:
 - `β_ij`: Transmission rate from group `j` to group `i`,
 - `S_i`: Susceptible population in group `i`,
 - `N_j`: Total population in group `j`,
-- `γ_i`: Recovery rate in group `i`.
+- `γ`: Recovery rate (same for all groups).
 
 The NGM is calculated at the disease free equilibrium (DFE) where
 
@@ -60,32 +60,41 @@ F = [
 ]
 
 V = [
-    [γ_1,    0,    0,    0],
-    [   0, γ_2,    0,    0],
-    [   0,    0, γ_3,    0],
-    [   0,    0,    0, γ_4]
+    [γ,    0,    0,    0],
+    [   0, γ,    0,    0],
+    [   0,    0, γ,    0],
+    [   0,    0,    0, γ]
 ]
 
 
 Since `V` is diagonal, its inverse is:
 
 V^-1 = [
-    [1/γ_1,     0,     0,     0],
-    [    0, 1/γ_2,     0,     0],
-    [    0,     0, 1/γ_3,     0],
-    [    0,     0,     0, 1/γ_4]
+    [1/γ,     0,     0,     0],
+    [    0, 1/γ,     0,     0],
+    [    0,     0, 1/γ,     0],
+    [    0,     0,     0, 1/γ]
 ]
 
 Multiplying `F` and `V^-1`:
 
 K = [
-    [β_11 * S_1 / (γ_1 * N_1), β_12 * S_1 / (γ_2 * N_2), β_13 * S_1 / (γ_3 * N_3), β_14 * S_1 / (γ_4 * N_4)],
-    [β_21 * S_2 / (γ_1 * N_1), β_22 * S_2 / (γ_2 * N_2), β_23 * S_2 / (γ_3 * N_3), β_24 * S_2 / (γ_4 * N_4)],
-    [β_31 * S_3 / (γ_1 * N_1), β_32 * S_3 / (γ_2 * N_2), β_33 * S_3 / (γ_3 * N_3), β_34 * S_3 / (γ_4 * N_4)],
-    [β_41 * S_4 / (γ_1 * N_1), β_42 * S_4 / (γ_2 * N_2), β_43 * S_4 / (γ_3 * N_3), β_44 * S_4 / (γ_4 * N_4)]
+    [β_11 * S_1 / (γ * N_1), β_12 * S_1 / (γ * N_2), β_13 * S_1 / (γ * N_3), β_14 * S_1 / (γ * N_4)],
+    [β_21 * S_2 / (γ * N_1), β_22 * S_2 / (γ * N_2), β_23 * S_2 / (γ * N_3), β_24 * S_2 / (γ * N_4)],
+    [β_31 * S_3 / (γ * N_1), β_32 * S_3 / (γ * N_2), β_33 * S_3 / (γ * N_3), β_34 * S_3 / (γ * N_4)],
+    [β_41 * S_4 / (γ * N_1), β_42 * S_4 / (γ * N_2), β_43 * S_4 / (γ * N_3), β_44 * S_4 / (γ * N_4)]
 ]
 
-Note that each entry `K_ij` represents the expected number of secondary infections in group `i` caused by an infected individual in group `j`. The effective reproductive number is calculated as the dominant eigenvalue of the NGM (when the population has vaccination?).
+Note that each entry `K_ij` represents the expected number of secondary infections in group `i` caused by an infected individual in group `j`:
+
+K = [
+    [R_11 / N_1, R_12 / N_2, R_13 / N_3, R_14 / N_4],
+    [R_21 / N_1, R_22 / N_2, R_23 / N_3, R_24 / N_4],
+    [R_31 / N_1, R_32 / N_2, R_33 / N_3, R_34 / N_4],
+    [R_41 / N_1, R_42 / N_2, R_43 / N_3, R_44 / N_4]
+]
+
+The effective reproductive number is calculated as the dominant eigenvalue of the NGM (when the population has vaccination?).
 
 The distribution of infections is calculated from the dominant eigenvector of the NGM.
 
@@ -95,7 +104,7 @@ Inputs:
 
 * Sizes of the groups
 * Vaccination efficacy and number of doses allocated to each group
-* Within and between group reproduction numbers; the entires to the NGM
+* Within and between group reproduction numbers; the entries to the NGM
 * Per-group probability of severe infection
 
 Outputs:
