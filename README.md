@@ -14,22 +14,9 @@ approach.
 
 This repo contains code to apply the next-generation method of Diekman et al. (1990) to calculate R0 for an SIR model with 4 risk groups and flexible inputs for varying vaccine allocation to the 4 groups.
 
-Specifically we assume the 4 groups with the following assumptions:
+### Next generation matrix calculation
 
-| Group | Probability of onward, within group transmission | Probability of being infected from outside group | Probability of severe outcome in group |
-|----------|----------|----------|----------|
-| Core      | High     | High     | Low     |
-| Children  | Low      | Low      | High    |
-| Travelers | Low      | High     | Low     |
-| General   | Low      | Low      | Low     |
-
-Vaccination is assumed to be all or nothing  -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy. Immune individuals will start in the S or R class based on the number of doses allocated to each group.
-
-The next-generation matrix is calculated for a 4-Group Infectious Disease Model:
-
-# Next Generation Matrix (NGM)
-
-The NGM for a 4-Group Infectious Disease Model with compartments $S_i$, $I_i$, $R_i$: Susceptible, Infected, and Recovered compartments in group $i$, where $i = 1, 2, 3, 4$. Transmission dynamics for $I_i$ in each group given by:
+We calculate the next-generation matrix for a 4-Group Infectious Disease Model with compartments $S_i$, $I_i$, $R_i$: Susceptible, Infected, and Recovered compartments in group $i$, where $i = 1, 2, 3, 4$. Transmission dynamics for $I_i$ in each group given by:
 
 $$dI_i/dt = Σ (β_ij * S_i * I_j / N_j) - γ * I_i$$
 
@@ -78,7 +65,7 @@ $$ K = {\left\lbrack \matrix{
     β_{31} * S_3 / (γ * N_1) & β_{32} * S_3 / (γ * N_2) & β_{33} * S_3 / (γ * N_3) & β_{34} * S_3 / (γ * N_4) \cr
     β_{41} * S_4 / (γ * N_1) & β_{42} * S_4 / (γ * N_2) & β_{43} * S_4 / (γ * N_3) & β_{44} * S_4 / (γ * N_4)} \right\rbrack} $$
 
-Note that each entry $K_{ij}$ represents the expected number of secondary infections in group $i$ caused by an infected individual in group $j$:
+Note that each entry $K_{ij}$ represents the expected number of secondary infections, $R_{ij}$ in group $i$ caused by an infected individual in group $j$:
 
 $$ K = {\left\lbrack \matrix{
     R_{11} / N_1 & R_{12} / N_2 & R_{13} / N_3 & R_{14} / N_4 \cr
@@ -86,17 +73,32 @@ $$ K = {\left\lbrack \matrix{
     R_{31} / N_1 & R_{32} / N_2 & R_{33} / N_3 & R_{34} / N_4 \cr
     R_{41} / N_1 & R_{42} / N_2 & R_{43} / N_3 & R_{44} / N_4} \right\rbrack} $$
 
-The effective reproductive number is calculated as the dominant eigenvalue of the NGM (when the population has vaccination?).
+The effective reproductive number is calculated as the dominant eigenvalue of $K$ (when the population has vaccination?).
 
-The distribution of infections is calculated from the dominant eigenvector of the NGM.
+The distribution of infections is calculated from the dominant eigenvector of $K$.
 
 Severe infections are calculated by multiplying the proportion of infections in each group by a group-specific probability of severe infection.
 
+### Model assumptions
+
+Vaccination is assumed to be all or nothing  -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy. In the NGM, each $N_i = N_i * (1 - VE)$.
+
+# Streamlit app
+
+We make the following assumptions about transmission between and within groups for the default parameters:
+
+| Group | Probability of onward, within group transmission | Probability of being infected from outside group | Probability of severe outcome in group |
+|----------|----------|----------|----------|
+| Core      | High     | High     | Low     |
+| Children  | Low      | Low      | High    |
+| Travelers | Low      | High     | Low     |
+| General   | Low      | Low      | Low     |
+
 Inputs:
 
-* Sizes of the groups
-* Vaccination efficacy and number of doses allocated to each group
-* Within and between group reproduction numbers; the entries to the NGM
+* Sizes of the groups, $N_i$
+* Vaccination efficacy (VE) and number of doses allocated to each group ($V_i$)
+* Within and between group reproduction numbers; the entries to the NGM, $R_{ij}$
 * Per-group probability of severe infection
 
 Outputs:
