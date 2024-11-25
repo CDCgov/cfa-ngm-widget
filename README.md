@@ -85,7 +85,7 @@ Vaccination is assumed to be all or nothing  -- each individual's immunity is de
 
 # Streamlit app
 
-We make the following assumptions about transmission between and within groups for the default parameters:
+Default parameters assume the following about transmission:
 
 | Group | Probability of onward, within group transmission | Probability of being infected from outside group | Probability of severe outcome in group |
 |----------|----------|----------|----------|
@@ -94,7 +94,7 @@ We make the following assumptions about transmission between and within groups f
 | Travelers | Low      | High     | Low     |
 | General   | Low      | Low      | Low     |
 
-Inputs:
+Other Inputs to the widget:
 
 * Sizes of the groups, $N_i$
 * Vaccination efficacy (VE) and number of doses allocated to each group ($V_i$)
