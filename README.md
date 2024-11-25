@@ -23,31 +23,101 @@ Specifically we assume the 4 groups with the following assumptions:
 | Travelers | Low      | High     | Low     |
 | General   | Low      | Low      | Low     |
 
-Vaccination is assumed to be all or nothing, with people starting in the S or R class based on the number of doses allocated to each group and the vaccination efficacy.
+Vaccination is assumed to be all or nothing  -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy. Immune individuals will start in the S or R class based on the number of doses allocated to each group.
 
-Total infections are calculated based on the expected final size of an epidemic with the given R0 based on Andreasen (2011).
+The next-generation matrix is calculated for a 4-Group Infectious Disease Model:
 
-Severe infections are calculated by multiplying the number of infections in each group by a group-specific probability of severe infection.
+\( S_i, I_i, R_i \): Susceptible, Infected, and Recovered compartments in group \( i \), where \( i = 1, 2, 3, 4 \).
+
+With transmission dynamics for \( I_i \) in each group are:
+\[
+\frac{dI_i}{dt} = \sum_{j=1}^4 \beta_{ij} S_i \frac{I_j}{N_j} - \gamma_i I_i,
+\]
+where:
+- \( \beta_{ij} \): Transmission rate from group \( j \) to group \( i \),
+- \( S_i \): Susceptible population in group \( i \),
+- \( N_j \): Total population in group \( j \),
+- \( \gamma_i \): Recovery rate in group \( i \).
+
+At the DFE:
+\[
+I_1 = I_2 = I_3 = I_4 = 0, \quad S_i = N_i \quad \text{(for all \( i \))}.
+\]
+
+F (new infections) and V (transitions between compartments) are used to calculate the NGM:
+
+\[
+F = \begin{bmatrix}
+\beta_{11} \frac{S_1}{N_1} & \beta_{12} \frac{S_1}{N_2} & \beta_{13} \frac{S_1}{N_3} & \beta_{14} \frac{S_1}{N_4} \\
+\beta_{21} \frac{S_2}{N_1} & \beta_{22} \frac{S_2}{N_2} & \beta_{23} \frac{S_2}{N_3} & \beta_{24} \frac{S_2}{N_4} \\
+\beta_{31} \frac{S_3}{N_1} & \beta_{32} \frac{S_3}{N_2} & \beta_{33} \frac{S_3}{N_3} & \beta_{34} \frac{S_3}{N_4} \\
+\beta_{41} \frac{S_4}{N_1} & \beta_{42} \frac{S_4}{N_2} & \beta_{43} \frac{S_4}{N_3} & \beta_{44} \frac{S_4}{N_4}
+\end{bmatrix},
+\]
+and
+\[
+V = \begin{bmatrix}
+\gamma_1 & 0 & 0 & 0 \\
+0 & \gamma_2 & 0 & 0 \\
+0 & 0 & \gamma_3 & 0 \\
+0 & 0 & 0 & \gamma_4
+\end{bmatrix}.
+\]
+
+The NGM \( K \) is given by:
+\[
+K = F V^{-1}.
+\]
+
+Since \( V \) is diagonal, its inverse is:
+\[
+V^{-1} = \begin{bmatrix}
+\frac{1}{\gamma_1} & 0 & 0 & 0 \\
+0 & \frac{1}{\gamma_2} & 0 & 0 \\
+0 & 0 & \frac{1}{\gamma_3} & 0 \\
+0 & 0 & 0 & \frac{1}{\gamma_4}
+\end{bmatrix}.
+\]
+
+Multiply \( F \) and \( V^{-1} \):
+\[
+K = \begin{bmatrix}
+\frac{\beta_{11} S_1}{\gamma_1 N_1} & \frac{\beta_{12} S_1}{\gamma_2 N_2} & \frac{\beta_{13} S_1}{\gamma_3 N_3} & \frac{\beta_{14} S_1}{\gamma_4 N_4} \\
+\frac{\beta_{21} S_2}{\gamma_1 N_1} & \frac{\beta_{22} S_2}{\gamma_2 N_2} & \frac{\beta_{23} S_2}{\gamma_3 N_3} & \frac{\beta_{24} S_2}{\gamma_4 N_4} \\
+\frac{\beta_{31} S_3}{\gamma_1 N_1} & \frac{\beta_{32} S_3}{\gamma_2 N_2} & \frac{\beta_{33} S_3}{\gamma_3 N_3} & \frac{\beta_{34} S_3}{\gamma_4 N_4} \\
+\frac{\beta_{41} S_4}{\gamma_1 N_1} & \frac{\beta_{42} S_4}{\gamma_2 N_2} & \frac{\beta_{43} S_4}{\gamma_3 N_3} & \frac{\beta_{44} S_4}{\gamma_4 N_4}
+\end{bmatrix}.
+\]
+
+- Each entry \( K_{ij} \) represents the expected number of secondary infections in group \( i \) caused by an infected individual in group \( j \).
+- The **basic reproduction number \( R_0 \)** is the dominant eigenvalue (largest absolute eigenvalue) of \( K \).
+
+The effective reproductive number is calculated as the dominant eigenvalue of the NGM (when the population has vaccination?).
+
+The distribution of infections is calculated from the dominant eigenvector of the NGM.
+
+Severe infections are calculated by multiplying the proportion of infections in each group by a group-specific probability of severe infection.
 
 Inputs:
 
 * Sizes of the groups
 * Vaccination efficacy and number of doses allocated to each group
-* Beta (transmission constant)
-* Factors by which to multiply the transmission constant for "high" and "low" transmission
-* Recovery rate
-* Factors to multiply expected infections by to estimate severe infections for "high" and "low" risk of severe infection groups
+* Within and between group reproduction numbers; the entires to the NGM
+* Per-group probability of severe infection
 
 Outputs:
 
-* Total number of infections
-* Total number of severe infections
+* Effective reproductive number
+* Distribution of infections and severe infections
 
 ### References
 
-Andreasen, V. The Final Size of an Epidemic and Its Relation to the Basic Reproduction Number. Bull Math Biol 73, 2305–2321 (2011). https://doi.org/10.1007/s11538-010-9623-3
-
 Diekmann O, Heesterbeek JA, Metz JA. On the definition and the computation of the basic reproduction ratio R0 in models for infectious diseases in heterogeneous populations. J Math Biol. 1990;28(4):365-82. doi: 10.1007/BF00178324. PMID: 2117040.
+
+Diekmann O, Heesterbeek JA, Roberts MG. The construction of next-generation matrices for compartmental epidemic models. J R Soc Interface. 2010 Jun 6;7(47):873-85. doi: 10.1098/rsif.2009.0386. Epub 2009 Nov 5. PMID: 19892718; PMCID: PMC2871801.
+
+ van den Driessche P, Watmough J. Reproduction numbers and sub-threshold endemic equilibria for compartmental models of disease transmission. Math Biosci. 2002 Nov-Dec;180:29-48. doi: 10.1016/s0025-5564(02)00108-6. PMID: 12387915.
+
 
 ## Authors
 
