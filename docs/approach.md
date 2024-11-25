@@ -1,6 +1,7 @@
 # Using Next Generation Matrices
 
 The NGM for a 4-Group Infectious Disease Model with compartments $S_g$, $I_g$, $R_g$: Susceptible, Infected, and Recovered compartments in the $G$ groups $g = 1, \dots, G$. Where possible we try to be general, otherwise we will take $K = 4$
+
 Dynamics for $I_k$ in each group given by:
 
 $$
