@@ -1,17 +1,10 @@
 # function to calculate next generation for 4 group SIR model
 
-ngm_sir <- function(N, V, R_between, R_within, VE, p_severe) {
+ngm_sir <- function(N, V, K, VE, p_severe) {
   stopifnot(all(N >= V))
   stopifnot(length(N) == length(V))
-  n_groups <- length(N)
 
   S <- N - VE * V
-  K <- matrix(
-    R_between,
-    nrow = n_groups, ncol = n_groups
-  )
-  diag(K) <- R_within
-
   K <- K * S / N
 
   eigenvalues <- eigen(K)
@@ -22,12 +15,16 @@ ngm_sir <- function(N, V, R_between, R_within, VE, p_severe) {
 }
 
 # inputs
+K <- matrix(c(
+  3, 1, 3, 1, # core
+  1, 1, 1, 1, # kids
+  3, 1, 1, 1, # travelers
+  1, 1, 1, 1 # general
+), nrow = 4, ncol = 4)
 
 N <- c(100, 100, 10, 790) # pop size: kids, core, travelers, general
 V <- c(100, 0, 0, 0) # doses
-p_severe <- c(0.9, 0.3, 0.3, 0.3)
-R_within <- 3 # secondary infections # should be a matrix?
-R_between <- 1 # secondary infections # should be a matrix?
+p_severe <- c(0.09, 0.03, 0.03, 0.03)
 VE <- 0.7 # vaccine efficacy
 
-ngm_sir(N = N, V = V, R_between = R_between, R_within = R_within, VE = VE, p_severe = p_severe)
+ngm_sir(N = N, V = V, K = K, VE = VE, p_severe = p_severe)
