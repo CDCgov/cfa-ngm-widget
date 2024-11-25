@@ -16,68 +16,8 @@ This repo contains code to apply the next-generation method of Diekman et al. (1
 
 ### Next generation matrix calculation
 
-We calculate the next-generation matrix for a 4-Group Infectious Disease Model with compartments $S_i$, $I_i$, $R_i$: Susceptible, Infected, and Recovered compartments in group $i$, where $i = 1, 2, 3, 4$. Transmission dynamics for $I_i$ in each group given by:
-
-$$dI_i/dt = Σ (β_ij * S_i * I_j / N_j) - γ * I_i$$
-
-where:
-- $β_ij$: Transmission rate from group $j$ to group $i$,
-- $S_i$: Susceptible population in group $i$,
-- $N_j$: Total population in group $j$,
-- $γ$: Recovery rate (same for all groups).
-
-The NGM is calculated at the disease free equilibrium (DFE) where
-
-$$I_1 = I_2 = I_3 = I_4 = 0$$
-$$S_i = N_i$$
-
-And then the NGM $K$ is given by:
-
-$$K = F \cdot V^-1$$
-
-where $F$ is the matrix of new infections and V is the matrix of transitions between compartments, not representing new infections:
-
-$$ F = {\left\lbrack \matrix{
-β_11 * S_1 / N_1 & β_12 * S_1 / N_2 & β_13 * S_1 / N_3 & β_14 * S_1 / N_4 \cr
-β_21 * S_2 / N_1 & β_22 * S_2 / N_2 & β_23 * S_2 / N_3 & β_24 * S_2 / N_4 \cr
-β_31 * S_3 / N_1 & β_32 * S_3 / N_2 & β_33 * S_3 / N_3 & β_34 * S_3 / N_4 \cr
-β_41 * S_4 / N_1 & β_42 * S_4 / N_2 & β_43 * S_4 / N_3 & β_44 * S_4 / N_4} \right\rbrack} $$
-
-$$ V = {\left\lbrack \matrix{
-γ & 0 & 0 & 0 \cr
-0 & γ & 0 & 0 \cr
-0 & 0 & γ & 0 \cr
-0 & 0 & 0 & γ} \right\rbrack} $$
-
-Since $V$ is diagonal, its inverse is:
-
-$$ V^-1 = {\left\lbrack \matrix{
-1/γ & 0 & 0 & 0 \cr
-0 & 1/γ & 0 & 0 \cr
-0 & 0 & 1/γ & 0 \cr
-0 & 0 & 0 & 1/γ} \right\rbrack} $$
-
-Multiplying $F$ and $V^-1$:
-
-$$ K = {\left\lbrack \matrix{
-    β_{11} * S_1 / (γ * N_1) & β_{12} * S_1 / (γ * N_2) & β_{13} * S_1 / (γ * N_3) & β_{14} * S_1 / (γ * N_4) \cr
-    β_{21} * S_2 / (γ * N_1) & β_{22} * S_2 / (γ * N_2) & β_{23} * S_2 / (γ * N_3) & β_{24} * S_2 / (γ * N_4) \cr
-    β_{31} * S_3 / (γ * N_1) & β_{32} * S_3 / (γ * N_2) & β_{33} * S_3 / (γ * N_3) & β_{34} * S_3 / (γ * N_4) \cr
-    β_{41} * S_4 / (γ * N_1) & β_{42} * S_4 / (γ * N_2) & β_{43} * S_4 / (γ * N_3) & β_{44} * S_4 / (γ * N_4)} \right\rbrack} $$
-
-Note that each entry $K_{ij}$ represents the expected number of secondary infections, $R_{ij}$ in group $i$ caused by an infected individual in group $j$:
-
-$$ K = {\left\lbrack \matrix{
-    R_{11} / N_1 & R_{12} / N_2 & R_{13} / N_3 & R_{14} / N_4 \cr
-    R_{21} / N_1 & R_{22} / N_2 & R_{23} / N_3 & R_{24} / N_4 \cr
-    R_{31} / N_1 & R_{32} / N_2 & R_{33} / N_3 & R_{34} / N_4 \cr
-    R_{41} / N_1 & R_{42} / N_2 & R_{43} / N_3 & R_{44} / N_4} \right\rbrack} $$
-
-The effective reproductive number is calculated as the dominant eigenvalue of $K$ (when the population has vaccination?).
-
-The distribution of infections is calculated from the dominant eigenvector of $K$.
-
-Severe infections are calculated by multiplying the proportion of infections in each group by a group-specific probability of severe infection.
+The next-generation matrix approach (NGM) is described in `docs/ngm.md`.
+The documentation is best viewed off of GitHub, either by opening in VSCode and using the built in [markdown preview](https://code.visualstudio.com/Docs/languages/markdown#_markdown-preview) or by building with `mkdocs` using `mkdocs serve` (this requires installing `mkdocs`).
 
 ### Model assumptions
 
