@@ -3,45 +3,7 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-
-def ngm_sir(N, V, K, VE, p_severe):
-    """
-    Function to calculate next-generation matrix (NGM) for a 4-group SIR model
-
-    Args:
-        N (array): Population sizes for each group
-        V (array): Number of vaccine doses administered to each group
-        K (2D array): Square matrix with entries representing between and within group R0
-        VE (float): Vaccine efficacy, all or nothing
-        p_severe (array): Group spcfeic probability of severe infection
-
-    Returns:
-        dict: Contains R-effective, total infections, severe infections, adjusted K matrix
-    """
-    # check sizes of inputs? do we need this
-    assert np.all(N >= V), "Vaccinated cannot exceed population size"
-    assert len(K.shape) == 2 and K.shape[0] == K.shape[1]
-    assert len(N) == len(V) == len(p_severe), "Input dimensions must match"
-
-    # Calculate susceptibles for NGM
-    S = N - VE * V
-    K_adjusted = K * S / N
-
-    # Eigenvalue computation for NGM
-    eigenvalues, eigenvectors = np.linalg.eig(K_adjusted)
-    r_effective = np.max(np.abs(eigenvalues))
-
-    # Calculate distribution of infections and severe infections
-    dominant_vector = eigenvectors[:, np.argmax(np.abs(eigenvalues))]
-    infections = dominant_vector
-    severe_infections = infections * p_severe
-
-    return {
-        "R_effective": r_effective,
-        "Infections": infections.real,
-        "Severe_Infections": severe_infections.real,
-        "K_adjusted": K_adjusted,
-    }
+from ngm import ngm_sir
 
 
 def app():
@@ -78,42 +40,46 @@ def app():
         ]
     )
 
-    # Vaccine efficacy
-    VE = st.sidebar.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01)
-
-    # Probability of severe infections
-    st.sidebar.subheader("Severe Infection Probabilities")
-    p_severe = np.array(
-        [
-            st.sidebar.slider(
-                f"Probability of Severe Infection ({group})",
-                0.0,
-                1.0,
-                value=0.03,
-                step=0.01,
-            )
-            for group in group_names
-        ]
-    )
-
     # Contact matrix
-    st.sidebar.subheader("NGM (4x4)")
+    st.sidebar.subheader("R0 (low) and R0 (high), entries to NGM (K)")
+    # Define lo and hi using Streamlit inputs
+    lo = st.sidebar.number_input("Low value", value=0.5)
+    hi = st.sidebar.number_input("High value", value=3)
+
+    # Create the contact matrix K
     K = np.array(
         [
-            [
-                st.sidebar.number_input(
-                    f"K[{group_names[i]} → {group_names[j]}]",
-                    value=1,
-                )
-                for j in range(4)
-            ]
-            for i in range(4)
+            [hi, lo, hi, lo],  # core
+            [lo, lo, lo, lo],  # kids
+            [hi, lo, lo, lo],  # travelers
+            [lo, lo, lo, lo],  # general
         ]
     )
+
+    with st.sidebar.expander("Advanced Settings"):
+        st.sidebar.subheader("Vaccine efficacy")
+        VE = st.sidebar.slider(
+            "Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01
+        )
+
+        # Probability of severe infections
+        st.sidebar.subheader("Severe Infection Probabilities")
+        p_severe = np.array(
+            [
+                st.sidebar.slider(
+                    f"Probability of Severe Infection ({group})",
+                    0.0,
+                    1.0,
+                    value=0.03,
+                    step=0.01,
+                )
+                for group in group_names
+            ]
+        )
 
     # Perform the NGM calculation
     if st.sidebar.button("Calculate"):
-        result = ngm_sir(N, V, K, VE, p_severe)
+        result = ngm_sir(n=N, v=V, k=K, v_e=VE, p_s=p_severe)
 
         # Display the adjusted contact matrix
         st.subheader("NGM with vaccination")
