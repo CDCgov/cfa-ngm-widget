@@ -8,8 +8,8 @@ ngm_sir <- function(N, V, K, VE, p_severe) {
   K <- K * S / N
 
   eigenvalues <- eigen(K)
-  r_effective <- max(eigenvalues$values)
-  infections <- eigenvalues$vectors[, which.max(eigenvalues$values)] * N
+  r_effective <- max(abs(eigenvalues$values))
+  infections <- eigenvalues$vectors[, which.max(abs(eigenvalues$values))]
   severe_infections <- infections * p_severe
   return(list(r_e = r_effective, infections = infections, severe_infections = severe_infections))
 }
@@ -21,8 +21,6 @@ K <- matrix(c(
   3, 1, 1, 1, # travelers
   1, 1, 1, 1 # general
 ), nrow = 4, ncol = 4)
-
-
 
 N <- c(100, 100, 10, 790) # pop size: core, kids, travelers, general
 V <- c(10, 0, 0, 0) # doses
