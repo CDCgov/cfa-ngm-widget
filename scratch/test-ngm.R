@@ -76,7 +76,7 @@ V2 <- substitute(a - b, list(a = Vm2, b = Vp2))
 V3 <- substitute(a - b, list(a = Vm3, b = Vp3))
 vlist <- c(V1, V2, V3)
 params <- list(
-  bKK = 10, bKC = 1, bKG = 1,
+  bKK = 1, bKC = 1, bKG = 1,
   bCK = 1, bCC = 10, bCG = 1,
   bGK = 1, bGC = 1, bGG = 1,
   gamma = 1

@@ -11,7 +11,7 @@ def ngm_sir(N, V, K, VE, p_severe):
     Args:
         N (array): Population sizes for each group
         V (array): Number of vaccine doses administered to each group
-        K (2D array): Contact matrix (4x4); (flexible?)
+        K (2D array): Square matrix with entries representing between and within group R0
         VE (float): Vaccine efficacy, all or nothing
         p_severe (array): Group spcfeic probability of severe infection
 
@@ -20,6 +20,7 @@ def ngm_sir(N, V, K, VE, p_severe):
     """
     # check sizes of inputs? do we need this
     assert np.all(N >= V), "Vaccinated cannot exceed population size"
+    assert len(K.shape) == 2 and K.shape[0] == K.shape[1]
     assert len(N) == len(V) == len(p_severe), "Input dimensions must match"
 
     # Calculate susceptibles for NGM
@@ -28,11 +29,11 @@ def ngm_sir(N, V, K, VE, p_severe):
 
     # Eigenvalue computation for NGM
     eigenvalues, eigenvectors = np.linalg.eig(K_adjusted)
-    r_effective = max(eigenvalues)
+    r_effective = np.max(np.abs(eigenvalues))
 
-    # Calculate infections and severe infections
-    dominant_vector = eigenvectors[:, np.argmax(eigenvalues)]
-    infections = dominant_vector * N
+    # Calculate distribution of infections and severe infections
+    dominant_vector = eigenvectors[:, np.argmax(np.abs(eigenvalues))]
+    infections = dominant_vector
     severe_infections = infections * p_severe
 
     return {
@@ -102,7 +103,7 @@ def app():
             [
                 st.sidebar.number_input(
                     f"K[{group_names[i]} → {group_names[j]}]",
-                    value=1 if i != j else 3,
+                    value=1,
                 )
                 for j in range(4)
             ]
@@ -131,14 +132,14 @@ def app():
         # Display results
         st.subheader("Results")
         st.write(f"R-effective: {result['R_effective']:.2f}")
-        st.write("Infections by Group:")
+        st.write("Distribution of Infections by Group:")
         st.json(
             {
                 group: round(inf, 2)
                 for group, inf in zip(group_names, result["Infections"])
             }
         )
-        st.write("Severe Infections by Group:")
+        st.write("Distribution of Severe Infections by Group:")
         st.json(
             {
                 group: round(sev, 2)
