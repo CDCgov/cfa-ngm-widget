@@ -1,43 +1,44 @@
 import numpy as np
 
 
-def ngm_sir(n, v, k, v_e, p_s):
+def ngm_sir(n, doses, r, v_e):
     """
-    Function to calculate Re and distribution of infections for a 4-group SIR model
+    Function to calculate Re and distribution of infections for a 4-group SIR model with equal recovery rates of 1
 
     Args:
         n (array): Population sizes for each group
-        v (array): Number of vaccine doses administered to each group
-        k (2D array): Square matrix with entries representing between and within group R0
+        doses (array): Number of vaccine doses administered to each group
+        r (2D array): Square matrix with entries representing between and within group beta (when gamma =1 these entires are within and between group R0)
         v_e (float): Vaccine efficacy, all or nothing
-        p_s (array): Group specific probability of severe infection
 
     Returns:
-        dict: Contains R-effective, distribution of infections, severe infections, adjusted K matrix
+        dict: Contains dominant eigenvalue, dominant eigenvector, and adjusted NGM accounting for vaccination
     """
-    # check sizes of inputs? do we need this
-    assert np.all(n >= v), "Vaccinated cannot exceed population size"
-    assert len(k.shape) == 2 and k.shape[0] == k.shape[1]
-    assert (
-        len(n) == len(v) == len(p_s) == k.shape[0]
-    ), "Input dimensions must match"
+    assert np.all(n >= doses), "Vaccinated cannot exceed population size"
+    assert len(r.shape) == 2 and r.shape[0] == r.shape[1]
+    assert len(n) == len(doses) == r.shape[0], "Input dimensions must match"
 
-    # Calculate susceptibles for NGM
-    s = n - v_e * v
-    k_adjusted = k * s / n
+    n_sus = n - doses * v_e
+    n_t = n_sus.reshape(-1, 1)  # transpose
+    R = r * n_t / sum(n_t)
 
-    # Eigenvalue computation for NGM
-    eigenvalues, eigenvectors = np.linalg.eig(k_adjusted)
-    r_effective = np.max(np.abs(eigenvalues))
-
-    # Calculate distribution of infections and severe infections
-    dominant_vector = eigenvectors[:, np.argmax(np.abs(eigenvalues))]
-    infections = dominant_vector / dominant_vector.sum()
-    severe_infections = infections * p_s
+    eigenvalues, eigenvectors = np.linalg.eig(R)
+    dominant_index = np.argmax(np.abs(eigenvalues))
+    dominant_eigenvalue = eigenvalues[dominant_index]
+    dominant_vector = eigenvectors[:, dominant_index]
+    dominant_vector_rescaled = dominant_vector / dominant_vector.sum()
 
     return {
-        "R_effective": r_effective,
-        "Infections": infections.real,
-        "Severe_Infections": severe_infections.real,
-        "K_adjusted": k_adjusted,
+        "dominant_eigenvalue": dominant_eigenvalue,
+        "dominant_eigenvector": dominant_vector_rescaled,
+        "ngm_adjusted": R,
     }
+
+
+# n = np.array([200, 800])
+# doses = np.array([100,0])
+# v_e = 1
+# b = np.array([[10, 0.1], [0.1, 1]])
+# p_s = [0.01, 0.01]
+
+# print(ngm_sir(n=n, doses=doses, b=b, v_e=v_e, p_s=p_s))
