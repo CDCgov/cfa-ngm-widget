@@ -62,24 +62,9 @@ def app():
             "Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01
         )
 
-        # Probability of severe infections
-        st.sidebar.subheader("Severe Infection Probabilities")
-        p_severe = np.array(
-            [
-                st.sidebar.slider(
-                    f"Probability of Severe Infection ({group})",
-                    0.0,
-                    1.0,
-                    value=0.03,
-                    step=0.01,
-                )
-                for group in group_names
-            ]
-        )
-
     # Perform the NGM calculation
     if st.sidebar.button("Calculate"):
-        result = ngm_sir(n=N, v=V, k=K, v_e=VE, p_s=p_severe)
+        result = ngm_sir(n=N, doses=V, r=K, v_e=VE)
 
         # Display the adjusted contact matrix
         st.subheader("NGM with vaccination")
@@ -88,7 +73,7 @@ def app():
         )
 
         K_adjusted_df = pd.DataFrame(
-            result["K_adjusted"],
+            result["ngm_adjusted"],
             columns=group_names,
             index=group_names,
         )
@@ -97,19 +82,14 @@ def app():
 
         # Display results
         st.subheader("Results")
-        st.write(f"R-effective: {result['R_effective']:.2f}")
+        st.write(f"R-effective: {result['dominant_eigenvalue']:.2f}")
         st.write("Distribution of Infections by Group:")
         st.json(
             {
                 group: round(inf, 2)
-                for group, inf in zip(group_names, result["Infections"])
-            }
-        )
-        st.write("Distribution of Severe Infections by Group:")
-        st.json(
-            {
-                group: round(sev, 2)
-                for group, sev in zip(group_names, result["Severe_Infections"])
+                for group, inf in zip(
+                    group_names, result["dominant_eigenvector"]
+                )
             }
         )
 
