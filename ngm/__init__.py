@@ -10,7 +10,7 @@ def ngm_sir(n, v, k, v_e, p_s):
         v (array): Number of vaccine doses administered to each group
         k (2D array): Square matrix with entries representing between and within group R0
         v_e (float): Vaccine efficacy, all or nothing
-        p_s (array): Group spcfeic probability of severe infection
+        p_s (array): Group specific probability of severe infection
 
     Returns:
         dict: Contains R-effective, distribution of infections, severe infections, adjusted K matrix
