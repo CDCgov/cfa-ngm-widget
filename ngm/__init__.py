@@ -1,34 +1,41 @@
 from collections import namedtuple
 import numpy as np
+from typing import Any
 
 
-def ngm_sir(n, doses, r, v_e):
+def simulate(
+    n: np.array, n_vax: np.array, K: np.array, p_severe: np.array, ve: float
+) -> dict[str, Any]:
     """
-    Function to calculate Re and distribution of infections for a 4-group SIR model with equal recovery rates of 1
+    Calculate Re and distribution of infections
 
     Args:
-        n (array): Population sizes for each group
-        doses (array): Number of vaccine doses administered to each group
-        r (2D array): Square matrix with entries representing between and within group beta (when gamma =1 these entires are within and between group R0)
-        v_e (float): Vaccine efficacy, all or nothing
+        n (np.array): Population sizes for each group
+        n_vax (np.array): Number of people vaccinated in each group
+        K (np.array): Square matrix with entries representing between and within group R_0
+        p_severe (np.array): Group-specific probability of severe infection
+        ve (float): Vaccine efficacy
 
     Returns:
         dict: Contains dominant eigenvalue, dominant eigenvector, and adjusted NGM accounting for vaccination
     """
-    n_sus = n - doses * v_e
-    n_t = n_sus.reshape(-1, 1)  # transpose
-    R = r * n_t / sum(n_t)
+    n_groups = len(n)
+    assert len(n_vax) == n_groups
+    assert len(p_severe) == n_groups
+    assert K.shape[0] == n_groups
+    assert K.shape[1] == n_groups
+    assert all(n >= n_vax), "Vaccinated cannot exceed population size"
 
-    eigenvalues, eigenvectors = np.linalg.eig(R)
-    dominant_index = np.argmax(np.abs(eigenvalues))
-    dominant_eigenvalue = eigenvalues[dominant_index]
-    dominant_vector = eigenvectors[:, dominant_index]
-    dominant_vector_rescaled = dominant_vector / dominant_vector.sum()
+    # eigen analysis
+    p_vax = n_vax / n
+    reduced_K = vaccinated_K(K=K, p_vax=p_vax, ve=ve)
+    eigen = dominant_eigen(reduced_K)
 
     return {
-        "dominant_eigenvalue": dominant_eigenvalue,
-        "dominant_eigenvector": dominant_vector_rescaled,
-        "ngm_adjusted": R,
+        "reduced_K": reduced_K,
+        "Re": eigen.value,
+        "infections": eigen.vector,
+        "severe_infections": eigen.vector * p_severe,
     }
 
 
@@ -76,6 +83,9 @@ def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
 
     value = e.eigenvalues[i]
     vector = e.eigenvectors[:, i]
+
+    assert value > 0
+    assert all(vector > 0)
 
     if norm == "L2":
         pass
