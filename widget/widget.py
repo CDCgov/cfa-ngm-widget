@@ -3,11 +3,11 @@ import numpy as np
 import pandas as pd
 import streamlit as st
 
-from ngm import ngm_sir
+import ngm
 
 
 def app():
-    st.title("4-Group SIR Model NGM Calculator")
+    st.title("4-Group NGM Calculator")
 
     # Group names
     group_names = ["Core", "Kids", "Travelers", "General Population"]
@@ -19,9 +19,7 @@ def app():
     st.sidebar.subheader("Population Sizes")
     N = np.array(
         [
-            st.sidebar.number_input(
-                f"Population ({group})", value=100, min_value=0
-            )
+            st.sidebar.number_input(f"Population ({group})", value=100, min_value=0)
             for group in group_names
         ]
     )
@@ -58,40 +56,34 @@ def app():
 
     with st.sidebar.expander("Advanced Settings"):
         st.sidebar.subheader("Vaccine efficacy")
-        VE = st.sidebar.slider(
-            "Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01
-        )
+        VE = st.sidebar.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01)
 
     # Perform the NGM calculation
-    if st.sidebar.button("Calculate"):
-        result = ngm_sir(n=N, doses=V, r=K, v_e=VE)
+    result = ngm.simulate(
+        n=N, n_vax=V, K=K, p_severe=np.array([1.0, 1.0, 1.0, 1.0]), ve=VE
+    )
 
-        # Display the adjusted contact matrix
-        st.subheader("NGM with vaccination")
-        st.write(
-            "This matrix reflects the impact of vaccine efficacy and susceptibility:"
-        )
+    # Display the adjusted contact matrix
+    st.subheader("NGM with vaccination")
+    st.write("This matrix reflects the impact of vaccine efficacy and susceptibility:")
 
-        K_adjusted_df = pd.DataFrame(
-            result["ngm_adjusted"],
-            columns=group_names,
-            index=group_names,
-        )
+    K_adjusted_df = pd.DataFrame(
+        result["reduced_K"],
+        columns=group_names,
+        index=group_names,
+    )
 
-        st.dataframe(K_adjusted_df)
+    st.dataframe(K_adjusted_df)
 
-        # Display results
-        st.subheader("Results")
-        st.write(f"R-effective: {result['dominant_eigenvalue']:.2f}")
-        st.write("Distribution of Infections by Group:")
-        st.json(
-            {
-                group: round(inf, 2)
-                for group, inf in zip(
-                    group_names, result["dominant_eigenvector"]
-                )
-            }
-        )
+    # Display results
+    st.subheader("Results")
+    st.write(f"R-effective: {result['Re']:.2f}")
+    st.write("Distribution of Infections by Group:")
+    st.json(
+        {group: round(inf, 2) for group, inf in zip(group_names, result["infections"])}
+    )
+    total_severe = sum(result["severe_infections"])
+    st.write(f"Total number of severe infections: {total_severe:.2f}")
 
 
 if __name__ == "__main__":

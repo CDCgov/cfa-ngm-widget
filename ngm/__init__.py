@@ -35,7 +35,7 @@ def simulate(
         "reduced_K": reduced_K,
         "Re": eigen.value,
         "infections": eigen.vector,
-        "severe_infections": eigen.vector * p_severe,
+        "severe_infections": eigen.value * eigen.vector * p_severe,
     }
 
 
