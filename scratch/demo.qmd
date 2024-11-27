@@ -3,97 +3,96 @@ title: Next-generation matrix demo
 format: html
 ---
 
+```{python}
+import numpy as np
+```
+
 The next generation matrix $K$ has entries $K_{ij}$. Every infection in group $i$ in this generation will give rise to $K_{ij}$ infections in group $j$ in the next generation.
 
 In this example, there are four groups. The core group transmits many infections to themselves and to travelers, who in turn transfer many infections to the core group (but not to themselves). Children and the general public don't transmit very much.
 
-```{r}
+```{python}
 # high and low transmission rates
-hi <- 3.0
-lo <- 0.5
+hi = 3.0
+lo = 0.5
 
-K <- matrix(c(
-  hi, lo, hi, lo, # core
-  lo, lo, lo, lo, # kids
-  hi, lo, lo, lo, # travelers
-  lo, lo, lo, lo  # general
-), nrow = 4, ncol = 4)
+K = np.array(
+    [
+        [hi, lo, hi, lo],  # core
+        [lo, lo, lo, lo],  # children
+        [hi, lo, lo, lo],  # travelers
+        [lo, lo, lo, lo],  # general
+    ]
+)
 ```
 
 Given a length-4 vector of infections $x$, representing the number of infections in each group in some generation, the next generation will have $Kx$ infections in each group.
 
 By definition, $v$ and $\lambda$ are an eigenvector and eigenvalue of $K$ if $Kv = \lambda v$:
 
-```{r}
+```{python}
 # do the eigenvalue analysis
-e <- eigen(K)
+e = np.linalg.eig(K)
 # which eigenvalue is the dominant one?
-i <- which.max(e$values)
-dominant_eigenvalue <- e$values[i]
+i = np.argmax(e.eigenvalues)
+dominant_eigenvalue = e.eigenvalues[i]
 # get the corresponding eigenvector
-v <- e$vectors[, i]
+v = e.eigenvectors[:, i]
 
 # note that this vector is L2-normalized
 # (I need all.equal because there is some machine precision limitation)
-stopifnot(all.equal(sqrt(sum(v ** 2)), 1.0))
+assert np.isclose(np.sqrt(sum(v**2)), 1.0)
 
 # but we want an L1-normalized vector
-dominant_eigenvector <- v / sum(v)
+dominant_eigenvector = v / sum(v)
 
-print("Dominant eigenvalue:")
-print(dominant_eigenvalue)
-print("Dominant eigenvector:")
-print(dominant_eigenvector)
+print("Dominant eigenvalue: ", dominant_eigenvalue)
+print("Dominant eigenvector:", dominant_eigenvector)
 ```
 
 Let's do an example, to show how these would play out. Start with a single infection, in the core group:
 
-```{r}
-x0 <- c(1, 0, 0, 0)
+```{python}
+x0 = np.array([1.0, 0.0, 0.0, 0.0])
 ```
 
 Then iteratively generate next generations:
 
-```{r}
-n_generations <- 10
+```{python}
+n_generations = 10
 
-x <- x0
-results <- list(x0)
-for (i in 1:(n_generations - 1)) {
-  x <- K %*% x
-  results <- c(results, list(as.vector(x)))
-}
+x = x0
+
+results = [x0]
+
+for i in range(n_generations - 1):
+  x = np.matmul(K, x)
+  results.append(x)
 ```
 
 Toward the end of the simulation, $x$ will be large, but it has the same distribution as the L1-normalized dominant eigenvector:
 
-```{r}
-print("Final numbers of infections:")
-last_x <- results[[length(results)]]
-print(last_x)
+```{python}
+print("Final numbers of infections: ", results[-1])
 
-print("Same thing, L1-normalized:")
-print(last_x / sum(last_x))
+print("Same thing, L1-normalized:", results[-1] / sum(results[-1]))
 ```
 
 Note that this is the same as the L1-normalized dominant eigenvector.
 
 We can also check how the number of infections changes from generation to generation:
 
-```{r}
+```{python}
 # get the total number of infections per generation
-total_infections <- purrr::map_dbl(results, sum)
-print("Total infections per generation:")
-print(total_infections)
+total_infections = [sum(x) for x in results]
+print("Total infections per generation:", total_infections)
 
 # and the ratio of infections between generations
-empirical_r <- purrr::map_dbl(
-  2:n_generations,
-  function(i) total_infections[i] / total_infections[i - 1]
-)
+empirical_r = [
+    total_infections[i + 1] / total_infections[i] for i in range(n_generations - 1)
+]
 
-print("Ratio of infections between generations")
-print(empirical_r)
+print("Ratio of infections between generations: ", empirical_r)
 ```
 
 Note that this stabilizes to the dominant eigenvalue.
