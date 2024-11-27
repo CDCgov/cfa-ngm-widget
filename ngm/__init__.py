@@ -16,9 +16,11 @@ def ngm_sir(n, v, k, v_e, p_s):
         dict: Contains R-effective, distribution of infections, severe infections, adjusted K matrix
     """
     # check sizes of inputs? do we need this
-    assert np.all(n >= n), "Vaccinated cannot exceed population size"
+    assert np.all(n >= v), "Vaccinated cannot exceed population size"
     assert len(k.shape) == 2 and k.shape[0] == k.shape[1]
-    assert len(n) == len(v) == len(p_s) == k.shape[0], "Input dimensions must match"
+    assert (
+        len(n) == len(v) == len(p_s) == k.shape[0]
+    ), "Input dimensions must match"
 
     # Calculate susceptibles for NGM
     s = n - v_e * v
