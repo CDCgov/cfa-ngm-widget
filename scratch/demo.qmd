@@ -34,7 +34,7 @@ By definition, $v$ and $\lambda$ are an eigenvector and eigenvalue of $K$ if $Kv
 # do the eigenvalue analysis
 e = np.linalg.eig(K)
 # which eigenvalue is the dominant one?
-i = np.argmax(e.eigenvalues)
+i = np.argmax(np.abs(e.eigenvalues))
 dominant_eigenvalue = e.eigenvalues[i]
 # get the corresponding eigenvector
 v = e.eigenvectors[:, i]
