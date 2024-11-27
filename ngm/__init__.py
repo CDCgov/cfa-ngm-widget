@@ -30,7 +30,7 @@ def ngm_sir(n, v, k, v_e, p_s):
 
     # Calculate distribution of infections and severe infections
     dominant_vector = eigenvectors[:, np.argmax(np.abs(eigenvalues))]
-    infections = dominant_vector / sum(dominant_vector)
+    infections = dominant_vector / dominant_vector.sum()
     severe_infections = infections * p_s
 
     return {
