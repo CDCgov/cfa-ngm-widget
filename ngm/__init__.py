@@ -79,7 +79,7 @@ def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
     # do the eigenvalue analysis
     e = np.linalg.eig(X)
     # which eigenvalue is the dominant one?
-    i = np.argmax(e.eigenvalues)
+    i = np.argmax(np.abs(e.eigenvalues))
 
     value = e.eigenvalues[i]
     vector = _ensure_positive_array(e.eigenvectors[:, i])
