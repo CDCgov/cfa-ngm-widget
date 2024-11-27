@@ -82,10 +82,12 @@ def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
     i = np.argmax(e.eigenvalues)
 
     value = e.eigenvalues[i]
-    vector = e.eigenvectors[:, i]
+    vector = _ensure_positive_array(e.eigenvectors[:, i])
 
-    assert value > 0
-    assert all(vector > 0)
+    if not value > 0:
+        raise RuntimeError(f"Negative dominant eigenvalue: {value}")
+    if not all(vector >= 0):
+        raise RuntimeError(f"Negative dominant eigenvector values: {vector}")
 
     if norm == "L2":
         pass
@@ -95,3 +97,13 @@ def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
         raise RuntimeError(f"Unknown norm '{norm}'")
 
     return namedtuple("DominantEigen", ["value", "vector"])(value=value, vector=vector)
+
+
+def _ensure_positive_array(x: np.array) -> np.array:
+    """Ensure all entries of an array are positive"""
+    if all(x >= 0):
+        return x
+    elif all(x < 0):
+        return -x
+    else:
+        raise RuntimeError(f"Cannot make vector all positive: {x}")
