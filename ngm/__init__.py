@@ -1,3 +1,4 @@
+from collections import namedtuple
 import numpy as np
 
 
@@ -14,10 +15,6 @@ def ngm_sir(n, doses, r, v_e):
     Returns:
         dict: Contains dominant eigenvalue, dominant eigenvector, and adjusted NGM accounting for vaccination
     """
-    assert np.all(n >= doses), "Vaccinated cannot exceed population size"
-    assert len(r.shape) == 2 and r.shape[0] == r.shape[1]
-    assert len(n) == len(doses) == r.shape[0], "Input dimensions must match"
-
     n_sus = n - doses * v_e
     n_t = n_sus.reshape(-1, 1)  # transpose
     R = r * n_t / sum(n_t)
@@ -35,10 +32,31 @@ def ngm_sir(n, doses, r, v_e):
     }
 
 
-# ###example from keeling and rohani
-# n = np.array([200, 800])
-# doses = np.array([0,0])
-# v_e = 1
-# r = np.array([[10, 0.1], [0.1, 1]])
-# p_s = [0.01, 0.01]
-# print(ngm_sir(n=n, doses=doses, r=r, v_e=v_e))
+def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
+    """Dominant eigenvalue and eigenvector of a matrix
+
+    Args:
+        X (np.array): matrix
+        norm (str, optional): Vector norm. `np.linalg.eig()` returns
+          a result with `"L2"` norm. Defaults to "L1", in which case
+          the sum of the vector values is 1.
+
+    Returns:
+        namedtuple: with entries `value` and `vector`
+    """
+    # do the eigenvalue analysis
+    e = np.linalg.eig(X)
+    # which eigenvalue is the dominant one?
+    i = np.argmax(e.eigenvalues)
+
+    value = e.eigenvalues[i]
+    vector = e.eigenvectors[:, i]
+
+    if norm == "L2":
+        pass
+    elif norm == "L1":
+        vector /= sum(vector)
+    else:
+        raise RuntimeError(f"Unknown norm '{norm}'")
+
+    return namedtuple("DominantEigen", ["value", "vector"])(value=value, vector=vector)
