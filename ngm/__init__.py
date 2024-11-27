@@ -35,10 +35,10 @@ def ngm_sir(n, doses, r, v_e):
     }
 
 
+# ###example from keeling and rohani
 # n = np.array([200, 800])
-# doses = np.array([100,0])
+# doses = np.array([0,0])
 # v_e = 1
-# b = np.array([[10, 0.1], [0.1, 1]])
+# r = np.array([[10, 0.1], [0.1, 1]])
 # p_s = [0.01, 0.01]
-
-# print(ngm_sir(n=n, doses=doses, b=b, v_e=v_e, p_s=p_s))
+# print(ngm_sir(n=n, doses=doses, r=r, v_e=v_e))
