@@ -49,7 +49,6 @@ def vaccinated_K(K: np.array, n: np.array, n_vax: np.array, ve: float) -> np.arr
         n (np.array): Population sizes for each group
         n_vax (np.array): Number of people vaccinated in each group
         K (np.array): Square matrix with entries representing between and within group R_0
-        p_severe (np.array): Group-specific probability of severe infection
         ve (float): Vaccine efficacy
 
     Returns:
