@@ -31,19 +31,31 @@ K = np.array(
 )
 ```
 
-
+# Test that vaccines lower Re
 ```{python}
 # run for no vaccines
-n_vax = np.array([0,0,0,0])
-test1 = ngm.simulate(n, n_vax, K, p_severe, ve)
+n_vax_0 = np.array([0,0,0,0])
+test1 = ngm.simulate(n, n_vax_0, K, p_severe, ve)
 test1
 
 # run for 100000 vaccines distributed to core
-n_vax = np.array([100000,0,0,0])
-test2 = ngm.simulate(n, n_vax, K, p_severe, ve)
+n_vax_core = np.array([100000,0,0,0])
+test2 = ngm.simulate(n, n_vax_core, K, p_severe, ve)
 test2
 
 ```
+
+# Varying population size distributions
+
+```{python}
+# test that equal pop sizes result in bigger Re
+n_equal = np.array([0.25, 0.25, 0.25, 0.25]) * 1000000
+test3 = ngm.simulate(n_equal, n_vax_0, K, p_severe, ve)
+test3
+
+```
+
+With equal population sizes, Re is larger than with more realistic population sizes of these groups (test3 vs. test1).
 
 # Varying total doses
 
