@@ -50,7 +50,14 @@ Outputs:
 - Effective reproductive number
 - Distribution of infections and severe infections
 
+Other default parameter values:
+
+- Vaccine efficacy: 74% for single dose (based on Barry et al. 2024)
+- Probability of severe infection: assumed to be CFR (0.02 for population > 15 years old and 0.06 for population <= 15 years old)
+
 ### References
+
+Berry MT, Khan SR, Schlub TE, Notaras A, Kunasekaran M, Grulich AE, MacIntyre CR, Davenport MP, Khoury DS. Predicting vaccine effectiveness for mpox. Nat Commun. 2024 May 8;15(1):3856. doi: 10.1038/s41467-024-48180-w. PMID: 38719852; PMCID: PMC11078999.
 
 Diekmann O, Heesterbeek JA, Metz JA. On the definition and the computation of the basic reproduction ratio R0 in models for infectious diseases in heterogeneous populations. J Math Biol. 1990;28(4):365-82. doi: 10.1007/BF00178324. PMID: 2117040.
 
