@@ -17,10 +17,11 @@ def app():
 
     # Population size
     st.sidebar.subheader("Population Sizes")
+    default_values = [100, 100, 50, 1000]
     N = np.array(
         [
-            st.sidebar.number_input(f"Population ({group})", value=100, min_value=0)
-            for group in group_names
+            st.sidebar.number_input(f"Population ({group})", value=default_values[i], min_value=0)
+            for i, group in enumerate(group_names)
         ]
     )
 
@@ -60,12 +61,12 @@ def app():
 
     # Perform the NGM calculation
     result = ngm.simulate(
-        n=N, n_vax=V, K=K, p_severe=np.array([1.0, 1.0, 1.0, 1.0]), ve=VE
+        n=N, n_vax=V, K=K, p_severe=np.array([0.02, 0.06, 0.02, 0.02]), ve=VE
     )
 
     # Display the adjusted contact matrix
     st.subheader("NGM with vaccination")
-    st.write("This matrix reflects the impact of vaccine efficacy and susceptibility:")
+    st.write("This matrix reflects the impact of vaccine efficacy and numbers of susceptible individuals:")
 
     K_adjusted_df = pd.DataFrame(
         result["reduced_K"],

@@ -27,9 +27,8 @@ def simulate(
     assert all(n >= n_vax), "Vaccinated cannot exceed population size"
 
     # eigen analysis
-    p_vax = n_vax / n
-    reduced_K = vaccinated_K(K=K, p_vax=p_vax, ve=ve)
-    eigen = dominant_eigen(reduced_K)
+    reduced_K = vaccinated_K(K = K, n = n, n_vax = n_vax, ve = ve)
+    eigen = dominant_eigen(reduced_K, norm = "L1")
 
     return {
         "reduced_K": reduced_K,
@@ -39,7 +38,7 @@ def simulate(
     }
 
 
-def vaccinated_K(K: np.array, p_vax: np.array, ve: float) -> np.array:
+def vaccinated_K(K: np.array, n: np.array, n_vax: np.array, ve: float) -> np.array:
     """Adjust a next generation matrix with vaccination
 
     Matrix element K_ij is how many infections in group j will
@@ -47,21 +46,21 @@ def vaccinated_K(K: np.array, p_vax: np.array, ve: float) -> np.array:
     reduces K_ij by a factor of 1 - p_vax_j * ve.
 
     Args:
-        K (np.array): Next generation matrix. Must be square.
-        p_vax (np.array): Proportion vaccinated in each group. Should have
-          length equal to either of K's dimensions.
+        n (np.array): Population sizes for each group
+        n_vax (np.array): Number of people vaccinated in each group
+        K (np.array): Square matrix with entries representing between and within group R_0
+        p_severe (np.array): Group-specific probability of severe infection
         ve (float): Vaccine efficacy
 
     Returns:
         np.array: matrix of the same shape as K
     """
     assert len(K.shape) == 2 and K.shape[0] == K.shape[1], "K must be square"
-    assert K.shape[0] == len(p_vax), "Input dimensions must match"
+    assert K.shape[0] == len(n_vax), "Input dimensions must match"
     assert 0 <= ve <= 1.0
-    assert all(0 <= p_vax) and all(p_vax <= 1.0)
 
-    # note that * here is column-wise multiplication
-    return K * (1.0 - p_vax * ve)
+    n_sus = n - n_vax * ve
+    return K * n_sus / n_sus.sum()
 
 
 def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
