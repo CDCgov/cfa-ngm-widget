@@ -25,7 +25,7 @@ The documentation is best viewed off of GitHub, either by opening in VSCode and 
 
 ### Model assumptions
 
-Vaccination is assumed to be all or nothing -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy. In the NGM, each $N_i = N_i * (1 - VE)$.
+Vaccination is assumed to be all or nothing -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy. In the NGM, each $N_i_vax = N_i_initial - v * ve$.
 
 # Streamlit app
 
@@ -42,13 +42,14 @@ Other Inputs to the widget:
 
 - Sizes of the groups, $N_i$
 - Vaccination efficacy (VE) and number of doses allocated to each group ($V_i$)
-- Within and between group reproduction numbers; the entries to the NGM, $R_{ij}$
+- Within and between group contact rates; $\beta_{ij}$
 - Per-group probability of severe infection
 
 Outputs:
 
 - Effective reproductive number
-- Distribution of infections and severe infections
+- Distribution of infections
+- Severe infections (per generation)
 
 ### References
 
