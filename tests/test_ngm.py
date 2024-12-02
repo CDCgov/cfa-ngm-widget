@@ -18,16 +18,17 @@ def test_dominant_eigen_bigger():
     assert np.isclose(e.vector, np.array([0.14719267, 1.0 / 3, 0.51947399])).all()
 
 
-def test_vax_k():
-    K = np.array([[1.0, 2.0], [3.0, 4.0]])
-    p_vax = np.array([0.1, 0.2])
-    ve = 0.3
+def test_vax_beta():
+    beta = np.array([[10.0, 0.1], [0.1, 1.0]])
+    n = np.array([200, 800])
+    n_vax = np.array([100, 0])
+    ve = 1.0
 
-    current = ngm.vaccinated_K(K=K, p_vax=p_vax, ve=ve)
+    current = ngm.get_R(beta=beta, n=n, n_vax=n_vax, ve=ve)
     expected = np.array(
         [
-            [1.0 * (1.0 - 0.1 * 0.3), 2.0 * (1.0 - 0.2 * 0.3)],
-            [3.0 * (1.0 - 0.1 * 0.3), 4.0 * (1.0 - 0.2 * 0.3)],
+            [10.0 * 1 / 9, 0.1 * 8/9],
+            [0.1 * 1/9, 1 * 8/9],
         ]
     )
 
@@ -35,25 +36,31 @@ def test_vax_k():
 
 
 def test_simulate():
-    n = np.array([300, 200, 100])
-    n_vax = np.array([0, 11, 22])
-    K = np.array([[3.0, 0.5, 0.5], [0.5, 3.0, 0.5], [0.5, 0.5, 2.0]])
-    p_severe = np.array([0.0, 0.1, 0.2])
-    ve = 0.8
-    current = ngm.simulate(n=n, n_vax=n_vax, K=K, p_severe=p_severe, ve=ve)
+    n = np.array([200, 200, 100, 500])
+    n_vax = np.array([0, 0, 0, 0])
+    beta = np.array([[3.0, 0.5, 3, 0.5],
+                     [0.5, 0.5, 0.5, 0.5],
+                     [3, 0.5, 0.5, 0.5],
+                     [0.5, 0.5, 0.5, 0.5]])
+    p_severe = np.array([0.02, 0.06, 0.02, 0.02])
+    ve = 1.0
+    current = ngm.simulate(n=n, n_vax=n_vax, beta=beta, p_severe=p_severe, ve=ve)
 
-    assert set(current.keys()) == {"Re", "reduced_K", "infections", "severe_infections"}
-    assert np.isclose(current["Re"], 3.630075754903929)
+    assert set(current.keys()) == {"Re", "R", "infections", "severe_infections"}
+    assert np.isclose(current["Re"], 0.92)
     assert_array_equal(
-        current["reduced_K"],
-        np.array([[3.0, 0.478, 0.412], [0.5, 2.868, 0.412], [0.5, 0.478, 1.648]]),
+        current["R"],
+        np.array([[0.6, 0.1, 0.6, 0.1],
+                  [0.1, 0.1, 0.1, 0.1],
+                  [0.3, .05, 0.05, 0.05],
+                  [0.25, 0.25, 0.25, 0.25]]),
     )
     assert_array_equal(
-        np.round(current["infections"], 6), np.array([0.419582, 0.382363, 0.198055])
+        np.round(current["infections"], 6), np.array([0.44507246, 0.10853944, 0.17503951, 0.2713486])
     )
     assert_array_equal(
         np.round(current["severe_infections"], 6),
-        np.array([0.0, 0.038236, 0.039611]),
+        np.array([0.00820112, 0.006, 0.00322536, 0.005]),
     )
 
 

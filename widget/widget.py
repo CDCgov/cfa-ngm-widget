@@ -17,10 +17,11 @@ def app():
 
     # Population size
     st.sidebar.subheader("Population Sizes")
+    default_values = [100, 100, 50, 1000]
     N = np.array(
         [
-            st.sidebar.number_input(f"Population ({group})", value=100, min_value=0)
-            for group in group_names
+            st.sidebar.number_input(f"Population ({group})", value=default_values[i], min_value=0)
+            for i, group in enumerate(group_names)
         ]
     )
 
@@ -39,13 +40,13 @@ def app():
     )
 
     # Contact matrix
-    st.sidebar.subheader("R0 (low) and R0 (high), entries to NGM (K)")
+    st.sidebar.subheader("High and low contact rates")
     # Define lo and hi using Streamlit inputs
-    lo = st.sidebar.number_input("Low value", value=0.5)
-    hi = st.sidebar.number_input("High value", value=3)
+    lo = st.sidebar.number_input("Low value", value=1)
+    hi = st.sidebar.number_input("High value", value=10)
 
     # Create the contact matrix K
-    K = np.array(
+    beta = np.array(
         [
             [hi, lo, hi, lo],  # core
             [lo, lo, lo, lo],  # kids
@@ -60,20 +61,20 @@ def app():
 
     # Perform the NGM calculation
     result = ngm.simulate(
-        n=N, n_vax=V, K=K, p_severe=np.array([1.0, 1.0, 1.0, 1.0]), ve=VE
+        n=N, n_vax=V, beta=beta, p_severe=np.array([0.02, 0.06, 0.02, 0.02]), ve=VE
     )
 
     # Display the adjusted contact matrix
     st.subheader("NGM with vaccination")
-    st.write("This matrix reflects the impact of vaccine efficacy and susceptibility:")
+    st.write("This matrix reflects the impact of vaccine efficacy and numbers of susceptible individuals:")
 
-    K_adjusted_df = pd.DataFrame(
-        result["reduced_K"],
+    R = pd.DataFrame(
+        result["R"],
         columns=group_names,
         index=group_names,
     )
 
-    st.dataframe(K_adjusted_df)
+    st.dataframe(R)
 
     # Display results
     st.subheader("Results")
