@@ -31,23 +31,34 @@ Given a length-4 vector of infections $x$, representing the number of infections
 By definition, $v$ and $\lambda$ are an eigenvector and eigenvalue of $K$ if $Kv = \lambda v$:
 
 ```{python}
-# do the eigenvalue analysis
-e = np.linalg.eig(K)
-# which eigenvalue is the dominant one?
-i = np.argmax(np.abs(e.eigenvalues))
-dominant_eigenvalue = e.eigenvalues[i]
-# get the corresponding eigenvector
-v = e.eigenvectors[:, i]
+def dominant_eigen(X):
+    # do the eigenvalue analysis
+    e = np.linalg.eig(X)
+    # which eigenvalue is the dominant one?
+    i = np.argmax(np.abs(e.eigenvalues))
+    dominant_eigenvalue = e.eigenvalues[i]
+    # get the corresponding eigenvector
+    v = e.eigenvectors[:, i]
 
-# note that this vector is L2-normalized
-# (I need all.equal because there is some machine precision limitation)
-assert np.isclose(np.sqrt(sum(v**2)), 1.0)
+    # note that this vector is L2-normalized
+    # (I need all.equal because there is some machine precision limitation)
+    assert np.isclose(np.sqrt(sum(v**2)), 1.0)
 
-# but we want an L1-normalized vector
-dominant_eigenvector = v / sum(v)
+    # but we want an L1-normalized vector
+    dominant_eigenvector = v / sum(v)
 
-print("Dominant eigenvalue: ", dominant_eigenvalue)
-print("Dominant eigenvector:", dominant_eigenvector)
+    print("Dominant eigenvalue: ", dominant_eigenvalue)
+    print("Dominant eigenvector:", dominant_eigenvector)
+
+
+dominant_eigen(K)
+```
+
+Note that the Jacobian has the same eigenvectors and an eigenvalue less by unity:
+
+```{python}
+J = K - np.identity(4)
+dominant_eigen(J)
 ```
 
 Let's do an example, to show how these would play out. Start with a single infection, in the core group:
@@ -84,13 +95,11 @@ We can also check how the number of infections changes from generation to genera
 
 ```{python}
 # get the total number of infections per generation
-total_infections = [sum(x) for x in results]
+total_infections = [float(sum(x)) for x in results]
 print("Total infections per generation:", total_infections)
 
 # and the ratio of infections between generations
-empirical_r = [
-    total_infections[i + 1] / total_infections[i] for i in range(n_generations - 1)
-]
+empirical_r = np.exp(np.diff(np.log(total_infections)))
 
 print("Ratio of infections between generations: ", empirical_r)
 ```
