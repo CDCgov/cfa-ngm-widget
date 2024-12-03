@@ -49,16 +49,16 @@ $$
 
 The basic reproductive number $R_0$ is calculated as the dominant eigenvalue of $R$.
 
-This model incporates vaccination by recalculating the distribution of susceptible individuals $S_g / N_g$:
+This model incorporates vaccination by recalculating the distribution of susceptible individuals $S_g / N_g$ when vaccinations have been administered (assuming all or nothing vaccination, with vaccine efficacy given by ve):
 
 $$
-\mathbf{S_g_vax = S_g_initial - v_g * ve}
+\mathbf{S_{g}_{vax}} = S_{g}_{initial} - v_g * ve
 $$
 
-where v_g is the number of doses given to each group and ve is vaccine efficacy. Then $R_ij$ with vaccination factored in is given by
+where v_g is the number of doses given to each group. Then $R_ij$ with vaccination factored in is given by
 
 $$
-\mathbf{R}_{ij}_{vax} = \frac{\beta_{ij} S_j_vax}{\gamma_j N_j_vax}
+\mathbf{R}_{ij}_{vax} = \frac{\beta_{ij} S_{j}_{vax}}{\gamma_j N_{j}_{vax}}
 $$
 
 

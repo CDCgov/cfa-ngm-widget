@@ -25,11 +25,9 @@ The documentation is best viewed off of GitHub, either by opening in VSCode and 
 
 ### Model assumptions
 
-Vaccination is assumed to be all or nothing -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy. In the NGM, each $N_i_vax = N_i_initial - v * ve$.
+Vaccination is assumed to be all or nothing -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy.
 
-# Streamlit app
-
-Default parameters assume the following about transmission:
+Default parameters in the widget assume the following about transmission:
 
 | Group     | Probability of onward, within group transmission | Probability of being infected from outside group | Probability of severe outcome in group |
 | --------- | ------------------------------------------------ | ------------------------------------------------ | -------------------------------------- |
