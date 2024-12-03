@@ -34,17 +34,17 @@ where $\mathbf{F}$ is the matrix of new infections and $\mathbf{V}$ is the matri
 The elements of $\mathbf{F}$ are
 
 $$
-\mathbf{F}_{ij} = \frac{\beta_{ij} S_j}{N_j}
+\mathbf{F}_{ij} = \frac{\beta_{ij} S_{j}}{N_{j}}
 $$
 
 while $\mathbf{V}$ is a diagonal matrix with $\mathbf{V}_{ii} = \gamma$ where the recovery rate is shared among all groups $g$.
 
 Since $\mathbf{V}$ is diagonal, its inverse is as well, with $(\mathbf{V}^{-1})_{ij} = 1 / \gamma_i$.
 
-Thus, $\mathbf{R}$ is given by
+If all $\gamma_i = \gamma$, $\mathbf{R}$ is given by
 
 $$
-\mathbf{R}_{ij} = \frac{\beta_{ij} S_j}{\gamma_j N_j}
+\mathbf{R}_{ij} = \frac{\beta_{ij} S_{j}}{\gamma N_{j}}
 $$
 
 The basic reproductive number $R_0$ is calculated as the dominant eigenvalue of $R$.
@@ -52,13 +52,13 @@ The basic reproductive number $R_0$ is calculated as the dominant eigenvalue of 
 This model incorporates vaccination by recalculating the distribution of susceptible individuals $S_g / N_g$ when $v_g$ vaccinations have been administered to each group $g$ (assuming all or nothing vaccination, with vaccine efficacy given by $ve$):
 
 $$
-\mathbf{S_{g}^{vax}} = S_{g}^{initial} - v_g * ve
+\mathbf{S_{g}^{vax}} = S_{g}^{initial} - v_{g} * ve
 $$
 
 Then $R_ij$ with vaccination factored in is given by
 
 $$
-\mathbf{R}_{ij}^{vax} = \frac{\beta_{ij} S_{j}^{vax}}{\gamma_j N_{j}^{vax}}
+\mathbf{R}_{ij}^{vax} = \frac{\beta_{ij} S_{j}^{vax}}{\gamma N_{j}^{vax}}
 $$
 
 
