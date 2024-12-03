@@ -62,8 +62,9 @@ def get_R(beta: np.array, n: np.array, n_vax: np.array, ve: float) -> np.array:
     assert beta.shape[0] == len(n_vax), "Input dimensions must match"
     assert 0 <= ve <= 1.0
 
-    n_sus = n - n_vax * ve
-    return beta * n_sus.reshape(-1, 1) / n_sus.sum()
+    s_i = n / n.sum()
+    s_vax = (n - n_vax * ve) / n
+    return beta * s_i * s_vax
 
 
 def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
