@@ -35,12 +35,14 @@ value
 vector
 ```
 
+This breaks down the math going into our estimates. For this 2 group population with 1000 individuals, where 200 are high risk and 800 lower risk individuals, we vaccinate 100 of the high risk individuals. To calculate Re, we multiply the beta matrix by the population distribution of each group (s_i in this example) and the proportion of each group that remains susceptible post vaccination distribution (s_vax in this example).
+
 # 4 group model
 
 ```{python}
-# parameters (core, kids, travelers, general)
+# parameters (core, kids, general)
 n = np.array([0.1, 0.45, 0.05, 0.4]) * 1000000
-p_severe = np.array([0.01, 0.1, 0.01, 0.01])
+p_severe = np.array([0.01, 0.1, 0.01])
 ve = 0.74
 
 # within between group R
@@ -166,5 +168,3 @@ plt.grid(True)
 plt.show()
 
 ```
-
-the number of deaths under different vaccine strategies doesn't vary that much (53 - 54)

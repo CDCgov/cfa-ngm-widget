@@ -27,8 +27,8 @@ def test_vax_beta():
     current = ngm.get_R(beta=beta, n=n, n_vax=n_vax, ve=ve)
     expected = np.array(
         [
-            [10.0 * 1 / 9, 0.1 * 8/9],
-            [0.1 * 1/9, 1 * 8/9],
+            [10.0 * .2 * .5, 0.1 * .8 * .5],
+            [0.1 *  .2 * .5, 1 * .8 * .5],
         ]
     )
 
@@ -50,17 +50,17 @@ def test_simulate():
     assert np.isclose(current["Re"], 0.92)
     assert_array_equal(
         current["R"],
-        np.array([[0.6, 0.1, 0.6, 0.1],
-                  [0.1, 0.1, 0.1, 0.1],
-                  [0.3, .05, 0.05, 0.05],
-                  [0.25, 0.25, 0.25, 0.25]]),
+        np.array([[0.6, 0.1, 0.3,  0.25],
+                  [0.1, 0.1, 0.05, 0.25],
+                  [0.6, 0.1, 0.05, 0.25],
+                  [0.1, 0.1, 0.05, 0.25]]),
     )
     assert_array_equal(
-        np.round(current["infections"], 6), np.array([0.44507246, 0.10853944, 0.17503951, 0.2713486])
+        np.round(current["infections"], 6), np.array([0.43969484, 0.107228  , 0.34584916, 0.107228])
     )
     assert_array_equal(
         np.round(current["severe_infections"], 6),
-        np.array([0.00820112, 0.006, 0.00322536, 0.005]),
+        np.array([[0.00810203, 0.0059275 , 0.00637278, 0.00197583]]),
     )
 
 
