@@ -5,7 +5,7 @@ The NGM for a 4-Group Infectious Disease Model with compartments $S_i$, $I_i$, $
 Dynamics for $I_i$ in each group given by:
 
 $$
-\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij} S_i I_j}{N_j} - \gamma_i I_i
+\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij} S_i I_j}{N} - \gamma_i I_i
 $$
 
 where:
@@ -18,10 +18,10 @@ where:
 The NGM is calculated at the disease free equilibrium (DFE) where
 
 $$
-I_i = 0, S_i = N_i \  \text{for all\ } i
+I_i = 0, S_i \approx N_i \  \text{for all\ } i
 $$
 
-And then the NGM `R` is given by:
+And then the NGM $\mathbf{R}_{ij}$ is given by:
 
 $$
 \mathbf{R}_{ij} = \frac{\beta_{ij} S_{i}}{\gamma N}
@@ -34,13 +34,13 @@ The basic reproductive number $R_0$ is calculated as the dominant eigenvalue of 
 This model incorporates vaccination by recalculating the distribution of susceptible individuals in each group $S_{i}^{vax}$ (assuming all or nothing vaccination, with vaccine efficacy given by $ve$ and the proportion of $i$ vacinated is $v_i$):
 
 $$
-\mathbf{S_{i}^{vax}} = S_{i}^{initial} * (1 - v_{i} * ve)
+\mathbf{S_{i}^\mathrm{vax}} = S_{i} - v_{i} * \mathrm{VE}
 $$
 
-So that $S_i^{vax}$ is the population $i$ that is still susceptible post vaccination administration. Then $R_ij$ with vaccination factored in is given by
+So that $S_i^\mathrm{vax}$ is the population $i$ that is still susceptible post vaccination administration. Then \mathbf{R}_{ij} with vaccination factored in is given by
 
 $$
-\mathbf{R}_{ij}^{vax} = \mathbf{R}_{ij} \frac{S_{i}^{vax}}{N_i}
+\mathbf{R}_{ij}^{vax} = \mathbf{R}_{ij} \frac{S_{i}^\mathrm{vax}}{N_i}
 $$
 
 
