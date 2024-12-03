@@ -11,6 +11,32 @@ import matplotlib.pyplot as plt
 
 ```
 
+# Example calculation with 2 groups
+
+```{python}
+import numpy as np
+n = np.array([200, 800])
+beta = np.array([[10, 0.1],[.1, 1]])
+n_vax = np.array([100, 0])
+ve = 1.0
+
+s_i = n / n.sum()
+s_vax = (n - n_vax * ve) / n
+
+R_vax = beta * s_i * s_vax
+e = np.linalg.eig(R_vax)
+i = np.argmax(np.abs(e.eigenvalues))
+
+value = e.eigenvalues[i]
+vector = e.eigenvectors[:, i]
+vector /= sum(vector)
+
+value
+vector
+```
+
+# 4 group model
+
 ```{python}
 # parameters (core, kids, travelers, general)
 n = np.array([0.1, 0.45, 0.05, 0.4]) * 1000000
@@ -50,7 +76,7 @@ test2
 ```{python}
 # test that equal pop sizes result in bigger Re
 n_equal = np.array([0.25, 0.25, 0.25, 0.25]) * 1000000
-test3 = ngm.simulate(n_equal, n_vax_0, K, p_severe, ve)
+test3 = ngm.simulate(n_equal, n_vax_0, beta, p_severe, ve)
 test3
 
 ```
@@ -72,7 +98,7 @@ df_n_vax = pd.DataFrame(n_vax_values, columns=["Core", "Kids", "Travelers", "Gen
 results = []
 for index, row in df_n_vax.iterrows():
     n_vax = row.values
-    result = ngm.simulate(n, n_vax, K, p_severe, ve)
+    result = ngm.simulate(n, n_vax, beta, p_severe, ve)
     results.append({
         "Total Doses": total_doses_range[index],
         "Re": result["Re"],
@@ -109,7 +135,7 @@ df_n_vax = pd.DataFrame(n_vax_values, columns=["Core", "Kids", "Travelers", "Gen
 results = []
 for index, row in df_n_vax.iterrows():
     n_vax = row.values
-    result = ngm.simulate(n, n_vax, K, p_severe, ve)
+    result = ngm.simulate(n, n_vax, beta, p_severe, ve)
     results.append({
         "Core Doses": n_vax[0],
         "Re": result["Re"],
