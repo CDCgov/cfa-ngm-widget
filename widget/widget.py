@@ -17,10 +17,10 @@ def app():
 
     # Population size
     st.sidebar.subheader("Population Sizes")
-    default_values = [100, 100, 50, 1000]
+    default_values = np.array([0.2, 0.2, 0.005, 0.595]) * 1000000
     N = np.array(
         [
-            st.sidebar.number_input(f"Population ({group})", value=default_values[i], min_value=0)
+        st.sidebar.number_input(f"Population ({group})", value=int(default_values[i]), min_value=0)
             for i, group in enumerate(group_names)
         ]
     )
