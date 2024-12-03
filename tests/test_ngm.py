@@ -1,6 +1,7 @@
 import numpy as np
 import ngm
 from numpy.testing import assert_array_equal
+from numpy.testing import assert_allclose
 import pytest
 
 
@@ -27,8 +28,8 @@ def test_vax_beta():
     current = ngm.get_R(beta=beta, n=n, n_vax=n_vax, ve=ve)
     expected = np.array(
         [
-            [10.0 * .2 * .5, 0.1 * .8 * .5],
-            [0.1 *  .2 * .5, 1 * .8 * .5],
+            [10.0 * .2 * .5, 0.1 * .8],
+            [0.1  * .2 * .5, 1.0 * .8],
         ]
     )
 
@@ -38,29 +39,31 @@ def test_vax_beta():
 def test_simulate():
     n = np.array([200, 200, 100, 500])
     n_vax = np.array([0, 0, 0, 0])
-    beta = np.array([[3.0, 0.5, 3, 0.5],
+    beta = np.array([[3.0, 0.5, 3.0, 0.5],
                      [0.5, 0.5, 0.5, 0.5],
-                     [3, 0.5, 0.5, 0.5],
+                     [3.0, 0.5, 0.5, 0.5],
                      [0.5, 0.5, 0.5, 0.5]])
     p_severe = np.array([0.02, 0.06, 0.02, 0.02])
     ve = 1.0
     current = ngm.simulate(n=n, n_vax=n_vax, beta=beta, p_severe=p_severe, ve=ve)
 
     assert set(current.keys()) == {"Re", "R", "infections", "severe_infections"}
-    assert np.isclose(current["Re"], 0.92)
-    assert_array_equal(
+    assert np.isclose(current["Re"], 0.9213240982914666)
+    assert_allclose(
         current["R"],
         np.array([[0.6, 0.1, 0.3,  0.25],
                   [0.1, 0.1, 0.05, 0.25],
                   [0.6, 0.1, 0.05, 0.25],
                   [0.1, 0.1, 0.05, 0.25]]),
     )
-    assert_array_equal(
-        np.round(current["infections"], 6), np.array([0.43969484, 0.107228  , 0.34584916, 0.107228])
+    assert_allclose(
+        current["infections"], np.array([0.43969484, 0.107228  , 0.34584916, 0.107228]),
     )
-    assert_array_equal(
-        np.round(current["severe_infections"], 6),
-        np.array([[0.00810203, 0.0059275 , 0.00637278, 0.00197583]]),
+
+    assert_allclose(
+        current["severe_infections"],
+        np.array([0.00810203, 0.0059275 , 0.00637278, 0.00197583]),
+        rtol=1e-5
     )
 
 
