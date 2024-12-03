@@ -31,16 +31,16 @@ If all $\gamma_i = \gamma$ and we assume SIR dynamics.
 
 The basic reproductive number $R_0$ is calculated as the dominant eigenvalue of $R$.
 
-This model incorporates vaccination by recalculating the distribution of susceptible individuals in each group $S_{i}^{vax}$ (assuming all or nothing vaccination, with vaccine efficacy given by $ve$):
+This model incorporates vaccination by recalculating the distribution of susceptible individuals in each group $S_{i}^{vax}$ (assuming all or nothing vaccination, with vaccine efficacy given by $ve$ and the proportion of $i$ vacinated is $v_i$):
 
 $$
 \mathbf{S_{i}^{vax}} = S_{i}^{initial} * (1 - v_{i} * ve)
 $$
 
-Then $R_ij$ with vaccination factored in is given by
+So that $S_i^{vax}$ is the population $i$ that is still susceptible post vaccination administration. Then $R_ij$ with vaccination factored in is given by
 
 $$
-\mathbf{R}_{ij}^{vax} = \frac{\beta_{ij} S_{i}^{vax}}{\gamma N}
+\mathbf{R}_{ij}^{vax} = \mathbf{R}_{ij} \frac{S_{i}^{vax}}{N_i}
 $$
 
 
