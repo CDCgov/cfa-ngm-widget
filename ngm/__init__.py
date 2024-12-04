@@ -6,7 +6,11 @@ DominantEigen = namedtuple("DominantEigen", ["value", "vector"])
 
 
 def simulate(
-    n: np.ndarray, n_vax: np.ndarray, beta: np.ndarray, p_severe: np.ndarray, ve: float
+    R: np.ndarray,
+    n: np.ndarray,
+    n_vax: np.ndarray,
+    p_severe: np.ndarray,
+    ve: float,
 ) -> dict[str, Any]:
     """
     Calculate Re and distribution of infections
@@ -24,51 +28,33 @@ def simulate(
     n_groups = len(n)
     assert len(n_vax) == n_groups
     assert len(p_severe) == n_groups
-    assert beta.shape[0] == n_groups
-    assert beta.shape[1] == n_groups
+    assert R.shape[0] == n_groups
+    assert R.shape[1] == n_groups
     assert all(n >= n_vax), "Vaccinated cannot exceed population size"
 
     # eigen analysis
-    R = get_R(beta=beta, n=n, n_vax=n_vax, ve=ve)
+    R_vax = reduce_R(R=R, p_vax=n_vax / n, ve=ve)
     eigen = dominant_eigen(R, norm="L1")
 
     return {
-        "R": R,
+        "R": R_vax,
         "Re": eigen.value,
         "infections": eigen.vector,
-        "severe_infections": eigen.value * eigen.vector * p_severe,
+        "severe_infections": eigen.vector * p_severe,
     }
 
 
-def get_R(beta: np.ndarray, n: np.ndarray, n_vax: np.ndarray, ve: float) -> np.ndarray:
-    """Adjust a next generation matrix with vaccination
-
-    Matrix element beta_ij is the matrix of who acquires infection from whom and
-    captures mixing between different groups. When recovery rate = 1, R (the next
-    generation matrix) is calculated by multiplying each row by the relative size
-    of the susceptible population of each group.
-
-    The size of the susceptible population is calculated with the population size
-    of each group subtracted n_vax * ve when n_vax > 1.
-
-    Args:
-        n (np.array): Population sizes for each group
-        n_vax (np.array): Number of people vaccinated in each group
-        beta (np.array): Square matrix with entries representing contact between and within groups
-        ve (float): Vaccine efficacy
-
-    Returns:
-        np.array: matrix R from which to calculate R0
-    """
+def reduce_R(R: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
+    """Adjust a next generation matrix with vaccination"""
+    assert len(R.shape) == 2 and R.shape[0] == R.shape[1], "R must be square"
+    n_groups = R.shape[0]
+    assert len(p_vax) == n_groups, "Input dimensions must match"
     assert (
-        len(beta.shape) == 2 and beta.shape[0] == beta.shape[1]
-    ), "beta must be square"
-    assert beta.shape[0] == len(n_vax), "Input dimensions must match"
+        0 <= p_vax <= 1.0 for pv in p_vax
+    ).all(), "Vaccine coverage must be in [0, 1]"
     assert 0 <= ve <= 1.0
 
-    s_i = n
-    s_vax = (n - n_vax * ve) / n
-    return (beta.T * ((s_i / n.sum()) * s_vax)).T
+    return (R.T * (1 - p_vax * ve)).T
 
 
 def dominant_eigen(X: np.ndarray, norm: str = "L1") -> DominantEigen:
@@ -116,7 +102,9 @@ def _ensure_positive_array(x: np.ndarray) -> np.ndarray:
         raise RuntimeError(f"Cannot make vector all positive: {x}")
 
 
-def distribute_vaccines(V: float, N_i: np.ndarray, strategy=None) -> np.ndarray:
+def distribute_vaccines(
+    V: float, N_i: np.ndarray, strategy: str = "even"
+) -> np.ndarray:
     """
     Distribute vaccines based on the specified strategy.
 
