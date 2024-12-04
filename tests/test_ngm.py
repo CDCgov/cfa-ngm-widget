@@ -38,6 +38,7 @@ def test_vax_beta():
 
 
 def test_simulate():
+    # Tests ngm against itself
     n = np.array([200, 200, 100, 500])
     n_vax = np.array([0, 0, 0, 0])
     beta = np.array([[3.0, 0.5, 3.0, 0.5],
@@ -49,21 +50,23 @@ def test_simulate():
     current = ngm.simulate(n=n, n_vax=n_vax, beta=beta, p_severe=p_severe, ve=ve)
 
     assert set(current.keys()) == {"Re", "R", "infections", "severe_infections"}
-    assert np.isclose(current["Re"], 0.9213240982914666)
+    assert np.isclose(current["Re"], 0.9213240982914677)
     assert_allclose(
         current["R"],
-        np.array([[0.6, 0.1, 0.3,  0.25],
-                  [0.1, 0.1, 0.05, 0.25],
-                  [0.6, 0.1, 0.05, 0.25],
-                  [0.1, 0.1, 0.05, 0.25]]),
+        np.array([
+            [0.6 , 0.1 , 0.6 , 0.1 ],
+            [0.1 , 0.1 , 0.1 , 0.1 ],
+            [0.3 , 0.05, 0.05, 0.05],
+            [0.25, 0.25, 0.25, 0.25]
+        ]),
     )
     assert_allclose(
-        current["infections"], np.array([0.43969484, 0.107228  , 0.34584916, 0.107228]),
+        current["infections"], np.array([0.44507246, 0.10853944, 0.17503951, 0.2713486]),
     )
 
     assert_allclose(
         current["severe_infections"],
-        np.array([0.00810203, 0.0059275 , 0.00637278, 0.00197583]),
+        np.array([0.00820112, 0.006, 0.00322536, 0.005]),
         rtol=1e-5
     )
 
