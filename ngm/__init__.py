@@ -119,3 +119,53 @@ def run_ngm(r: np.ndarray, x0: np.ndarray, steps: int) -> np.ndarray:
         x = np.matmul(r, x)
 
     return x
+
+def distribute_vaccines(V, N_i, strategy="core"):
+    """
+    Distribute vaccines based on the specified strategy.
+
+    Parameters:
+    V (int): Number of vaccine doses.
+    N_i (np.ndarray): Population sizes for each group.
+    strategy (str): Distribution strategy ("core", "kids", "even").
+
+    Returns:
+    np.ndarray: Array of vaccine doses distributed to each group.
+    """
+
+    # Ensure V and N_i are of type float
+    V = float(V)
+    N_i = N_i.astype(float)
+
+    # Initialize n_vax array
+    n_vax = np.zeros_like(N_i)
+
+    if strategy == "core":
+        # Distribute doses to core group first
+        if V <= N_i[0]:
+            n_vax[0] = V
+        else:
+            n_vax[0] = N_i[0]
+            remaining_doses = V - N_i[0]
+            # Distribute remaining doses evenly to groups 2 and 3
+            # note -- should this be in proportion to population sizes?
+            n_vax[1:] = remaining_doses / 2
+
+    elif strategy == "kids":
+        # Distribute doses to kids group first
+        if V <= N_i[1]:
+            n_vax[1] = V
+        else:
+            n_vax[1] = N_i[1]
+            remaining_doses = V - N_i[1]
+            # Distribute remaining doses evenly to core and general groups
+            # note -- should this be in proportion to population sizes??
+            n_vax[0] = remaining_doses / 2
+            n_vax[2] = remaining_doses / 2
+
+    elif strategy == "even":
+        # Distribute doses according to the proportion in each group
+        total_population = np.sum(N_i)
+        n_vax = (N_i / total_population) * V
+
+    return n_vax

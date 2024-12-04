@@ -1,0 +1,12 @@
+params:
+  N: [1e6, 1e7]
+  n_core: 0.05
+  n_children: 0.45
+  n_general: 0.5
+  V: [2e5, 1e6]
+  VE: 0.74
+  scenario: ["core", "children", "even"]
+  beta_high: 10
+  beta_low: [1.5, 3]
+  p_severe_children: 0.06
+  p_severe_adults: 0.02
