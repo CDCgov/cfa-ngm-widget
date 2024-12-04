@@ -88,7 +88,7 @@ def test_kr():
     )
 
     r_p_61 = np.array([[2, 0.02],[0.08, 0.8]]),
-    assert all(np.isclose(r, r_p_61))
+    assert np.isclose(r, r_p_61).all()
 
     r0 = ngm.dominant_eigen(r).value
 
