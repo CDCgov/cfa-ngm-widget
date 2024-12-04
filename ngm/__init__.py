@@ -65,7 +65,7 @@ def get_R(beta: np.ndarray, n: np.ndarray, n_vax: np.ndarray, ve: float) -> np.n
 
     s_i = n
     s_vax = (n - n_vax * ve) / n
-    return beta * (s_i / n.sum()) * s_vax
+    return (beta.T * ((s_i / n.sum()) * s_vax)).T
 
 
 def dominant_eigen(X: np.ndarray, norm: str = "L1") -> DominantEigen:
