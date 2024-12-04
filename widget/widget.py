@@ -26,32 +26,46 @@ def app():
     )
 
     # Vaccine doses
-
-    ndoses = 100000
-    st.sidebar.subheader("Vaccine Doses (Pre-filled Scenarios)")
-    starting_vax = st.sidebar.selectbox("Vaccine allocation strategy", ["No vaccination", "All core", "All kids", "Even"])
-    # No vax is default
-    allocation = [0, 0, 0]
-    if starting_vax == "All core":
-        allocation = [1, 0, 0]
-    elif starting_vax == "All kids":
-        allocation = [0, 1, 0]
-    elif starting_vax == "Even":
-        allocation = [1/3, 1/3, 1/3]
-    allocation = np.floor(np.array(allocation) * ndoses).astype("int")
-
-    st.sidebar.subheader("Vaccine Doses (Customization)")
-    V = np.array(
+    st.sidebar.subheader("Vaccine Allocation Strategies")
+    starting_vax = st.sidebar.selectbox(
+        "Vaccine allocation strategy",
         [
-            st.sidebar.number_input(
-                f"Vaccine Doses ({group})",
-                value=allocation[i],
-                min_value=0,
-                max_value=N[i],
-            )
-            for i, group in enumerate(group_names)
+            "All core (low)", "All kids (low)", "Even (low)",
+            "All core (high)", "All kids (high)", "Even (high)",
         ]
     )
+    ndoses_default = 100000
+    if starting_vax.split(r" (")[1][:-1] == "high":
+        ndoses_default = 200000
+
+    allocation_default = [0, 0, 0]
+    if starting_vax.split(r" (")[0] == "All core":
+        allocation_default = np.array([100.0, 0, 0])
+    elif starting_vax.split(r" (")[0] == "All kids":
+        allocation_default = np.array([0, 100.0, 0])
+    elif starting_vax.split(r" (")[0] == "Even":
+        allocation_default = 100.0 * N / N.sum()
+
+    st.sidebar.subheader("Vaccine Allocation Customization")
+    ndoses = st.sidebar.number_input("Total Number of Doses", value=ndoses_default, min_value=0, max_value=10000000, step=1)
+
+    allocation = []
+    remaining = 100.0
+    for i, group in enumerate(group_names[:-1]):
+        allocation.append(
+            st.sidebar.number_input(
+                f"Percent of Vaccine Doses going to {group}",
+                value=allocation_default[i],
+                min_value=0.0,
+                max_value=100.0 - sum(allocation[:i]),
+                step=1.0
+            )
+        )
+        remaining -= allocation[-1]
+    st.sidebar.subheader(f"(Allocating {remaining:.2f}% to {group_names[-1]})")
+    allocation.append(remaining)
+
+    V = np.floor(np.array(allocation) / 100.0 * ndoses).astype("int")
 
     # Contact matrix
     st.sidebar.subheader("High and low contact rates")
