@@ -116,14 +116,16 @@ def _ensure_positive_array(x: np.ndarray) -> np.ndarray:
         raise RuntimeError(f"Cannot make vector all positive: {x}")
 
 
-def distribute_vaccines(V, N_i, strategy="core"):
+def distribute_vaccines(V: float, N_i: np.ndarray, strategy=None) -> np.ndarray:
     """
     Distribute vaccines based on the specified strategy.
 
     Parameters:
     V (int): Number of vaccine doses.
     N_i (np.ndarray): Population sizes for each group.
-    strategy (str): Distribution strategy ("core", "kids", "even").
+    strategy (int): If None, then distribute evenly. If an integer, then
+        distribute to that group first, and divide according to population sizes
+        for the remainder.
 
     Returns:
     np.ndarray: Array of vaccine doses distributed to each group.
@@ -133,35 +135,37 @@ def distribute_vaccines(V, N_i, strategy="core"):
     V = float(V)
     N_i = N_i.astype(float)
 
-    # Initialize n_vax array
-    n_vax = np.zeros_like(N_i)
+    assert V <= sum(N_i), "Can't vaccinate more people than there are in the population"
 
-    if strategy == "core":
-        # Distribute doses to core group first
-        if V <= N_i[0]:
-            n_vax[0] = V
-        else:
-            n_vax[0] = N_i[0]
-            remaining_doses = V - N_i[0]
-            # Distribute remaining doses evenly to groups 2 and 3
-            # note -- should this be in proportion to population sizes?
-            n_vax[1:] = remaining_doses / 2
+    n_groups = len(N_i)
+    population_proportions = N_i / np.sum(N_i)
 
-    elif strategy == "kids":
-        # Distribute doses to kids group first
-        if V <= N_i[1]:
-            n_vax[1] = V
-        else:
-            n_vax[1] = N_i[1]
-            remaining_doses = V - N_i[1]
-            # Distribute remaining doses evenly to core and general groups
-            # note -- should this be in proportion to population sizes??
-            n_vax[0] = remaining_doses / 2
-            n_vax[2] = remaining_doses / 2
-
-    elif strategy == "even":
+    if strategy is None:
         # Distribute doses according to the proportion in each group
-        total_population = np.sum(N_i)
-        n_vax = (N_i / total_population) * V
+        n_vax = V * population_proportions
+    elif isinstance(strategy, int):
+        if V <= N_i[strategy]:
+            # if there aren't enough vaccines for the target group, then
+            # other groups get nothing
+            n_vax = np.zeros(n_groups)
+            n_vax[strategy] = V
+        else:
+            # fill up that group
+            n_vax = np.zeros(n_groups)
+            n_vax[strategy] = N_i[strategy]
+            remaining_doses = V - N_i[strategy]
+
+            remaining_population = sum(
+                [N_i[i] for i in range(n_groups) if i != strategy]
+            )
+            remaining_proportions = [
+                N_i[i] / remaining_population if i != strategy else 0.0
+                for i in range(n_groups)
+            ]
+
+            n_vax += remaining_doses * np.array(remaining_proportions)
+
+    assert sum(n_vax) == V
+    assert len(n_vax) == n_groups
 
     return n_vax

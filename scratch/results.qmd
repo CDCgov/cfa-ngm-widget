@@ -13,7 +13,7 @@ import yaml
 yaml_path = "config.yaml"
 
 with open(yaml_path) as f:
-    params = yaml.safe_load(f)['params']
+    params = yaml.safe_load(f)["params"]
 ```
 
 # 3 group model
@@ -37,6 +37,7 @@ We vary population sizes of this analysis to a large city of 10 million and a me
 We assume vaccine efficacy of a single dose vaccine of 75%.
 
 Disease parameters:
+
 * $R_0$ 1.5, 3
 * Transmission 10x higher in core group than general
 
@@ -45,10 +46,16 @@ We calculate $R_e$ for each of the vaccine scenarios in each population scenario
 Parameters can be found in `config.yaml`
 
 ```{python}
+scenario_names = {None: "even", 0: "core first", 1: "children first"}
+
 results = []
 for N in params["N"]:
+    # total population
     N = float(N)
+    # population proportions
     n = np.array([params["n_core"], params["n_children"], params["n_general"]])
+    assert sum(n) == 1.0
+    # population sizes
     N_i = n * N
 
     for scenario in params["scenario"]:
@@ -70,8 +77,6 @@ for N in params["N"]:
                 )
                 ve = params["VE"]
 
-                print(V)
-                print(N_i)
                 n_vax = ngm.distribute_vaccines(V, N_i, strategy=scenario)
                 result = ngm.simulate(
                     n=N_i, n_vax=n_vax, beta=beta, p_severe=p_severe, ve=ve
@@ -86,7 +91,7 @@ for N in params["N"]:
                         "N_core": N_i[0],
                         "N_children": N_i[1],
                         "N_general": N_i[2],
-                        "Scenario": scenario,
+                        "Scenario": scenario_names[scenario],
                         "V": V,
                         "V_core": n_vax[0],
                         "V_children": n_vax[1],
@@ -102,11 +107,18 @@ for N in params["N"]:
                     }
                 )
 
+```
+
+```{python}
+# | output: asis
+
 # Convert results to a DataFrame
 results_df = pd.DataFrame(results)
 results_df.to_csv("simulation_results.csv", index=False)
 
 
-# Display the results
-print(results_df)
+print(results_df.to_markdown())
+
+# save results
+results_df.to_csv("simulation_results.csv", index=False)
 ```
