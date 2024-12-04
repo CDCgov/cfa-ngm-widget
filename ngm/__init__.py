@@ -2,9 +2,10 @@ from collections import namedtuple
 import numpy as np
 from typing import Any
 
+DominantEigen = namedtuple("DominantEigen", ["value", "vector"])
 
 def simulate(
-    n: np.array, n_vax: np.array, beta: np.array, p_severe: np.array, ve: float
+    n: np.ndarray, n_vax: np.ndarray, beta: np.ndarray, p_severe: np.ndarray, ve: float
 ) -> dict[str, Any]:
     """
     Calculate Re and distribution of infections
@@ -38,7 +39,7 @@ def simulate(
     }
 
 
-def get_R(beta: np.array, n: np.array, n_vax: np.array, ve: float) -> np.array:
+def get_R(beta: np.ndarray, n: np.ndarray, n_vax: np.ndarray, ve: float) -> np.ndarray:
     """Adjust a next generation matrix with vaccination
 
     Matrix element beta_ij is the matrix of who acquires infection from whom and
@@ -67,7 +68,7 @@ def get_R(beta: np.array, n: np.array, n_vax: np.array, ve: float) -> np.array:
     return beta * (s_i / n.sum()) * s_vax
 
 
-def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
+def dominant_eigen(X: np.ndarray, norm: str = "L1") -> DominantEigen:
     """Dominant eigenvalue and eigenvector of a matrix
 
     Args:
@@ -99,10 +100,10 @@ def dominant_eigen(X: np.array, norm: str = "L1") -> namedtuple:
     else:
         raise RuntimeError(f"Unknown norm '{norm}'")
 
-    return namedtuple("DominantEigen", ["value", "vector"])(value=value, vector=vector)
+    return DominantEigen(value=value, vector=vector)
 
 
-def _ensure_positive_array(x: np.array) -> np.array:
+def _ensure_positive_array(x: np.ndarray) -> np.ndarray:
     """Ensure all entries of an array are positive"""
     if all(x >= 0):
         return x
