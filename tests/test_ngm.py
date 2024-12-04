@@ -28,12 +28,13 @@ def test_vax_beta():
     current = ngm.get_R(beta=beta, n=n, n_vax=n_vax, ve=ve)
     expected = np.array(
         [
-            [10.0 * .2 * .5, 0.1 * .8],
-            [0.1  * .2 * .5, 1.0 * .8],
+            [10.0 * .2 * .5, 0.1  * .2 * .5],
+            [0.1 * .8, 1.0 * .8],
         ]
     )
 
     assert_array_equal(current, expected)
+    assert ngm.dominant_eigen(current).value < 2.0013
 
 
 def test_simulate():
@@ -87,7 +88,7 @@ def test_kr():
         ve = 1.0,
     )
 
-    r_p_61 = np.array([[2, 0.02],[0.08, 0.8]]),
+    r_p_61 = np.array([[2, 0.02],[0.08, 0.8]])
     assert np.isclose(r, r_p_61).all()
 
     r0 = ngm.dominant_eigen(r).value
