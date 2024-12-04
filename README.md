@@ -16,7 +16,7 @@ approach.
 
 ## Model Description
 
-This repo contains code to apply the next-generation method of Diekman et al. (1990) to calculate R0 for an SIR model with 4 risk groups and flexible inputs for varying vaccine allocation to the 4 groups.
+This repo contains code to apply the next-generation method of Diekman et al. (1990) to calculate R0 for an SIR model with 3 risk groups and flexible inputs for varying vaccine allocation to each group.
 
 ### Next generation matrix calculation
 
@@ -33,13 +33,12 @@ Default parameters in the widget assume the following about transmission:
 | --------- | ------------------------------------------------ | ------------------------------------------------ | -------------------------------------- |
 | Core      | High                                             | High                                             | Low                                    |
 | Children  | Low                                              | Low                                              | High                                   |
-| Travelers | Low                                              | High                                             | Low                                    |
 | General   | Low                                              | Low                                              | Low                                    |
 
 Other Inputs to the widget:
 
 - Sizes of the groups, $N_i$
-- Vaccination efficacy (VE) and number of doses allocated to each group ($V_i$)
+- Vaccination efficacy (VE) and number of doses allocated to each group ($v_i$)
 - Within and between group contact rates; $\beta_{ij}$
 - Per-group probability of severe infection
 

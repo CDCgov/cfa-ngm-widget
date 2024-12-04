@@ -7,17 +7,17 @@ import ngm
 
 
 def app():
-    st.title("4-Group NGM Calculator")
+    st.title("3-Group NGM Calculator")
 
     # Group names
-    group_names = ["Core", "Kids", "Travelers", "General Population"]
+    group_names = ["Core", "Kids", "General Population"]
 
     # Sidebar for inputs
     st.sidebar.header("Model Inputs")
 
     # Population size
     st.sidebar.subheader("Population Sizes")
-    default_values = np.array([0.2, 0.2, 0.005, 0.595]) * 1000000
+    default_values = np.array([0.2, 0.2, 0.595]) * 1000000
     N = np.array(
         [
         st.sidebar.number_input(f"Population ({group})", value=int(default_values[i]), min_value=0)
@@ -48,10 +48,9 @@ def app():
     # Create the contact matrix K
     beta = np.array(
         [
-            [hi, lo, hi, lo],  # core
-            [lo, lo, lo, lo],  # kids
-            [hi, lo, lo, lo],  # travelers
-            [lo, lo, lo, lo],  # general
+            [hi, lo, lo],  # core
+            [lo, lo, lo],  # kids
+            [lo, lo, lo],  # general
         ]
     )
 
@@ -61,7 +60,7 @@ def app():
 
     # Perform the NGM calculation
     result = ngm.simulate(
-        n=N, n_vax=V, beta=beta, p_severe=np.array([0.02, 0.06, 0.02, 0.02]), ve=VE
+        n=N, n_vax=V, beta=beta, p_severe=np.array([0.02, 0.06, 0.02]), ve=VE
     )
 
     # Display the adjusted contact matrix
