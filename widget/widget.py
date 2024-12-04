@@ -27,7 +27,7 @@ def app():
 
     # Vaccine doses
 
-    ndoses = 50000
+    ndoses = 100000
     st.sidebar.subheader("Vaccine Doses (Pre-filled Scenarios)")
     starting_vax = st.sidebar.selectbox("Vaccine allocation strategy", ["No vaccination", "All core", "All kids", "Even"])
     # No vax is default
