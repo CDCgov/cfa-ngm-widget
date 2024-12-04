@@ -78,3 +78,18 @@ def test_ensure_positive():
 
     with pytest.raises(RuntimeError, match="all positive"):
         ngm._ensure_positive_array(np.array([1, -1]))
+
+def test_kr():
+    r = ngm.get_R(
+        beta = np.array([[10, 0.1],[0.1, 1]]),
+        n = np.array([0.2, 0.8]),
+        n_vax = np.array([0.0, 0.0]),
+        ve = 1.0,
+    )
+
+    r_p_61 = np.array([[2, 0.02],[0.08, 0.8]]),
+    assert all(np.isclose(r, r_p_61))
+
+    r0 = ngm.dominant_eigen(r).value
+
+    assert np.isclose(r0, 2.0013, atol=5e-5)
