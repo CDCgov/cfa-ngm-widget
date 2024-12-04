@@ -164,6 +164,4 @@ def distribute_vaccines(V, N_i, strategy="core"):
         total_population = np.sum(N_i)
         n_vax = (N_i / total_population) * V
 
-    # Not good: results in fewer vaccine doses administered than available... need to fix the strategies
-    n_vax = np.minimum(n_vax, N_i)
     return n_vax
