@@ -26,12 +26,26 @@ def app():
     )
 
     # Vaccine doses
-    st.sidebar.subheader("Vaccine Doses")
+
+    ndoses = 50000
+    st.sidebar.subheader("Vaccine Doses (Pre-filled Scenarios)")
+    starting_vax = st.sidebar.selectbox("Vaccine allocation strategy", ["No vaccination", "All core", "All kids", "Even"])
+    # No vax is default
+    allocation = [0, 0, 0]
+    if starting_vax == "All core":
+        allocation = [1, 0, 0]
+    elif starting_vax == "All kids":
+        allocation = [0, 1, 0]
+    elif starting_vax == "Even":
+        allocation = [1/3, 1/3, 1/3]
+    allocation = np.floor(np.array(allocation) * ndoses).astype("int")
+
+    st.sidebar.subheader("Vaccine Doses (Customization)")
     V = np.array(
         [
             st.sidebar.number_input(
                 f"Vaccine Doses ({group})",
-                value=0,
+                value=allocation[i],
                 min_value=0,
                 max_value=N[i],
             )
