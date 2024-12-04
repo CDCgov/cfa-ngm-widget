@@ -67,19 +67,33 @@ for N in params['N']:
                 n_vax = ngm.distribute_vaccines(V, N_i, strategy=scenario)
                 result = ngm.simulate(n=N_i, n_vax=n_vax, beta=beta, p_severe=p_severe, ve=ve)
 
+                infections = result["infections"]
+                severe_infections = result["severe_infections"]
+
+
                 results.append({
                     "N": N,
+                    "N_core": N_i[0],
+                    "N_children": N_i[1],
+                    "N_general": N_i[2],
                     "Scenario": scenario,
                     "V": V,
+                    "V_core": n_vax[0],
+                    "V_children": n_vax[1],
+                    "V_general": n_vax[2],
                     "Beta Low": beta_low,
                     "Re": result["Re"],
-                    "Infections": result["infections"],
-                    "Severe Infections": result["severe_infections"]
+                    "Infections Core": infections[0],
+                    "Infections Children": infections[1],
+                    "Infections General": infections[2],
+                    "Severe Infections Core": severe_infections[0],
+                    "Severe Infections Children": severe_infections[1],
+                    "Severe Infections General": severe_infections[2]
                 })
 
 # Convert results to a DataFrame
 results_df = pd.DataFrame(results)
+results_df.to_csv('simulation_results.csv', index=False)
 
-# Display the results
-print(results_df)
+
 ```
