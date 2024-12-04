@@ -62,7 +62,7 @@ def app():
             )
         )
         remaining -= allocation[-1]
-    st.sidebar.subheader(f"(Allocating {remaining:.2f}% to {group_names[-1]})")
+    st.sidebar.write(f"(Allocating {remaining:.2f}% to {group_names[-1]})")
     allocation.append(remaining)
 
     V = np.floor(np.array(allocation) / 100.0 * ndoses).astype("int")
