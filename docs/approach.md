@@ -2,7 +2,7 @@
 
 The NGM for a 4-Group Infectious Disease Model with compartments $S_i$, $I_i$, $R_i$: Susceptible, Infected, and Recovered compartments.
 
-Dynamics for $I_i$ in each group given by:
+The dynamics for $i$ in each group given by:
 
 $$
 \frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij} S_i I_j}{N} - \gamma_i I_i
