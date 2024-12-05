@@ -28,7 +28,7 @@ def simulate(params):
     )
 
     Re = result["Re"]
-    ifr = np.dot(result["infections"], result["severe_infections"])
+    ifr = result["severe_infection_ratio"]
 
     return pl.DataFrame({"Re": Re, "ifr": ifr, "ifr_times_Re": ifr * Re})
 
