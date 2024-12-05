@@ -118,14 +118,14 @@ def test_eigenvectors():
 def test_distribute_vaccine_even():
     N_i = np.array([1.0, 2.0, 3.0])
     V = 1.0
-    n_vax = ngm.distribute_vaccines(V, N_i, strategy=None)
+    n_vax = ngm.distribute_vaccines(V, N_i, strategy="even")
     assert_allclose(n_vax, np.array([1.0 / 6, 2.0 / 6, 3.0 / 6]))
 
 
 def test_distribute_vaccine():
     N_i = np.array([1.0, 2.0, 3.0])
     V = 2.0
-    n_vax = ngm.distribute_vaccines(V, N_i, strategy=0)
+    n_vax = ngm.distribute_vaccines(V, N_i, strategy="0")
     # note that population 0 got filled, and remaining 1.0 doses were
     # distributed according to denominator 5 (i.e., of the remaining population)
     assert_allclose(n_vax, np.array([1.0, 2.0 / 5, 3.0 / 5]))
@@ -135,7 +135,7 @@ def test_distribute_vaccine_error():
     """If there is too much vaccine, error out"""
     N_i = np.array([1.0, 2.0, 3.0])
 
-    ngm.distribute_vaccines(V=6.0, N_i=N_i, strategy=None)
+    ngm.distribute_vaccines(V=6.0, N_i=N_i, strategy="even")
 
     with pytest.raises(AssertionError):
-        ngm.distribute_vaccines(V=10.0, N_i=N_i, strategy=None)
+        ngm.distribute_vaccines(V=10.0, N_i=N_i, strategy="even")

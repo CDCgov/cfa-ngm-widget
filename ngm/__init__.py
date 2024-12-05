@@ -123,9 +123,9 @@ def distribute_vaccines(V: float, N_i: np.ndarray, strategy=None) -> np.ndarray:
     Parameters:
     V (int): Number of vaccine doses.
     N_i (np.ndarray): Population sizes for each group.
-    strategy (int): If None, then distribute evenly. If an integer, then
-        distribute to that group first, and divide according to population sizes
-        for the remainder.
+    strategy (str): If "even", then distribute evenly. If a string representation of
+        an integer (or just an integer), then distribute to that group first,
+        and divide according to population sizes for the other groups.
 
     Returns:
     np.ndarray: Array of vaccine doses distributed to each group.
@@ -140,26 +140,27 @@ def distribute_vaccines(V: float, N_i: np.ndarray, strategy=None) -> np.ndarray:
     n_groups = len(N_i)
     population_proportions = N_i / np.sum(N_i)
 
-    if strategy is None:
+    if strategy == "even":
         # Distribute doses according to the proportion in each group
         n_vax = V * population_proportions
-    elif isinstance(strategy, int):
-        if V <= N_i[strategy]:
+    else:
+        target_i = int(strategy)
+        if V <= N_i[target_i]:
             # if there aren't enough vaccines for the target group, then
             # other groups get nothing
             n_vax = np.zeros(n_groups)
-            n_vax[strategy] = V
+            n_vax[target_i] = V
         else:
             # fill up that group
             n_vax = np.zeros(n_groups)
-            n_vax[strategy] = N_i[strategy]
-            remaining_doses = V - N_i[strategy]
+            n_vax[target_i] = N_i[target_i]
+            remaining_doses = V - N_i[target_i]
 
             remaining_population = sum(
-                [N_i[i] for i in range(n_groups) if i != strategy]
+                [N_i[i] for i in range(n_groups) if i != target_i]
             )
             remaining_proportions = [
-                N_i[i] / remaining_population if i != strategy else 0.0
+                N_i[i] / remaining_population if i != target_i else 0.0
                 for i in range(n_groups)
             ]
 

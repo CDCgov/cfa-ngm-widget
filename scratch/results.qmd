@@ -6,14 +6,8 @@ format: html
 ```{python}
 import numpy as np
 import ngm as ngm
-import pandas as pd
-import matplotlib.pyplot as plt
-import yaml
-
-yaml_path = "config.yaml"
-
-with open(yaml_path) as f:
-    params = yaml.safe_load(f)["params"]
+import polars as pl
+import griddler, griddler.griddle
 ```
 
 # 3 group model
@@ -48,76 +42,45 @@ Parameters can be found in `config.yaml`
 ```{python}
 scenario_names = {None: "even", 0: "core first", 1: "children first"}
 
-results = []
-for N in params["N"]:
-    # total population
-    N = float(N)
-    # population proportions
-    n = np.array([params["n_core"], params["n_children"], params["n_general"]])
-    assert sum(n) == 1.0
+parameter_sets = griddler.griddle.read("config.yaml")
+
+
+def make_beta(lo, hi):
+    return np.array([[hi, lo, lo], [lo, lo, lo], [lo, lo, lo]])
+
+
+def simulate(params):
+    assert sum(params["pop_props"]) == 1.0
     # population sizes
-    N_i = n * N
+    N_i = params["n_total"] * np.array(params["pop_props"])
 
-    for scenario in params["scenario"]:
-        for V in params["V"]:
-            for beta_low in params["beta_low"]:
-                beta = np.array(
-                    [
-                        [params["beta_high"], beta_low, beta_low],
-                        [beta_low, beta_low, beta_low],
-                        [beta_low, beta_low, beta_low],
-                    ]
-                )
-                p_severe = np.array(
-                    [
-                        params["p_severe_adults"],
-                        params["p_severe_children"],
-                        params["p_severe_adults"],
-                    ]
-                )
-                ve = params["VE"]
+    beta = make_beta(lo=params["beta_low"], hi=params["beta_high"])
+    p_severe = np.array(params["p_severe"])
 
-                n_vax = ngm.distribute_vaccines(V, N_i, strategy=scenario)
-                result = ngm.simulate(
-                    n=N_i, n_vax=n_vax, beta=beta, p_severe=p_severe, ve=ve
-                )
+    n_vax = ngm.distribute_vaccines(
+        params["n_vax_total"], N_i, strategy=params["vax_strategy"]
+    )
 
-                infections = result["infections"]
-                severe_infections = result["severe_infections"]
+    result = ngm.simulate(
+        n=N_i, n_vax=n_vax, beta=beta, p_severe=p_severe, ve=params["ve"]
+    )
 
-                results.append(
-                    {
-                        "N": N,
-                        "N_core": N_i[0],
-                        "N_children": N_i[1],
-                        "N_general": N_i[2],
-                        "Scenario": scenario_names[scenario],
-                        "V": V,
-                        "V_core": n_vax[0],
-                        "V_children": n_vax[1],
-                        "V_general": n_vax[2],
-                        "Beta Low": beta_low,
-                        "Re": result["Re"],
-                        "Infections Core": infections[0],
-                        "Infections Children": infections[1],
-                        "Infections General": infections[2],
-                        "Severe Infections Core": severe_infections[0],
-                        "Severe Infections Children": severe_infections[1],
-                        "Severe Infections General": severe_infections[2],
-                    }
-                )
+    return pl.DataFrame(
+        {
+            "Re": result["Re"],
+            "ifr": np.dot(result["infections"], result["severe_infections"]),
+        }
+    )
 
+
+results = griddler.run_squash(simulate, parameter_sets)
 ```
 
 ```{python}
 # | output: asis
 
-# Convert results to a DataFrame
-results_df = pd.DataFrame(results)
-
-
-print(results_df.to_markdown())
+print(results.to_pandas().to_markdown())
 
 # save results
-results_df.to_csv("simulation_results.csv", index=False)
+results.drop(["pop_props", "p_severe"]).write_csv("simulation_results.csv")
 ```
