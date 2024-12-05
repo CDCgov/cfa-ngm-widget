@@ -49,4 +49,4 @@ with pl.Config(tbl_rows=-1):
     print(results)
 
 # save results
-results.write_csv("results.csv")
+results.write_csv("scratch/results.csv")
