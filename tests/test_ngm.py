@@ -101,6 +101,6 @@ def test_kr():
 def test_eigenvectors():
     r = np.array([[3.1, 0.15, 1.7],[0.78, 1.5, 0.1],[0.32, 0.98, 1.1]])
 
-    brute_force = ngm.run_ngm(r, np.array([1, 0, 0]), 200)
+    brute_force = np.linalg.matrix_power(r, 200) @ np.array([1, 0, 0])
     brute_force = brute_force / brute_force.sum()
     assert np.isclose(ngm.dominant_eigen(r).vector, brute_force).all()

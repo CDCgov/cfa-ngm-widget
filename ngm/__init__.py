@@ -4,6 +4,7 @@ from typing import Any
 
 DominantEigen = namedtuple("DominantEigen", ["value", "vector"])
 
+
 def simulate(
     n: np.ndarray, n_vax: np.ndarray, beta: np.ndarray, p_severe: np.ndarray, ve: float
 ) -> dict[str, Any]:
@@ -28,8 +29,8 @@ def simulate(
     assert all(n >= n_vax), "Vaccinated cannot exceed population size"
 
     # eigen analysis
-    R = get_R(beta = beta, n = n, n_vax = n_vax, ve = ve)
-    eigen = dominant_eigen(R, norm = "L1")
+    R = get_R(beta=beta, n=n, n_vax=n_vax, ve=ve)
+    eigen = dominant_eigen(R, norm="L1")
 
     return {
         "R": R,
@@ -59,7 +60,9 @@ def get_R(beta: np.ndarray, n: np.ndarray, n_vax: np.ndarray, ve: float) -> np.n
     Returns:
         np.array: matrix R from which to calculate R0
     """
-    assert len(beta.shape) == 2 and beta.shape[0] == beta.shape[1], "beta must be square"
+    assert (
+        len(beta.shape) == 2 and beta.shape[0] == beta.shape[1]
+    ), "beta must be square"
     assert beta.shape[0] == len(n_vax), "Input dimensions must match"
     assert 0 <= ve <= 1.0
 
@@ -112,6 +115,7 @@ def _ensure_positive_array(x: np.ndarray) -> np.ndarray:
     else:
         raise RuntimeError(f"Cannot make vector all positive: {x}")
 
+
 def run_ngm(r: np.ndarray, x0: np.ndarray, steps: int) -> np.ndarray:
     """Repeatedly applies the NGM r, starting with x0"""
     x = x0
@@ -119,6 +123,7 @@ def run_ngm(r: np.ndarray, x0: np.ndarray, steps: int) -> np.ndarray:
         x = np.matmul(r, x)
 
     return x
+
 
 def distribute_vaccines(V, N_i, strategy="core"):
     """
