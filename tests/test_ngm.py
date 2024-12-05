@@ -139,3 +139,11 @@ def test_distribute_vaccine_error():
 
     with pytest.raises(AssertionError):
         ngm.distribute_vaccines(V=10.0, N_i=N_i, strategy="even")
+
+
+def test_distribute_zero_doses():
+    """If there are zero doses, return zero doses"""
+    N_i = np.array([1.0, 2.0, 3.0])
+    for strategy in ["even", "0"]:
+        n_vax = ngm.distribute_vaccines(V=0.0, N_i=N_i, strategy=strategy)
+        assert_allclose(n_vax, np.array([0.0, 0.0, 0.0]))
