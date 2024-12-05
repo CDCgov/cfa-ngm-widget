@@ -16,9 +16,9 @@ def simulate(
     Calculate Re and distribution of infections
 
     Args:
+        R_novax: Next Generation Matrix in the absence of administering any vaccines
         n (np.array): Population sizes for each group
         n_vax (np.array): Number of people vaccinated in each group
-        beta (np.array): Square matrix with entries representing contact between and within groups
         p_severe (np.array): Group-specific probability of severe infection
         ve (float): Vaccine efficacy
 

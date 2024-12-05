@@ -41,7 +41,7 @@ def app():
         ]
     )
 
-    button_to_core = {"Core" : "core", "Kids" : "kids", "Even" : "even"}
+    button_to_core = {"Core" : 0, "Kids" : 1, "Even" : "even"}
 
     allocation_default = [0] * n_groups
     if ndoses > 0:
@@ -78,11 +78,11 @@ def app():
     from_to = [((i, group_names[i]), (j, group_names[j]),) for i in range(n_groups) for j in range(n_groups)]
     r_default = np.array([[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]])
 
-    r_0 = np.zeros((n_groups, n_groups,))
+    r_novax = np.zeros((n_groups, n_groups,))
     for ft in from_to:
         row = ft[1][0]
         col = ft[0][0]
-        r_0[row, col] = st.sidebar.number_input(
+        r_novax[row, col] = st.sidebar.number_input(
             f"From {ft[0][1]} to {ft[1][1]}",
             value=r_default[row, col],
             min_value=0.0,
@@ -94,9 +94,8 @@ def app():
         VE = st.sidebar.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01)
 
     # Perform the NGM calculation
-    beta = (r_0.T / (N / N.sum())).T # back-calculate beta
     result = ngm.simulate(
-        n=N, n_vax=V, beta=beta, p_severe=p_severe, ve=VE
+        R_novax=r_novax, n=N, n_vax=V, p_severe=p_severe, ve=VE
     )
 
     # Display the adjusted contact matrix
@@ -126,12 +125,12 @@ def app():
     st.write("Next Generation Matrix:")
     st.dataframe(
         pd.DataFrame(
-            np.round(r_0, 2),
+            np.round(r_novax, 2),
             columns=group_names,
             index=group_names,
         )
     )
-    novax_eigen = ngm.dominant_eigen(r_0)
+    novax_eigen = ngm.dominant_eigen(r_novax)
     st.write(f"R0: {novax_eigen.value:.2f}")
     st.write("Proportion of infections in each group:")
     st.dataframe(
