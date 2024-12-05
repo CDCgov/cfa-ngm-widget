@@ -4,6 +4,7 @@ baseline_parameters:
   # population proportions
   # [core, children, general]
   pop_props: [0.05, 0.45, 0.5]
+  R_novax: [[1.1, 0.0, 0.50], [0.0, 0.1, 0.25], [0.1, 0.1, 0.1]]
   ve: 0.74
   beta_high: 10
   beta_low: 1.5

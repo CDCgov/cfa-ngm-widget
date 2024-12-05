@@ -6,7 +6,7 @@ DominantEigen = namedtuple("DominantEigen", ["value", "vector"])
 
 
 def simulate(
-    R: np.ndarray,
+    R_novax: np.ndarray,
     n: np.ndarray,
     n_vax: np.ndarray,
     p_severe: np.ndarray,
@@ -28,13 +28,13 @@ def simulate(
     n_groups = len(n)
     assert len(n_vax) == n_groups
     assert len(p_severe) == n_groups
-    assert R.shape[0] == n_groups
-    assert R.shape[1] == n_groups
+    assert R_novax.shape[0] == n_groups
+    assert R_novax.shape[1] == n_groups
     assert all(n >= n_vax), "Vaccinated cannot exceed population size"
 
     # eigen analysis
-    R_vax = reduce_R(R=R, p_vax=n_vax / n, ve=ve)
-    eigen = dominant_eigen(R, norm="L1")
+    R_vax = reduce_R(R=R_novax, p_vax=n_vax / n, ve=ve)
+    eigen = dominant_eigen(R_vax, norm="L1")
 
     return {
         "R": R_vax,
@@ -49,8 +49,8 @@ def reduce_R(R: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
     assert len(R.shape) == 2 and R.shape[0] == R.shape[1], "R must be square"
     n_groups = R.shape[0]
     assert len(p_vax) == n_groups, "Input dimensions must match"
-    assert (
-        0 <= p_vax <= 1.0 for pv in p_vax
+    assert (0 <= p_vax).all() and (
+        p_vax <= 1.0
     ).all(), "Vaccine coverage must be in [0, 1]"
     assert 0 <= ve <= 1.0
 
