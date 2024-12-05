@@ -27,26 +27,11 @@ The documentation is best viewed off of GitHub, either by opening in VSCode and 
 
 Vaccination is assumed to be all or nothing -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy.
 
-Default parameters in the widget assume the following about transmission:
+### Widget
 
-| Group     | Probability of onward, within group transmission | Probability of being infected from outside group | Probability of severe outcome in group |
-| --------- | ------------------------------------------------ | ------------------------------------------------ | -------------------------------------- |
-| Core      | High                                             | High                                             | Low                                    |
-| Children  | Low                                              | Low                                              | High                                   |
-| General   | Low                                              | Low                                              | Low                                    |
+The widget is designed to let users modify vaccine allocation choices, measures of between- and within-group spread, population composition, and see how this effects $R_e$ and other key quantities.
 
-Other Inputs to the widget:
-
-- Sizes of the groups, $N_i$
-- Vaccination efficacy (VE) and number of doses allocated to each group ($v_i$)
-- Within and between group contact rates; $\beta_{ij}$
-- Per-group probability of severe infection
-
-Outputs:
-
-- Effective reproductive number
-- Distribution of infections
-- Severe infections (per generation)
+Specific inputs to and outputs from the widget are documented therein.
 
 ### References
 
