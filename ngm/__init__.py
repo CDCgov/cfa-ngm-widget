@@ -116,15 +116,6 @@ def _ensure_positive_array(x: np.ndarray) -> np.ndarray:
         raise RuntimeError(f"Cannot make vector all positive: {x}")
 
 
-def run_ngm(r: np.ndarray, x0: np.ndarray, steps: int) -> np.ndarray:
-    """Repeatedly applies the NGM r, starting with x0"""
-    x = x0
-    for _ in range(steps):
-        x = np.matmul(r, x)
-
-    return x
-
-
 def distribute_vaccines(V, N_i, strategy="core"):
     """
     Distribute vaccines based on the specified strategy.
