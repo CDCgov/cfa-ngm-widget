@@ -9,6 +9,6 @@ baseline_parameters:
   beta_low: 1.5
   p_severe: [0.02, 0.06, 0.02]
 grid_parameters:
-  n_vax_total: [!!float 2e5, !!float 1e6]
+  n_vax_total: [0.0, !!float 2e5, !!float 1e6, !!float 5e6]
   # vaccination strategy
   vax_strategy: ["0", "1", "even"]

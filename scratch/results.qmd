@@ -7,6 +7,7 @@ format: html
 import numpy as np
 import ngm as ngm
 import polars as pl
+import polars.selectors as cs
 import griddler, griddler.griddle
 ```
 
@@ -26,21 +27,20 @@ Vaccine strategies:
 * all to kids
 * even distribution to everyone
 
-We vary population sizes of this analysis to a large city of 10 million and a medium city of 1 million with 1 million and 200,000 doses of vaccination available respectively.
+We set population sizes for this analysis to a large city of 10 million and administer 0, 200 000, 1 million, and 5 million vaccines.
 
-We assume vaccine efficacy of a single dose vaccine of 75%.
+We assume vaccine efficacy of a single dose vaccine of 74%.
 
 Disease parameters:
+* $R_0$ 1.5
+* Transmission 6x higher in core group than general
 
-* $R_0$ 1.5, 3
-* Transmission 10x higher in core group than general
-
-We calculate $R_e$ for each of the vaccine scenarios in each population scenario and each $R_0$ scenario (3 vax x 2 pop x 2 R0 = 12 scenarios) using the next generation matrix approach. We also calculate the distribution of infections and severe infections (per infection) under each scenario.
+We calculate $R_e$ for each of the vaccine scenarios in each population scenario and each $R_0$ scenario (3 vax strategies x 4 vaccine doses = 12 scenarios) using the next generation matrix approach. We also calculate the distribution of infections and severe infections (per infection) under each scenario.
 
 Parameters can be found in `config.yaml`
 
 ```{python}
-scenario_names = {None: "even", 0: "core first", 1: "children first"}
+strategy_names = {"even": "even", "0": "core first", "1": "children first"}
 
 parameter_sets = griddler.griddle.read("config.yaml")
 
@@ -65,15 +65,15 @@ def simulate(params):
         n=N_i, n_vax=n_vax, beta=beta, p_severe=p_severe, ve=params["ve"]
     )
 
-    return pl.DataFrame(
-        {
-            "Re": result["Re"],
-            "ifr": np.dot(result["infections"], result["severe_infections"]),
-        }
-    )
+    Re = result["Re"]
+    ifr = np.dot(result["infections"], result["severe_infections"])
+
+    return pl.DataFrame({"Re": Re, "ifr": ifr, "ifr_times_Re": ifr * Re})
 
 
-results = griddler.run_squash(simulate, parameter_sets)
+results = griddler.run_squash(simulate, parameter_sets).with_columns(
+    pl.col("vax_strategy").replace_strict(strategy_names)
+)
 ```
 
 ```{python}
@@ -82,5 +82,7 @@ results = griddler.run_squash(simulate, parameter_sets)
 print(results.to_pandas().to_markdown())
 
 # save results
-results.drop(["pop_props", "p_severe"]).write_csv("simulation_results.csv")
+results.select(
+    ["n_vax_total", "vax_strategy", "Re", "ifr", "ifr_times_Re"]
+).with_columns(cs.float().round(3)).write_csv("results.csv")
 ```
