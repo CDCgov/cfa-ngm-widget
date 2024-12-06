@@ -4,7 +4,7 @@ import pandas as pd
 import streamlit as st
 
 import ngm
-
+from scratch.simulate import simulate_scenario
 
 def app():
     st.title("3-Group NGM Calculator")
@@ -15,6 +15,7 @@ def app():
     # Group names
     group_names = ["Core", "Kids", "General Population"]
     n_groups = len(group_names)
+
     # Sidebar for inputs
     st.sidebar.header("Model Inputs")
 
@@ -93,53 +94,61 @@ def app():
         st.sidebar.subheader("Vaccine efficacy")
         VE = st.sidebar.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01)
 
-    # Perform the NGM calculation
-    result = ngm.simulate(
-        R_novax=r_novax, n=N, n_vax=V, p_severe=p_severe, ve=VE
-    )
+        st.sidebar.subheader("Generations of spread")
+        G = st.sidebar.slider("Generations", 1, 10, value=10, step=1)
 
-    # Display the adjusted contact matrix
+
+    params = {
+        "n_total": N.sum(),
+        "pop_props": N/N.sum(),
+        "R_novax": r_novax,
+        "p_severe": p_severe,
+        "n_vax": V,
+        "ve": VE,
+        "G": G,
+    }
+
+
+    # Run the simulation with vaccination
+    result = simulate_scenario(params, return_polars=False)
+
     st.subheader("Results with vaccination:")
 
-    R = pd.DataFrame(
-        np.round(result["R"], 2),
-        columns=group_names,
-        index=group_names,
-    )
-
-    st.write("Next Generation Matrix:")
-    st.dataframe(R)
-
-    # Display results
-    st.write(f"R-effective: {result['Re']:.2f}")
+    st.write(f"R-effective: {float(result['Re']):.2f}")
     st.write("Proportion of infections in each group:")
+    infections = [1.0, result["infections_core"], result["infections_children"], result["infections_adults"]]
+    fatalities_after_G_generations =  [result["deaths_after_G_generations"], result["deaths_after_G_generations_core"], result["deaths_after_G_generations_children"], result["deaths_after_G_generations_adults"]]
+
     st.dataframe(
         pd.DataFrame(
-            [np.round(result["infections"], 2)],
-            columns=group_names,
+            [np.round(infections, 2),
+             np.round(fatalities_after_G_generations, 1)],
+            columns=["Total", *group_names],
         ).style.hide(axis="index")
     )
-    st.write(f"Infection fatality ratio: {(p_severe * result['infections']).sum():.3f}")
+    st.write(f"Infection fatality ratio: {result['ifr']:.3f}")
+
+
+    # Run counterfactural scenario
+    params_no_vax = params.copy()
+    params_no_vax["n_vax_total"] = 0
+    result_no_vax = simulate_scenario(params_no_vax, return_polars=False)
+
 
     st.subheader("Counterfactual (no vaccination):")
-    st.write("Next Generation Matrix:")
-    st.dataframe(
-        pd.DataFrame(
-            np.round(r_novax, 2),
-            columns=group_names,
-            index=group_names,
-        )
-    )
-    novax_eigen = ngm.dominant_eigen(r_novax)
-    st.write(f"R0: {novax_eigen.value:.2f}")
+    st.write(f"R-effective: {float(result_no_vax['Re']):.2f}")
     st.write("Proportion of infections in each group:")
+    infections = [1.0, result_no_vax["infections_core"], result_no_vax["infections_children"], result_no_vax["infections_adults"]]
+    fatalities_after_G_generations =  [result_no_vax["deaths_after_G_generations"], result_no_vax["deaths_after_G_generations_core"], result_no_vax["deaths_after_G_generations_children"], result_no_vax["deaths_after_G_generations_adults"]]
+
     st.dataframe(
         pd.DataFrame(
-            [np.round(novax_eigen.vector, 2)],
-            columns=group_names,
+            [np.round(infections, 2),
+             np.round(fatalities_after_G_generations, 1)],
+            columns=["Total", *group_names],
         ).style.hide(axis="index")
     )
-    st.write(f"Infection fatality ratio: {(p_severe * novax_eigen.vector).sum():.3f}")
+    st.write(f"Infection fatality ratio: {result_no_vax['ifr']:.3f}")
 
 
 if __name__ == "__main__":

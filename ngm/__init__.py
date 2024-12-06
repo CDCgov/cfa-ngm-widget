@@ -5,8 +5,8 @@ from typing import Any
 DominantEigen = namedtuple("DominantEigen", ["value", "vector"])
 
 
-def simulate(
-    R_novax: np.ndarray,
+def run_ngm(
+    M_novax: np.ndarray,
     n: np.ndarray,
     n_vax: np.ndarray,
     ve: float,
@@ -15,7 +15,7 @@ def simulate(
     Calculate Re and distribution of infections
 
     Args:
-        R_novax: Next Generation Matrix in the absence of administering any vaccines
+        M_novax: Next Generation Matrix in the absence of administering any vaccines
         n (np.array): Population sizes for each group
         n_vax (np.array): Number of people vaccinated in each group
         ve (float): Vaccine efficacy
@@ -25,21 +25,33 @@ def simulate(
     """
     n_groups = len(n)
     assert len(n_vax) == n_groups
-    assert R_novax.shape[0] == n_groups
-    assert R_novax.shape[1] == n_groups
+    assert M_novax.shape[0] == n_groups
+    assert M_novax.shape[1] == n_groups
     assert all(n >= n_vax), "Vaccinated cannot exceed population size"
 
     # eigen analysis
-    R_vax = reduce_R(R=R_novax, p_vax=n_vax / n, ve=ve)
-    eigen = dominant_eigen(R_vax, norm="L1")
+    M_vax = reduce_R(R=M_novax, p_vax=n_vax / n, ve=ve)
+    eigen = dominant_eigen(M_vax, norm="L1")
 
-    return {"R": R_vax, "Re": eigen.value, "infection_distribution": eigen.vector}
+    return {"M": M_vax, "Re": eigen.value, "infection_distribution": eigen.vector}
 
 
-def severity():
-    # report something like eigen.vector * p_severe
-    # optionally, over numbers of generations?
-    raise NotImplementedError
+def severity(eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G: int
+) -> np.ndarray:
+
+    """
+    Calculate severe infections after G generations
+
+    Args:
+        eigenvalue: eigenvalue, which is number of new infections caused by each infected (Re)
+        eigenvector (np.array): eigenvector, representing distribution of infections in each group
+        p_severe (np.array): Probability of severe outcome in each group
+        G (int): Number of generations to project number of severe infections
+
+    Returns:
+        np.ndarray: contains number of severe infections from one infection after G generations
+    """
+    return pow(eigenvalue, G) * eigenvector * p_severe
 
 
 def reduce_R(R: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
