@@ -29,8 +29,23 @@ def simulate(params):
 
     Re = result["Re"]
     ifr = result["severe_infection_ratio"]
+    fatalities_per_prior_infection = Re * result["severe_infection_distribution"]
 
-    return pl.DataFrame({"Re": Re, "ifr": ifr, "ifr_times_Re": ifr * Re})
+    # there are two ways to get the Re*IFR
+    assert np.isclose(
+        Re * result["severe_infection_ratio"], fatalities_per_prior_infection.sum()
+    )
+
+    return pl.DataFrame(
+        {
+            "Re": Re,
+            "ifr": ifr,
+            "deaths_per_prior_infection": fatalities_per_prior_infection.sum(),
+            "deaths_per_prior_infection_core": fatalities_per_prior_infection[0],
+            "deaths_per_prior_infection_children": fatalities_per_prior_infection[1],
+            "deaths_per_prior_infection_adults": fatalities_per_prior_infection[2],
+        }
+    )
 
 
 results_all = griddler.run_squash(simulate, parameter_sets).with_columns(
@@ -38,12 +53,21 @@ results_all = griddler.run_squash(simulate, parameter_sets).with_columns(
 )
 
 results = (
-    results_all.select(["n_vax_total", "vax_strategy", "Re", "ifr", "ifr_times_Re"])
-    .with_columns(cs.float().round(3))
+    results_all.with_columns(cs.float().round(3))
+    .select(
+        [
+            "n_vax_total",
+            "vax_strategy",
+            "Re",
+            "ifr",
+            "deaths_per_prior_infection",
+            "deaths_per_prior_infection_core",
+            "deaths_per_prior_infection_children",
+            "deaths_per_prior_infection_adults",
+        ]
+    )
     .sort(["n_vax_total", "vax_strategy"])
 )
-
-print(results_all)
 
 with pl.Config(tbl_rows=-1):
     print(results)

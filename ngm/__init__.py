@@ -39,7 +39,8 @@ def simulate(
     return {
         "R": R_vax,
         "Re": eigen.value,
-        "infections": eigen.vector,
+        "infection_distribution": eigen.vector,
+        "severe_infection_distribution": eigen.vector * p_severe,
         "severe_infection_ratio": np.dot(eigen.vector, p_severe),
     }
 
