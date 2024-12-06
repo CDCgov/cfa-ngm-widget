@@ -43,9 +43,16 @@ $$
 \mathbf{R}_{ij}^\mathrm{vax} = \mathbf{R}_{ij} \frac{S_{i}^\mathrm{vax}}{N_i}
 $$
 
-
 The spectral radius of $\mathbf{R}^\mathrm{vax}$ is $R_e$.
 
 The distribution of infections is calculated from the eigenvector that corresponds to the spectral radius of $\mathbf{R}^\mathrm{vax}$ (specifying that the elements of said eigenvector sum to 1).
 
 Severe infections are calculated by multiplying the proportion of infections in each group by a group-specific probability of severe infection.
+
+## Derived quantities
+
+Let $x$ be the L1-normed eigenvector associated with the dominant eigenvalue, and let $p_\mathrm{severe}$ be a vector representing the proportion of infections in each population that are severe. Then:
+
+- The distribution of severe infections is the element-wise product $x \odot p_\mathrm{severe}$.
+- The number of severe infections in each group per infection in the prior generation is $R_e (x \odot p_\mathrm{severe})$. The number of severe infections after $G$ generations is $R_e^G (x \odot p_\mathrm{severe})$.
+- The population-wide ratio of severe infections to all infections is the dot product $x \cdot p_\mathrm{severe}$.

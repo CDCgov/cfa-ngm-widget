@@ -9,7 +9,6 @@ def simulate(
     R_novax: np.ndarray,
     n: np.ndarray,
     n_vax: np.ndarray,
-    p_severe: np.ndarray,
     ve: float,
 ) -> dict[str, Any]:
     """
@@ -19,7 +18,6 @@ def simulate(
         R_novax: Next Generation Matrix in the absence of administering any vaccines
         n (np.array): Population sizes for each group
         n_vax (np.array): Number of people vaccinated in each group
-        p_severe (np.array): Group-specific probability of severe infection
         ve (float): Vaccine efficacy
 
     Returns:
@@ -27,7 +25,6 @@ def simulate(
     """
     n_groups = len(n)
     assert len(n_vax) == n_groups
-    assert len(p_severe) == n_groups
     assert R_novax.shape[0] == n_groups
     assert R_novax.shape[1] == n_groups
     assert all(n >= n_vax), "Vaccinated cannot exceed population size"
@@ -36,13 +33,13 @@ def simulate(
     R_vax = reduce_R(R=R_novax, p_vax=n_vax / n, ve=ve)
     eigen = dominant_eigen(R_vax, norm="L1")
 
-    return {
-        "R": R_vax,
-        "Re": eigen.value,
-        "infection_distribution": eigen.vector,
-        "severe_infection_distribution": eigen.vector * p_severe,
-        "severe_infection_ratio": np.dot(eigen.vector, p_severe),
-    }
+    return {"R": R_vax, "Re": eigen.value, "infection_distribution": eigen.vector}
+
+
+def severity():
+    # report something like eigen.vector * p_severe
+    # optionally, over numbers of generations?
+    raise NotImplementedError
 
 
 def reduce_R(R: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:

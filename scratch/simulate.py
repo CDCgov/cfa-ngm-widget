@@ -28,8 +28,8 @@ def simulate(params):
     )
 
     Re = result["Re"]
-    ifr = result["severe_infection_ratio"]
-    fatalities_per_prior_infection = Re * result["severe_infection_distribution"]
+    ifr = np.dot(result["infection_distribution"], p_severe)
+    fatalities_per_prior_infection = Re * result["infection_distribution"] * p_severe
 
     # there are two ways to get the Re*IFR
     assert np.isclose(
