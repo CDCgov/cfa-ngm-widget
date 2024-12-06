@@ -55,7 +55,13 @@ def test_simulate():
     ve = 1.0
     current = ngm.simulate(R_novax=R_novax, n=n, n_vax=n_vax, p_severe=p_severe, ve=ve)
 
-    assert set(current.keys()) == {"Re", "R", "infections", "severe_infection_ratio"}
+    assert set(current.keys()) == {
+        "Re",
+        "R",
+        "infection_distribution",
+        "severe_infection_ratio",
+        "severe_infection_distribution",
+    }
     assert np.isclose(current["Re"], 0.9213240982914677)
     assert_allclose(
         current["R"],
@@ -69,7 +75,7 @@ def test_simulate():
         ),
     )
     assert_allclose(
-        current["infections"],
+        current["infection_distribution"],
         np.array([0.44507246, 0.10853944, 0.17503951, 0.2713486]),
     )
 
