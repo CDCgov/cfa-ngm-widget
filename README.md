@@ -14,6 +14,13 @@ approach.
 - Enable poetry with `poetry install`
 - To run the app: `make`, which calls `streamlit run widget/widget.py`
 
+### Using containers
+
+- Build and tag the image: `podman build -t ngm .`
+- Run the container: `podman run -p 8501:8501 ngm`
+  - Note the port 8501 is hard-coded in the `Dockerfile`
+- In a browser, visit: `http://localhost:8501/`
+
 ## Model Description
 
 This repo contains code to apply the next-generation method of Diekman et al. (1990) to calculate R0 for an SIR model with 3 risk groups and flexible inputs for varying vaccine allocation to each group.
