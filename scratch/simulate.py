@@ -39,7 +39,7 @@ def simulate_scenario(params, distributions_as_percents=False):
     fatalities_per_prior_infection = ngm.severity(eigenvalue = Re, eigenvector = result["infection_distribution"],
                                                p_severe = p_severe, G = 1)
     fatalities_after_G_generations = ngm.severity(eigenvalue = Re, eigenvector = result["infection_distribution"],
-                                                  p_severe = p_severe, G = 10)
+                                                  p_severe = p_severe, G = params["G"])
 
 
 
