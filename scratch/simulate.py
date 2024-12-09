@@ -10,13 +10,17 @@ strategy_names = {"even": "even", "0": "core first", "1": "children first"}
 parameter_sets = griddler.griddle.read("scratch/config.yaml")
 
 
-def simulate_scenario(params, return_polars = True):
+def simulate_scenario(params, distributions_as_percents=False):
     assert sum(params["pop_props"]) == 1.0
+
+    mult = 1.0
+    if distributions_as_percents:
+        mult = 100.0
 
     # population sizes
     N_i = params["n_total"] * np.array(params["pop_props"])
 
-    R_novax = np.array(params["R_novax"])
+    M_novax = np.array(params["M_novax"])
     p_severe = np.array(params["p_severe"])
 
     if "n_vax" in params:
@@ -27,7 +31,7 @@ def simulate_scenario(params, return_polars = True):
         )
 
     result = ngm.run_ngm(
-        M_novax=R_novax, n=N_i, n_vax=n_vax, ve=params["ve"]
+        M_novax=M_novax, n=N_i, n_vax=n_vax, ve=params["ve"]
     )
 
     Re = result["Re"]
@@ -35,15 +39,15 @@ def simulate_scenario(params, return_polars = True):
     fatalities_per_prior_infection = ngm.severity(eigenvalue = Re, eigenvector = result["infection_distribution"],
                                                p_severe = p_severe, G = 1)
     fatalities_after_G_generations = ngm.severity(eigenvalue = Re, eigenvector = result["infection_distribution"],
-                                                  p_severe = p_severe, G = 10)
+                                                  p_severe = p_severe, G = params["G"])
 
 
 
     results_dict = {
             "Re": Re,
-            "infections_core": result["infection_distribution"][0],
-            "infections_children": result["infection_distribution"][1],
-            "infections_adults": result["infection_distribution"][2],
+            "infections_core": result["infection_distribution"][0] * mult,
+            "infections_children": result["infection_distribution"][1] * mult,
+            "infections_adults": result["infection_distribution"][2] * mult,
             "ifr": ifr,
             "deaths_per_prior_infection": fatalities_per_prior_infection.sum(),
             "deaths_per_prior_infection_core": fatalities_per_prior_infection[0],
@@ -56,10 +60,7 @@ def simulate_scenario(params, return_polars = True):
 
         }
 
-    if return_polars:
-        return pl.DataFrame(results_dict)
-    else:
-        return(results_dict)
+    return pl.DataFrame(results_dict)
 
 
 if __name__ == "__main__":
