@@ -31,14 +31,13 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
 
     st.subheader("Results with vaccination:")
 
-    st.write(f"R-effective: {result['Re'].round_sig_figs(sigdigs)[0]}")
-    st.write("Proportion of infections in each group:")
-
     st.dataframe(
         pl.concat([
             extract_vector(disp, result, disp_name, sigdigs) for disp,disp_name in zip(display, display_names)
         ])
     )
+
+    st.write(f"R-effective: {result['Re'].round_sig_figs(sigdigs)[0]}")
 
     st.write(f"Infection fatality ratio: {result['ifr'].round_sig_figs(sigdigs)[0]}")
 
