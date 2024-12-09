@@ -20,12 +20,12 @@ def test_dominant_eigen_bigger():
 
 
 def test_R_vax():
-    R_novax = np.array([[10.0, 0.1], [0.1, 1.0]])
+    M_novax = np.array([[10.0, 0.1], [0.1, 1.0]])
     n = np.array([2.0, 8.0])
     n_vax = np.array([1.0, 0.0])
     ve = 1.0
 
-    current = ngm.reduce_R(R=R_novax, p_vax=n_vax / n, ve=ve)
+    current = ngm.reduce_R(R=M_novax, p_vax=n_vax / n, ve=ve)
     expected = np.array(
         [
             [10.0 * 0.5, 0.1 * 0.5],
@@ -48,12 +48,12 @@ def test_simulate():
             [0.5, 0.5, 0.5, 0.5],
         ]
     )
-    R_novax = (beta.T * (n / n_total)).T
+    M_novax = (beta.T * (n / n_total)).T
 
     n_vax = np.array([0, 0, 0, 0])
     p_severe = np.array([0.02, 0.06, 0.02, 0.02])
     ve = 1.0
-    current = ngm.simulate(R_novax=R_novax, n=n, n_vax=n_vax, p_severe=p_severe, ve=ve)
+    current = ngm.simulate(M_novax=M_novax, n=n, n_vax=n_vax, p_severe=p_severe, ve=ve)
 
     assert set(current.keys()) == {
         "Re",

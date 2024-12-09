@@ -30,7 +30,7 @@ def run_ngm(
     assert all(n >= n_vax), "Vaccinated cannot exceed population size"
 
     # eigen analysis
-    M_vax = reduce_R(R=M_novax, p_vax=n_vax / n, ve=ve)
+    M_vax = reduce_R(M=M_novax, p_vax=n_vax / n, ve=ve)
     eigen = dominant_eigen(M_vax, norm="L1")
 
     return {"M": M_vax, "Re": eigen.value, "infection_distribution": eigen.vector}
@@ -54,17 +54,17 @@ def severity(eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G
     return pow(eigenvalue, G) * eigenvector * p_severe
 
 
-def reduce_R(R: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
+def reduce_R(M: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
     """Adjust a next generation matrix with vaccination"""
-    assert len(R.shape) == 2 and R.shape[0] == R.shape[1], "R must be square"
-    n_groups = R.shape[0]
+    assert len(M.shape) == 2 and M.shape[0] == M.shape[1], "M must be square"
+    n_groups = M.shape[0]
     assert len(p_vax) == n_groups, "Input dimensions must match"
     assert (0 <= p_vax).all() and (
         p_vax <= 1.0
     ).all(), "Vaccine coverage must be in [0, 1]"
     assert 0 <= ve <= 1.0
 
-    return (R.T * (1 - p_vax * ve)).T
+    return (M.T * (1 - p_vax * ve)).T
 
 
 def dominant_eigen(X: np.ndarray, norm: str = "L1") -> DominantEigen:

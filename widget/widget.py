@@ -1,10 +1,45 @@
 # To-do: be very sure we know what rows vs columns mean
 import numpy as np
-import pandas as pd
+import polars as pl
 import streamlit as st
 
 import ngm
 from scratch.simulate import simulate_scenario
+
+def extract_vector(prefix: str, df: pl.DataFrame, index_name: str, sigdigs, groups=["core", "children", "adults"]):
+    assert df.shape[0] == 1
+    cols = [prefix + grp for grp in groups]
+    vec = (
+        df
+        .select(
+            pl.col(col).round_sig_figs(sigdigs) for col in cols
+        )
+        .with_columns(
+            total=pl.sum_horizontal(cols),
+            summary=pl.lit(index_name)
+        )
+        .select(["summary", "total", *cols])
+        .rename(lambda cname: cname.replace(prefix, "") if prefix in cname else cname)
+    )
+    return vec
+
+def summarize_scenario(params, sigdigs, display=["infections_", "deaths_after_G_generations_"], display_names=["Percent of infections", "Deaths after G generations"]):
+    # Run the simulation with vaccination
+    result = simulate_scenario(params, distributions_as_percents=True)
+
+    st.subheader("Results with vaccination:")
+
+    st.write(f"R-effective: {result['Re'][0]:.2f}")
+    st.write("Proportion of infections in each group:")
+
+    st.dataframe(
+        pl.concat([
+            extract_vector(disp, result, disp_name, sigdigs) for disp,disp_name in zip(display, display_names)
+        ])
+    )
+
+    st.write(f"Infection fatality ratio: {result['ifr'][0]:.3f}")
+
 
 def app():
     st.title("3-Group NGM Calculator")
@@ -79,11 +114,11 @@ def app():
     from_to = [((i, group_names[i]), (j, group_names[j]),) for i in range(n_groups) for j in range(n_groups)]
     r_default = np.array([[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]])
 
-    r_novax = np.zeros((n_groups, n_groups,))
+    M_novax = np.zeros((n_groups, n_groups,))
     for ft in from_to:
         row = ft[1][0]
         col = ft[0][0]
-        r_novax[row, col] = st.sidebar.number_input(
+        M_novax[row, col] = st.sidebar.number_input(
             f"From {ft[0][1]} to {ft[1][1]}",
             value=r_default[row, col],
             min_value=0.0,
@@ -97,58 +132,32 @@ def app():
         st.sidebar.subheader("Generations of spread")
         G = st.sidebar.slider("Generations", 1, 10, value=10, step=1)
 
+        st.sidebar.subheader("Misc")
+        sigdigs = st.sidebar.slider("Displayed significant figures", 1, 10, value=3, step=1)
 
-    params = {
+    scenario = {
+        "scenario_title": "Results with vaccination",
+        "group_names": group_names,
         "n_total": N.sum(),
         "pop_props": N/N.sum(),
-        "R_novax": r_novax,
+        "M_novax": M_novax,
         "p_severe": p_severe,
         "n_vax": V,
         "ve": VE,
         "G": G,
     }
 
+    counterfactual = scenario.copy()
+    counterfactual["scenario_title"] = "Counterfactual (no vaccination)"
+    counterfactual["n_vax"] = 0 * V
 
-    # Run the simulation with vaccination
-    result = simulate_scenario(params, return_polars=False)
+    scenarios = [
+        scenario,
+        counterfactual,
+    ]
 
-    st.subheader("Results with vaccination:")
-
-    st.write(f"R-effective: {float(result['Re']):.2f}")
-    st.write("Proportion of infections in each group:")
-    infections = [1.0, result["infections_core"], result["infections_children"], result["infections_adults"]]
-    fatalities_after_G_generations =  [result["deaths_after_G_generations"], result["deaths_after_G_generations_core"], result["deaths_after_G_generations_children"], result["deaths_after_G_generations_adults"]]
-
-    st.dataframe(
-        pd.DataFrame(
-            [np.round(infections, 2),
-             np.round(fatalities_after_G_generations, 1)],
-            columns=["Total", *group_names],
-        ).style.hide(axis="index")
-    )
-    st.write(f"Infection fatality ratio: {result['ifr']:.3f}")
-
-
-    # Run counterfactural scenario
-    params_no_vax = params.copy()
-    params_no_vax["n_vax_total"] = 0
-    result_no_vax = simulate_scenario(params_no_vax, return_polars=False)
-
-
-    st.subheader("Counterfactual (no vaccination):")
-    st.write(f"R-effective: {float(result_no_vax['Re']):.2f}")
-    st.write("Proportion of infections in each group:")
-    infections = [1.0, result_no_vax["infections_core"], result_no_vax["infections_children"], result_no_vax["infections_adults"]]
-    fatalities_after_G_generations =  [result_no_vax["deaths_after_G_generations"], result_no_vax["deaths_after_G_generations_core"], result_no_vax["deaths_after_G_generations_children"], result_no_vax["deaths_after_G_generations_adults"]]
-
-    st.dataframe(
-        pd.DataFrame(
-            [np.round(infections, 2),
-             np.round(fatalities_after_G_generations, 1)],
-            columns=["Total", *group_names],
-        ).style.hide(axis="index")
-    )
-    st.write(f"Infection fatality ratio: {result_no_vax['ifr']:.3f}")
+    for s in scenarios:
+        summarize_scenario(s, sigdigs)
 
 
 if __name__ == "__main__":
