@@ -11,19 +11,21 @@ def extract_vector(prefix: str, df: pl.DataFrame, index_name: str, sigdigs, grou
     cols = [prefix + grp for grp in groups]
     vec = (
         df
-        .select(
-            pl.col(col).round_sig_figs(sigdigs) for col in cols
-        )
         .with_columns(
             total=pl.sum_horizontal(cols),
-            summary=pl.lit(index_name)
+        )
+        .select(
+            pl.col(col).round_sig_figs(sigdigs) for col in ["total", *cols]
+        )
+        .with_columns(
+            summary=pl.lit(index_name),
         )
         .select(["summary", "total", *cols])
         .rename(lambda cname: cname.replace(prefix, "") if prefix in cname else cname)
     )
     return vec
 
-def summarize_scenario(params, sigdigs, display=["infections_", "deaths_after_G_generations_"], display_names=["Percent of infections", "Deaths after G generations"]):
+def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prior_infection_", "deaths_after_G_generations_"], display_names=["Percent of infections", "Deaths per prior infection", "Deaths after G generations"]):
     # Run the simulation with vaccination
     result = simulate_scenario(params, distributions_as_percents=True)
 
