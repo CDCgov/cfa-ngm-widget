@@ -29,7 +29,7 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
     # Run the simulation with vaccination
     result = simulate_scenario(params, distributions_as_percents=True)
 
-    st.subheader("Results with vaccination:")
+    st.subheader(params["scenario_title"])
 
     st.dataframe(
         pl.concat([
