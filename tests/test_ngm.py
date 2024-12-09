@@ -25,7 +25,7 @@ def test_R_vax():
     n_vax = np.array([1.0, 0.0])
     ve = 1.0
 
-    current = ngm.reduce_R(R=M_novax, p_vax=n_vax / n, ve=ve)
+    current = ngm.reduce_R(M=M_novax, p_vax=n_vax / n, ve=ve)
     expected = np.array(
         [
             [10.0 * 0.5, 0.1 * 0.5],
@@ -51,20 +51,17 @@ def test_simulate():
     M_novax = (beta.T * (n / n_total)).T
 
     n_vax = np.array([0, 0, 0, 0])
-    p_severe = np.array([0.02, 0.06, 0.02, 0.02])
     ve = 1.0
-    current = ngm.simulate(M_novax=M_novax, n=n, n_vax=n_vax, p_severe=p_severe, ve=ve)
+    current = ngm.run_ngm(M_novax=M_novax, n=n, n_vax=n_vax, ve=ve)
 
     assert set(current.keys()) == {
         "Re",
-        "R",
+        "M",
         "infection_distribution",
-        "severe_infection_ratio",
-        "severe_infection_distribution",
     }
     assert np.isclose(current["Re"], 0.9213240982914677)
     assert_allclose(
-        current["R"],
+        current["M"],
         np.array(
             [
                 [0.6, 0.1, 0.6, 0.1],
@@ -79,13 +76,15 @@ def test_simulate():
         np.array([0.44507246, 0.10853944, 0.17503951, 0.2713486]),
     )
 
-    # this test has values borrowed from when we had defined this output differently,
-    # which is why the calculation looks so wacky
-    assert_allclose(
-        current["severe_infection_ratio"],
-        sum(np.array([0.00820112, 0.006, 0.00322536, 0.005])) / current["Re"],
-        rtol=1e-5,
-    )
+def test_severe():
+    p_severe = np.array([0.02, 0.06, 0.02])
+    distribution = np.array([0.25, 0.25, 0.5])
+
+    g_0 = p_severe * distribution
+    assert (ngm.severity(1.0, distribution, p_severe, 1) == g_0).all()
+    assert (ngm.severity(2.0, distribution, p_severe, 1) > g_0).all()
+    assert (ngm.severity(0.5, distribution, p_severe, 1) < g_0).all()
+    assert (ngm.severity(2.0, distribution, p_severe, 3) > ngm.severity(2.0, distribution, p_severe, 1)).all()
 
 
 def test_ensure_positive():
