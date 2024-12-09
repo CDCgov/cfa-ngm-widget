@@ -25,7 +25,7 @@ def test_R_vax():
     n_vax = np.array([1.0, 0.0])
     ve = 1.0
 
-    current = ngm.reduce_R(M=M_novax, p_vax=n_vax / n, ve=ve)
+    current = ngm.vaccinate_M(M=M_novax, p_vax=n_vax / n, ve=ve)
     expected = np.array(
         [
             [10.0 * 0.5, 0.1 * 0.5],

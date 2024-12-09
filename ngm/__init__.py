@@ -30,7 +30,7 @@ def run_ngm(
     assert all(n >= n_vax), "Vaccinated cannot exceed population size"
 
     # eigen analysis
-    M_vax = reduce_R(M=M_novax, p_vax=n_vax / n, ve=ve)
+    M_vax = vaccinate_M(M=M_novax, p_vax=n_vax / n, ve=ve)
     eigen = dominant_eigen(M_vax, norm="L1")
 
     return {"M": M_vax, "Re": eigen.value, "infection_distribution": eigen.vector}
@@ -54,7 +54,7 @@ def severity(eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G
     return pow(eigenvalue, G) * eigenvector * p_severe
 
 
-def reduce_R(M: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
+def vaccinate_M(M: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
     """Adjust a next generation matrix with vaccination"""
     assert len(M.shape) == 2 and M.shape[0] == M.shape[1], "M must be square"
     n_groups = M.shape[0]
