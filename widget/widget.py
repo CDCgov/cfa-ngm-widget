@@ -1,5 +1,6 @@
 # To-do: be very sure we know what rows vs columns mean
 import numpy as np
+import pandas as pd
 import polars as pl
 import streamlit as st
 
@@ -26,15 +27,46 @@ def extract_vector(prefix: str, df: pl.DataFrame, index_name: str, sigdigs, grou
     return vec
 
 def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prior_infection_", "deaths_after_G_generations_"], display_names=["Percent of infections", "Deaths per prior infection", "Deaths after G generations"]):
+    p_vax = params["n_vax"] / (params["n_total"] * params["pop_props"])
+
     # Run the simulation with vaccination
     result = simulate_scenario(params, distributions_as_percents=True)
 
     st.subheader(params["scenario_title"])
 
+    st.write("Percent of each group vaccinated:")
+    st.dataframe(
+        (
+            pl.DataFrame({
+                grp : [prob * 100]
+                for grp,prob in zip(params["group_names"], p_vax)
+            })
+            .select(
+                pl.col(col).round_sig_figs(sigdigs) for col in params["group_names"]
+            )
+
+        )
+    )
+
+    st.write("Summaries of Infections:")
     st.dataframe(
         pl.concat([
             extract_vector(disp, result, disp_name, sigdigs) for disp,disp_name in zip(display, display_names)
         ])
+    )
+
+    st.write("Next Generation Matrix:")
+    m_vax = ngm.vaccinate_M(params["M_novax"], p_vax, params["ve"])
+    ngm_df = (
+        pl.DataFrame({
+            f"from {grp}": m_vax[:,i]
+            for i,grp in enumerate(params["group_names"])
+        })
+        .with_columns(pl.Series("", [f"to {grp}" for grp in params["group_names"]]))
+        .select(["", *[f"from {grp}" for grp in params["group_names"]]])
+    )
+    st.dataframe(
+        ngm_df
     )
 
     st.write(f"R-effective: {result['Re'].round_sig_figs(sigdigs)[0]}")
@@ -43,98 +75,51 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
 
 
 def app():
-    st.title("3-Group NGM Calculator")
 
-    # Information we should be getting from scratch/config.yaml
-    p_severe = np.array([0.02, 0.06, 0.02])
-
-    # Group names
-    group_names = ["Core", "Kids", "General Population"]
-    n_groups = len(group_names)
-
-    # Sidebar for inputs
-    st.sidebar.header("Model Inputs")
-
-    # Population size
-    st.sidebar.subheader("Population Sizes")
-    default_values = np.array([0.05, 0.45, 0.5]) * int(1e7)
-    N = np.array(
-        [
-        st.sidebar.number_input(f"Population ({group})", value=int(default_values[i]), min_value=0)
-            for i, group in enumerate(group_names)
-        ]
+    # set defaults ------------------------------------------------------------
+    params_default = pd.DataFrame(
+        {
+            "Group name": ["Core", "Children", "Non-core adult"],
+            "Pop. size": np.array([0.05, 0.45, 0.5]) * int(1e7),
+            "No. vaccines": [2.5e5, 2.5e5, 5e5],
+            "Prob. severe": [0.02, 0.06, 0.02],
+        }
     )
 
-    # Vaccine doses
-    st.sidebar.subheader("Vaccine Allocation: Doses")
-    ndoses_default = int(1e6)
-    ndoses = st.sidebar.number_input("Total Number of Doses", value=ndoses_default, min_value=0, max_value=sum(N))
+    n_groups_default = params_default.shape[0]
 
-    st.sidebar.subheader("Vaccine Allocation: Strategies")
-    strategy = st.sidebar.selectbox(
-        "Vaccine allocation strategy",
-        [
-            "Core", "Kids", "Even",
-        ]
+    M_default = pd.DataFrame(
+        {"to": params_default["Group name"]}
+        | {f"from {x}": [0.0] * n_groups_default for x in params_default["Group name"]}
+    )
+    M_default.set_index("to")
+    M_default.iloc[:, 1:] = np.array(
+        [[3.0, 0.0, 0.2], [0.1, 1.0, 0.5], [0.25, 1.0, 1.5]]
     )
 
-    button_to_core = {"Core" : 0, "Kids" : 1, "Even" : "even"}
+    # get parameters ------------------------------------------------------------
+    st.title("NGM Calculator")
 
-    allocation_default = [0] * n_groups
-    if ndoses > 0:
-        allocation_default = ngm.distribute_vaccines(V=ndoses, N_i=N, strategy=button_to_core[strategy])
-        allocation_default = 100 * allocation_default / allocation_default.sum()
+    st.sidebar.header("Model Inputs", help="If you can't see the full matrices without scrolling, drag the sidebar to make it wider.")
 
-    st.sidebar.subheader("Vaccine Allocation: Customization")
-    allocation = []
-    remaining = 100.0
-    for i, group in enumerate(group_names[:-1]):
-        this_max = 100.0 - sum(allocation[:i])
-        if (this_max / 100.0) * ndoses > N[i]:
-            this_max = N[i] / ndoses * 100
+    st.sidebar.subheader("Population Information", help="Define the:\n - Group names\n - Numbers of people in each group\n - Number of vaccines allocated to each group\n - Probability that an infection will produce the severe outcome of interest (e.g. death) in each group")
+    params = st.sidebar.data_editor(params_default)
 
-        allocation.append(
-            st.sidebar.number_input(
-                f"Percent of Vaccine Doses going to {group}",
-                value=allocation_default[i],
-                min_value=0.0,
-                max_value=this_max,
-                step=1.0
-            )
-        )
-        remaining -= allocation[-1]
-    st.sidebar.write(f"(Allocating {remaining:.2f}% to {group_names[-1]})")
-    allocation.append(remaining)
+    st.sidebar.subheader("Next Generation Matrix", help="For a single new infection of category `from`, specify how many infections of category `to` it will make.")
+    M_df = st.sidebar.data_editor(M_default, disabled=["to"], hide_index=True)
+    M_novax = M_df.iloc[:, 1:].to_numpy()
 
-    V = np.floor(np.array(allocation) / 100.0 * ndoses).astype("int")
+    VE = st.sidebar.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01, help="Vaccines are assumed to be all or nothing, and the probability that someone is successfully immunized is this value.")
 
-    # Contact matrix
-    st.sidebar.subheader("Next Generation Matrix")
-    st.sidebar.write("For a single new infection of category `from`, specify how many infections of category `to` it will make.")
+    G = st.sidebar.slider("Generations", 1, 10, value=10, step=1, help="Outcomes after this many generations are summarized.")
 
-    from_to = [((i, group_names[i]), (j, group_names[j]),) for i in range(n_groups) for j in range(n_groups)]
-    r_default = np.array([[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]])
+    sigdigs = st.sidebar.slider("Displayed significant figures", 1, 10, value=3, step=1, help="Values are reported only to this many significant figures.")
 
-    M_novax = np.zeros((n_groups, n_groups,))
-    for ft in from_to:
-        row = ft[1][0]
-        col = ft[0][0]
-        M_novax[row, col] = st.sidebar.number_input(
-            f"From {ft[0][1]} to {ft[1][1]}",
-            value=r_default[row, col],
-            min_value=0.0,
-            max_value=100.0
-        )
-
-    with st.sidebar.expander("Advanced Settings"):
-        st.sidebar.subheader("Vaccine efficacy")
-        VE = st.sidebar.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01)
-
-        st.sidebar.subheader("Generations of spread")
-        G = st.sidebar.slider("Generations", 1, 10, value=10, step=1)
-
-        st.sidebar.subheader("Misc")
-        sigdigs = st.sidebar.slider("Displayed significant figures", 1, 10, value=3, step=1)
+    # make and run scenarios ------------------------------------------------------------
+    group_names = params["Group name"]
+    N = params["Pop. size"].to_numpy()
+    V = params["No. vaccines"].to_numpy()
+    p_severe = params["Prob. severe"].to_numpy()
 
     scenario = {
         "scenario_title": "Results with vaccination",
@@ -151,12 +136,15 @@ def app():
     counterfactual = scenario.copy()
     counterfactual["scenario_title"] = "Counterfactual (no vaccination)"
     counterfactual["n_vax"] = 0 * V
+    counterfactual["p_vax"] = 0.0 * V
 
     scenarios = [
         scenario,
         counterfactual,
     ]
 
+    # present results ------------------------------------------------------------
+    st.write("The...")
     for s in scenarios:
         summarize_scenario(s, sigdigs)
 
