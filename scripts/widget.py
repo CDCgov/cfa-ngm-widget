@@ -39,7 +39,7 @@ def summarize_scenario(
 
     st.header(f"**{params['scenario_title']}**")
 
-    prop_vax_help = f"Vaccination of 100\% does not guarantee complete immunity if VE is less than 1. VE is {params['ve']}"
+    prop_vax_help = f"Vaccination of 100% does not guarantee complete immunity if VE is less than 1. VE is {params['ve']}"
     st.subheader("Percent of each group vaccinated:", help=prop_vax_help)
     st.dataframe(
         (
