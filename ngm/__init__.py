@@ -53,7 +53,7 @@ def severity(eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G
     """
     total_severe_infections = np.zeros_like(eigenvector)
     for g in range(0, G + 1):
-        total_severe_infections += pow(eigenvalue, g) * eigenvector * p_severe
+        total_severe_infections += eigenvalue ** g * eigenvector * p_severe
 
     return total_severe_infections
 
