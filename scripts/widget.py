@@ -1,8 +1,9 @@
 # To-do: be very sure we know what rows vs columns mean
 import numpy as np
 import polars as pl
+import pandas as pd
 import streamlit as st
-
+import altair as alt
 import ngm
 from scripts.simulate import simulate_scenario
 
@@ -25,6 +26,22 @@ def extract_vector(prefix: str, df: pl.DataFrame, index_name: str, sigdigs, grou
         .rename(lambda cname: cname.replace(prefix, "") if prefix in cname else cname)
     )
     return vec
+
+def exp_growth_model(G, inf_distribution, p_severe, R_e):
+
+    total_severe_infections_list = []
+    total_infections_list = []
+
+    total_severe_infections = 0
+    total_infections = 0
+    for g in range(0, G+1):
+        total_infections += sum(R_e ** g)
+        total_severe_infections += sum(R_e ** g * inf_distribution * p_severe)
+
+        total_infections_list.append(round(total_infections))
+        total_severe_infections_list.append(round(total_severe_infections))
+
+    return total_infections_list, total_severe_infections_list
 
 def summarize_scenario(
         params,
@@ -61,14 +78,11 @@ def summarize_scenario(
         "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
     )
     st.subheader("Summaries of Infections:")
-    st.dataframe(
-        (
-            pl.concat([
+    res_table = pl.concat([
                 extract_vector(disp, result, disp_name, sigdigs) for disp,disp_name in zip(display, display_names)
-            ])
-            .rename(group_display_names)
-        )
-    )
+            ]).rename(group_display_names)
+
+    st.dataframe(res_table)
     st.write(summary_help)
 
     ngm_help = "This is the Next Generation Matrix accounting for the specified administration of vaccines in this scenario."
@@ -92,6 +106,31 @@ def summarize_scenario(
 
     ifr_help = "The probability that a random infection will result in the severe outcome of interest, e.g. death, accounting for the specified administration of vaccines in this scenario. Here \"random\" means drawing uniformly across all infections, so the probability that one draws an infection in any class is given by the distribution specified in the summary table above."
     st.subheader(f"Severe infection ratio: {result['ifr'].round_sig_figs(sigdigs)[0]}", help=ifr_help)
+
+    st.subheader("Cumulative infections after G generations of infection", help="This plot shows how many total and severe infections there will have been, cumulatively, across G generations of infection.")
+
+    percent_infections = np.array(res_table.select(["Core", "Children", "General"]).row(0)) /100
+    total_infections_list, total_severe_infections_list = exp_growth_model(params["G"], percent_infections, params["p_severe"], result["Re"])
+
+    # wrangle data
+    data = pd.DataFrame({
+        'Generation': np.arange(0, params["G"] + 1),
+        'Severe Infections': total_severe_infections_list,
+        'Non-Severe Infections': np.array(total_infections_list) - np.array(total_severe_infections_list)
+    })
+
+    data_melted = data.melt(id_vars='Generation', var_name='Infection Type', value_name='Count')
+
+    # Bar plot
+    chart = alt.Chart(data_melted).mark_bar().encode(
+        x='Generation:O',
+        y='Count:Q',
+        color='Infection Type:N'
+    ).properties(
+        title=''
+    )
+
+    st.altair_chart(chart, use_container_width=True)
 
 
 def app():
