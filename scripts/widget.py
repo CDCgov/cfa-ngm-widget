@@ -55,12 +55,12 @@ def summarize_scenario(
     )
 
     summary_help = (
-    "The summaries are:\n"
-     "- Percent of infections: The percent among all infections which are in the given group.\n"
-     "- Severe infections per prior infection: If there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
-     "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
+        "The summaries are:\n"
+        "- Percent of infections: The percent among all infections which are in the given group.\n"
+        "- Severe infections per prior infection: If there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
+        "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
     )
-    st.subheader("Summaries of Infections:", help=summary_help)
+    st.subheader("Summaries of Infections:")
     st.dataframe(
         (
             pl.concat([
@@ -69,9 +69,10 @@ def summarize_scenario(
             .rename(group_display_names)
         )
     )
+    st.write(summary_help)
 
     ngm_help = "This is the Next Generation Matrix accounting for the specified administration of vaccines in this scenario."
-    st.subheader("Next Generation Matrix:", help=ngm_help)
+    st.subheader("Next Generation Matrix:")
     m_vax = ngm.vaccinate_M(params["M_novax"], p_vax, params["ve"])
     ngm_df = (
         pl.DataFrame({
@@ -84,6 +85,7 @@ def summarize_scenario(
     st.dataframe(
         ngm_df
     )
+    st.write(ngm_help)
 
     re_help = "The effective reproductive number accounting for the specified administration of vaccines in this scenario."
     st.subheader(f"R-effective: {result['Re'].round_sig_figs(sigdigs)[0]}", help=re_help)
