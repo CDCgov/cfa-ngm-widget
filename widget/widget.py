@@ -2,6 +2,8 @@
 import numpy as np
 import polars as pl
 import streamlit as st
+import pandas as pd
+import altair as alt
 
 import ngm
 from scratch.simulate import simulate_scenario
@@ -31,15 +33,58 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
 
     st.subheader(params["scenario_title"])
 
-    st.dataframe(
-        pl.concat([
+    res = pl.concat([
             extract_vector(disp, result, disp_name, sigdigs) for disp,disp_name in zip(display, display_names)
         ])
-    )
+
+    st.dataframe(res)
 
     st.write(f"R-effective: {result['Re'].round_sig_figs(sigdigs)[0]}")
 
     st.write(f"Infection fatality ratio: {result['ifr'].round_sig_figs(sigdigs)[0]}")
+
+    percent_infections = res.select(["core", "children", "adults"]).to_pandas().iloc[0]
+    inf_distribution = np.array([percent_infections["core"], percent_infections["children"], percent_infections["adults"]]) / 100
+
+    total_infections_list, total_severe_infections_list = exp_growth_model(params["G"], inf_distribution, params["p_severe"], result["Re"])
+
+    # wrangle data
+    data = pd.DataFrame({
+        'Generation': np.arange(1, params["G"] + 1),
+        'Severe Infections': total_severe_infections_list,
+        'Non-Severe Infections': np.array(total_infections_list) - np.array(total_severe_infections_list)
+    })
+
+    data_melted = data.melt(id_vars='Generation', var_name='Infection Type', value_name='Count')
+
+
+    # Bar plot
+    chart = alt.Chart(data_melted).mark_bar().encode(
+        x='Generation:O',
+        y='Count:Q',
+        color='Infection Type:N'
+    ).properties(
+        title=''
+    )
+
+    st.altair_chart(chart, use_container_width=True)
+
+
+def exp_growth_model(G, inf_distribution, p_severe, R_e):
+
+    total_severe_infections_list = []
+    total_infections_list = []
+
+    total_severe_infections = 0
+    total_infections = 0
+    for g in range(1, G + 1):
+        total_infections += sum(pow(R_e, g))
+        total_severe_infections += sum(pow(R_e, g) * inf_distribution * p_severe)
+
+        total_infections_list.append(round(total_infections))
+        total_severe_infections_list.append(round(total_severe_infections))
+
+    return total_infections_list, total_severe_infections_list
 
 
 def app():
