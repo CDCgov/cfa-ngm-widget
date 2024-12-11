@@ -118,6 +118,8 @@ def app():
             for default,edited in zip(names_from_summary, params["Group name"])
         }
 
+        VE = st.slider("Vaccine Efficacy", 0.0, 1.0, value=0.74, step=0.01, help="Protection due to vaccination is assumed to be all or nothing with this efficacy.")
+
         m_def_np = np.array([[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]])
         M_default = (
             pl.DataFrame({
@@ -128,16 +130,13 @@ def app():
             .select(["", *[f"from {grp}" for grp in params["Group name"]]])
         )
 
-        st.subheader("Next Generation Matrix", help="For a single new infection of category `from`, specify how many infections of category `to` it will make by editing the corresponding entry in the matrix.")
+        st.subheader("Next Generation Matrix", help="For a single new infection of category `from`, specify how many infections it will generate of category `to` by editing the corresponding entry in the matrix.")
         M_df = st.data_editor(M_default, disabled=["to"], hide_index=True)
         M_novax = M_df.drop("").to_numpy()
 
-        VE = st.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01, help="Vaccines are assumed to be all or nothing, and the probability that someone is successfully immunized is this value.")
-
-        G = st.slider("Generations", 1, 10, value=10, step=1, help="Outcomes after this many generations are summarized.")
-
         with st.expander("Advanced Options"):
-            sigdigs = st.slider("Displayed significant figures", 1, 10, value=3, step=1, help="Values are reported only to this many significant figures.")
+            G = st.slider("Generations", 1, 10, value=10, step=1, help="Outcomes after this many generations are summarized.")
+            sigdigs = st.slider("Displayed significant figures", 1, 4, value=3, step=1, help="Values are reported only to this many significant figures.")
 
     # # make and run scenarios ------------------------------------------------------------
     group_names = params["Group name"]
