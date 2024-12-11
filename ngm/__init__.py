@@ -40,7 +40,7 @@ def severity(eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G
 ) -> np.ndarray:
 
     """
-    Calculate severe infections after G generations
+    Calculate cumulative severe infections after G generations, including the index case.
 
     Args:
         eigenvalue: eigenvalue, which is number of new infections caused by each infected (Re)
@@ -52,7 +52,7 @@ def severity(eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G
         np.ndarray: contains total number of severe infections from one infection over G generations
     """
     total_severe_infections = np.zeros_like(eigenvector)
-    for g in range(1, G + 1):
+    for g in range(0, G + 1):
         total_severe_infections += pow(eigenvalue, g) * eigenvector * p_severe
 
     return total_severe_infections

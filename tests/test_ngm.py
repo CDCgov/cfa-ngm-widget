@@ -81,9 +81,10 @@ def test_severe():
     distribution = np.array([0.25, 0.25, 0.5])
 
     g_0 = p_severe * distribution
-    assert (ngm.severity(1.0, distribution, p_severe, 1) == g_0).all()
+    assert (ngm.severity(1.0, distribution, p_severe, 0) == g_0).all()
+    assert (ngm.severity(1.0, distribution, p_severe, 1) == 2.0 * g_0).all()
     assert (ngm.severity(2.0, distribution, p_severe, 1) > g_0).all()
-    assert (ngm.severity(0.5, distribution, p_severe, 1) < g_0).all()
+    assert (ngm.severity(0.5, distribution, p_severe, 1) < 2.0 * g_0).all()
     assert (ngm.severity(2.0, distribution, p_severe, 3) > ngm.severity(2.0, distribution, p_severe, 1)).all()
 
 
