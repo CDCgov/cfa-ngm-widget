@@ -51,8 +51,8 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
     summary_help = (
     "The summaries are:\n"
      "- Percent of infections: The percent among all infections which are in the given group.\n"
-     "- Severe infections per prior infection: if there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
-     "- Severe infections after G generations: how many severe infections will there have been after G generations of infections?\n"
+     "- Severe infections per prior infection: If there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
+     "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection?\n"
     )
     st.subheader("Summaries of Infections:", help=summary_help)
     st.dataframe(
