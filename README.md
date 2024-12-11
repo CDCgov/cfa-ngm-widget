@@ -12,7 +12,7 @@ approach.
 ## Getting started
 
 - Enable poetry with `poetry install`
-- To run the app: `streamlit run widget/widget.py`
+- To run the app: `streamlit run scripts/widget.py`
 
 ## Model Description
 
