@@ -6,6 +6,7 @@ import streamlit as st
 import ngm
 from scripts.simulate import simulate_scenario
 
+
 def extract_vector(prefix: str, df: pl.DataFrame, index_name: str, sigdigs, groups=["core", "children", "adults"]):
     assert df.shape[0] == 1
     cols = [prefix + grp for grp in groups]
@@ -104,37 +105,39 @@ def app():
         }
     )
 
-    st.sidebar.header("Model Inputs", help="If you can't see the full matrices without scrolling, drag the sidebar to make it wider.")
+    with st.sidebar:
+        st.header("Model Inputs", help="If you can't see the full matrices without scrolling, drag the sidebar to make it wider.")
 
-    st.sidebar.subheader("Population Information", help="Edit entries in the following matrix to define the:\n - Group names\n - Numbers of people in each group\n - Number of vaccines allocated to each group\n - Probability that an infection will produce the severe outcome of interest (e.g. death) in each group")
-    params = st.sidebar.data_editor(params_default)
+        st.subheader("Population Information", help="Edit entries in the following matrix to define the:\n - Group names\n - Numbers of people in each group\n - Number of vaccines allocated to each group\n - Probability that an infection will produce the severe outcome of interest (e.g. death) in each group")
+        params = st.sidebar.data_editor(params_default)
 
-    # scripts.summarize() hard-codes these names and we want to make sure we display what the user has set
-    names_from_summary = ["core", "children", "adults"]
-    grp_rename_map = {
-        default : edited
-        for default,edited in zip(names_from_summary, params["Group name"])
-    }
+        # scripts.summarize() hard-codes these names and we want to make sure we display what the user has set
+        names_from_summary = ["core", "children", "adults"]
+        grp_rename_map = {
+            default : edited
+            for default,edited in zip(names_from_summary, params["Group name"])
+        }
 
-    m_def_np = np.array([[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]])
-    M_default = (
-        pl.DataFrame({
-            f"from {grp}": m_def_np[:,i]
-            for i,grp in enumerate(params["Group name"])
-        })
-        .with_columns(pl.Series("", [f"to {grp}" for grp in params["Group name"]]))
-        .select(["", *[f"from {grp}" for grp in params["Group name"]]])
-    )
+        m_def_np = np.array([[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]])
+        M_default = (
+            pl.DataFrame({
+                f"from {grp}": m_def_np[:,i]
+                for i,grp in enumerate(params["Group name"])
+            })
+            .with_columns(pl.Series("", [f"to {grp}" for grp in params["Group name"]]))
+            .select(["", *[f"from {grp}" for grp in params["Group name"]]])
+        )
 
-    st.sidebar.subheader("Next Generation Matrix", help="For a single new infection of category `from`, specify how many infections of category `to` it will make by editing the corresponding entry in the matrix.")
-    M_df = st.sidebar.data_editor(M_default, disabled=["to"], hide_index=True)
-    M_novax = M_df.drop("").to_numpy()
+        st.subheader("Next Generation Matrix", help="For a single new infection of category `from`, specify how many infections of category `to` it will make by editing the corresponding entry in the matrix.")
+        M_df = st.data_editor(M_default, disabled=["to"], hide_index=True)
+        M_novax = M_df.drop("").to_numpy()
 
-    VE = st.sidebar.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01, help="Vaccines are assumed to be all or nothing, and the probability that someone is successfully immunized is this value.")
+        VE = st.slider("Vaccine Efficacy", 0.0, 1.0, value=0.7, step=0.01, help="Vaccines are assumed to be all or nothing, and the probability that someone is successfully immunized is this value.")
 
-    G = st.sidebar.slider("Generations", 1, 10, value=10, step=1, help="Outcomes after this many generations are summarized.")
+        G = st.slider("Generations", 1, 10, value=10, step=1, help="Outcomes after this many generations are summarized.")
 
-    sigdigs = st.sidebar.slider("Displayed significant figures", 1, 10, value=3, step=1, help="Values are reported only to this many significant figures.")
+        with st.expander("Advanced Options"):
+            sigdigs = st.slider("Displayed significant figures", 1, 10, value=3, step=1, help="Values are reported only to this many significant figures.")
 
     # # make and run scenarios ------------------------------------------------------------
     group_names = params["Group name"]
