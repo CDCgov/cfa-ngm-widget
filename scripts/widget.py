@@ -31,7 +31,7 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
     # Run the simulation with vaccination
     result = simulate_scenario(params, distributions_as_percents=True)
 
-    st.header(params["scenario_title"])
+    st.header(f"**{params['scenario_title']}**")
 
     prop_vax_help = f"Vaccination of 100\% does not guarantee complete immunity if VE is less than 1. VE is {params['ve']}"
     st.subheader("Percent of each group vaccinated:", help=prop_vax_help)
@@ -52,7 +52,7 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
     "The summaries are:\n"
      "- Percent of infections: The percent among all infections which are in the given group.\n"
      "- Severe infections per prior infection: If there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
-     "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection?\n"
+     "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
     )
     st.subheader("Summaries of Infections:", help=summary_help)
     st.dataframe(
@@ -85,6 +85,8 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
 
 def app():
     st.title("NGM Calculator")
+    st.write("With a NGM approach we can approximate the dynamics of disease spread around the disease-free equilibrium.")
+
     params_default = pl.DataFrame(
         {
             "Group name": ["Core", "Children", "General"],
@@ -148,7 +150,6 @@ def app():
     ]
 
     # present results ------------------------------------------------------------
-    st.write("The...")
     for s in scenarios:
         summarize_scenario(s, sigdigs)
 
