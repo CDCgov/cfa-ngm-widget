@@ -25,7 +25,13 @@ def extract_vector(prefix: str, df: pl.DataFrame, index_name: str, sigdigs, grou
     )
     return vec
 
-def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prior_infection_", "deaths_after_G_generations_"], display_names=["Percent of infections", "Severe infections per prior infection", "Severe infections after G generations"]):
+def summarize_scenario(
+        params,
+        sigdigs,
+        group_display_names,
+        display=["infections_", "deaths_per_prior_infection_", "deaths_after_G_generations_"],
+        display_names=["Percent of infections", "Severe infections per prior infection", "Severe infections after G generations"]
+    ):
     p_vax = params["n_vax"] / (params["n_total"] * params["pop_props"])
 
     # Run the simulation with vaccination
@@ -44,7 +50,6 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
             .select(
                 pl.col(col).round_sig_figs(sigdigs) for col in params["group_names"]
             )
-
         )
     )
 
@@ -56,9 +61,12 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
     )
     st.subheader("Summaries of Infections:", help=summary_help)
     st.dataframe(
-        pl.concat([
-            extract_vector(disp, result, disp_name, sigdigs) for disp,disp_name in zip(display, display_names)
-        ])
+        (
+            pl.concat([
+                extract_vector(disp, result, disp_name, sigdigs) for disp,disp_name in zip(display, display_names)
+            ])
+            .rename(group_display_names)
+        )
     )
 
     ngm_help = "This is the Next Generation Matrix accounting for the specified administration of vaccines in this scenario."
@@ -85,7 +93,7 @@ def summarize_scenario(params, sigdigs, display=["infections_", "deaths_per_prio
 
 def app():
     st.title("NGM Calculator")
-    st.write("With a NGM approach we can approximate the dynamics of disease spread around the disease-free equilibrium.")
+    st.write("Uses a Next Generation Matrix (NGM) approach to approximate the dynamics of disease spread around the disease-free equilibrium.")
 
     params_default = pl.DataFrame(
         {
@@ -100,6 +108,13 @@ def app():
 
     st.sidebar.subheader("Population Information", help="Edit entries in the following matrix to define the:\n - Group names\n - Numbers of people in each group\n - Number of vaccines allocated to each group\n - Probability that an infection will produce the severe outcome of interest (e.g. death) in each group")
     params = st.sidebar.data_editor(params_default)
+
+    # scripts.summarize() hard-codes these names and we want to make sure we display what the user has set
+    names_from_summary = ["core", "children", "adults"]
+    grp_rename_map = {
+        default : edited
+        for default,edited in zip(names_from_summary, params["Group name"])
+    }
 
     m_def_np = np.array([[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]])
     M_default = (
@@ -151,7 +166,7 @@ def app():
 
     # present results ------------------------------------------------------------
     for s in scenarios:
-        summarize_scenario(s, sigdigs)
+        summarize_scenario(s, sigdigs, grp_rename_map)
 
 
 if __name__ == "__main__":
