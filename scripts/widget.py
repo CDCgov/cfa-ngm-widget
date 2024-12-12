@@ -1,7 +1,6 @@
 # To-do: be very sure we know what rows vs columns mean
 import numpy as np
 import polars as pl
-import pandas as pd
 import streamlit as st
 import altair as alt
 import ngm
@@ -26,22 +25,6 @@ def extract_vector(prefix: str, df: pl.DataFrame, index_name: str, sigdigs, grou
         .rename(lambda cname: cname.replace(prefix, "") if prefix in cname else cname)
     )
     return vec
-
-def exp_growth_model(G, inf_distribution, p_severe, R_e):
-
-    total_severe_infections_list = []
-    total_infections_list = []
-
-    total_severe_infections = 0
-    total_infections = 0
-    for g in np.arange(G+1):
-        total_infections += sum(R_e ** g)
-        total_severe_infections += sum(R_e ** g * inf_distribution * p_severe)
-
-        total_infections_list.append(round(total_infections))
-        total_severe_infections_list.append(round(total_severe_infections))
-
-    return total_infections_list, total_severe_infections_list
 
 def summarize_scenario(
         params,
@@ -110,19 +93,21 @@ def summarize_scenario(
     st.subheader("Cumulative infections after G generations of infection", help="This plot shows how many total and severe infections there will have been, cumulatively, across G generations of infection.")
 
     percent_infections = np.array(res_table.select(["Core", "Children", "General"]).row(0)) /100
-    total_infections_list, total_severe_infections_list = exp_growth_model(params["G"], percent_infections, params["p_severe"], result["Re"])
 
-    # wrangle data
-    data = pd.DataFrame({
-        'Generation': np.arange(0, params["G"] + 1),
-        'Severe Infections': total_severe_infections_list,
-        'Non-Severe Infections': np.array(total_infections_list) - np.array(total_severe_infections_list)
-    })
-
-    data_melted = data.melt(id_vars='Generation', var_name='Infection Type', value_name='Count')
+    growth_df = (
+        pl.from_numpy(
+            ngm.exp_growth_model_severity(result["Re"], percent_infections, params["p_severe"], params["G"],),
+            schema=["Generation", "All Infections", "Severe Infections"]
+        )
+        .with_columns(
+            (pl.col("All Infections") - pl.col("Severe Infections")).alias("Non-Severe Infections")
+        )
+        .drop("All Infections")
+        .unpivot(index="Generation", variable_name="Infection Type", value_name="Count")
+    )
 
     # Bar plot
-    chart = alt.Chart(data_melted).mark_bar().encode(
+    chart = alt.Chart(growth_df).mark_bar().encode(
         x='Generation:O',
         y='Count:Q',
         color='Infection Type:N'

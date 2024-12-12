@@ -175,3 +175,26 @@ def distribute_vaccines(
     assert len(n_vax) == n_groups
 
     return n_vax
+
+def exp_growth_model_severity(R_e, inf_distribution, p_severe, G) -> np.ndarray:
+    """
+    Get cumulative infections and severe infections in generations 0, 1, ..., G
+
+    Parameters:
+    V (int): Number of vaccine doses.
+    N_i (np.ndarray): Population sizes for each group.
+    strategy (str): If "even", then distribute evenly. If a string representation of
+        an integer (or just an integer), then distribute to that group first,
+        and divide according to population sizes for the other groups.
+
+    Returns:
+    np.ndarray: array of infections
+        [:,0] is the generation
+        [:,1] is the number of infections
+        [:,2] is the number of severe infections
+    """
+    gens = np.arange(G+1)
+    infections = R_e ** gens
+    severe = np.outer(infections, inf_distribution * p_severe).sum(axis=1)
+
+    return np.stack((gens, infections, severe), 1)
