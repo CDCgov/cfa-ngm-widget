@@ -5,7 +5,7 @@ import polars.selectors as cs
 import griddler
 import griddler.griddle
 
-def simulate_scenario(params, distributions_as_percents=False):
+def simulate_children_of_core(params, distributions_as_percents=False):
     assert sum(params["pop_props"]) == 1.0
 
     mult = 1.0
@@ -36,33 +36,33 @@ def simulate_scenario(params, distributions_as_percents=False):
     fatalities_after_G_generations = ngm.severity(eigenvalue = Re, eigenvector = result["infection_distribution"],
                                                   p_severe = p_severe, G = params["G"])
 
-
-
     results_dict = {
             "Re": Re,
             "infections_core": result["infection_distribution"][0] * mult,
-            "infections_children": result["infection_distribution"][1] * mult,
-            "infections_adults": result["infection_distribution"][2] * mult,
+            "infections_core_children": result["infection_distribution"][1] * mult,
+            "infections_children": result["infection_distribution"][2] * mult,
+            "infections_adults": result["infection_distribution"][3] * mult,
             "ifr": ifr,
             "deaths_per_prior_infection": fatalities_per_prior_infection.sum(),
             "deaths_per_prior_infection_core": fatalities_per_prior_infection[0],
-            "deaths_per_prior_infection_children": fatalities_per_prior_infection[1],
-            "deaths_per_prior_infection_adults": fatalities_per_prior_infection[2],
+            "deaths_per_prior_infection_core_children": fatalities_per_prior_infection[1],
+            "deaths_per_prior_infection_children": fatalities_per_prior_infection[2],
+            "deaths_per_prior_infection_adults": fatalities_per_prior_infection[3],
             "deaths_after_G_generations": fatalities_after_G_generations.sum(),
             "deaths_after_G_generations_core": fatalities_after_G_generations[0],
-            "deaths_after_G_generations_children": fatalities_after_G_generations[1],
-            "deaths_after_G_generations_adults": fatalities_after_G_generations[2],
+            "deaths_after_G_generations_core_children": fatalities_after_G_generations[1],
+            "deaths_after_G_generations_children": fatalities_after_G_generations[2],
+            "deaths_after_G_generations_adults": fatalities_after_G_generations[3],
 
         }
 
     return pl.DataFrame(results_dict)
 
-
 if __name__ == "__main__":
-    parameter_sets = griddler.griddle.read("scripts/config.yaml")
-    strategy_names = {"even": "even", "0": "core first", "1": "children first"}
+    parameter_sets = griddler.griddle.read("scripts/config-children-core.yaml")
+    strategy_names = {"even": "even", "0": "core first", "1": "core children first", "2": "children first", "0_1": "core and core_children first"}
 
-    results_all = griddler.run_squash(simulate_scenario, parameter_sets).with_columns(
+    results_all = griddler.run_squash(simulate_children_of_core, parameter_sets).with_columns(
         pl.col("vax_strategy").replace_strict(strategy_names)
     )
 
@@ -75,9 +75,7 @@ if __name__ == "__main__":
                 "Re",
                 "ifr",
                 "deaths_per_prior_infection",
-                "deaths_per_prior_infection_core",
-                "deaths_per_prior_infection_children",
-                "deaths_per_prior_infection_adults",
+                "deaths_after_G_generations",
             ]
         )
         .sort(["n_vax_total", "vax_strategy"])
@@ -87,4 +85,4 @@ if __name__ == "__main__":
         print(results)
 
     # save results
-    results.write_csv("scripts/results.csv")
+    results.write_csv("scripts/results_children_core.csv")

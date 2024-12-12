@@ -1,4 +1,3 @@
-# To-do: be very sure we know what rows vs columns mean
 import numpy as np
 import polars as pl
 import streamlit as st
