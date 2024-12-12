@@ -90,7 +90,7 @@ def summarize_scenario(
     ifr_help = "The probability that a random infection will result in the severe outcome of interest, e.g. death, accounting for the specified administration of vaccines in this scenario. Here \"random\" means drawing uniformly across all infections, so the probability that one draws an infection in any class is given by the distribution specified in the summary table above."
     st.subheader(f"Severe infection ratio: {result['ifr'].round_sig_figs(sigdigs)[0]}", help=ifr_help)
 
-    st.subheader("Cumulative infections after G generations of infection", help="This plot shows how many total and severe infections there will have been, cumulatively, across G generations of infection.")
+    st.subheader("Cumulative infections after G generations of infection", help="This plot shows how many infections (in total across groups) there will be, both severe and otherwise, cumulatively, up to and including G generations of infection. The first generation is the generation produced by the index case, so G = 1 includes the index infection (generation 0) and one generation of spread")
 
     percent_infections = np.array(res_table.select(["Core", "Children", "General"]).row(0)) /100
 
