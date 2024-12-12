@@ -40,22 +40,25 @@ def severity(eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G
 ) -> np.ndarray:
 
     """
-    Calculate cumulative severe infections through G generations, including the index case.
+    Calculate cumulative severe infections up to and including the Gth generation.
+
+    The first generation is the generation produced by the index case, so G = 1 includes the index
+    infection (generation 0) and one generation of spread.
+    All infections in every generation (including the index case) are distributed proportionately
+    according to the eigenvector (defining the stationary distribution of infections) into groups,
+    and for each group into severe infections according to the provided probability of severe infections.
 
     Args:
         eigenvalue: eigenvalue, which is number of new infections caused by each infected (Re)
         eigenvector (np.array): eigenvector, representing distribution of infections in each group
         p_severe (np.array): Probability of severe outcome in each group
-        G (int): Number of generations to project number of severe infections
+        G (int): Number of generations of infections which have occurred.
 
     Returns:
-        np.ndarray: contains total number of severe infections from one infection over G generations
+        np.ndarray: contains total number of severe infections in each category.
     """
-    total_severe_infections = np.zeros_like(eigenvector)
-    for g in range(0, G + 1):
-        total_severe_infections += eigenvalue ** g * eigenvector * p_severe
 
-    return total_severe_infections
+    return (eigenvalue ** np.arange(G + 1)).sum() * eigenvector * p_severe
 
 
 def vaccinate_M(M: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:

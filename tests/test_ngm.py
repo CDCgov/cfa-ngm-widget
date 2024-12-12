@@ -77,16 +77,13 @@ def test_simulate():
     )
 
 def test_severe():
-    p_severe = np.array([0.02, 0.06, 0.02])
-    distribution = np.array([0.25, 0.25, 0.5])
+    p_severe = np.array([0.01, 0.0])
+    distribution = np.array([0.25, 0.75])
 
     g_0 = p_severe * distribution
-    assert (ngm.severity(1.0, distribution, p_severe, 0) == g_0).all()
-    assert (ngm.severity(1.0, distribution, p_severe, 1) == 2.0 * g_0).all()
-    assert (ngm.severity(2.0, distribution, p_severe, 1) > g_0).all()
-    assert (ngm.severity(0.5, distribution, p_severe, 1) < 2.0 * g_0).all()
-    assert (ngm.severity(2.0, distribution, p_severe, 3) > ngm.severity(2.0, distribution, p_severe, 1)).all()
-
+    assert (ngm.severity(10.0, distribution, p_severe, 0) == g_0).all()
+    assert (ngm.severity(2.0, distribution, p_severe, 3) == 15.0 * distribution * p_severe).all()
+    assert np.isclose(ngm.severity(0.5, distribution, p_severe, 3000), 2.0 * distribution * p_severe).all()
 
 def test_ensure_positive():
     assert_array_equal(
