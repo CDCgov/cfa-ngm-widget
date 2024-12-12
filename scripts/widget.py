@@ -34,7 +34,7 @@ def exp_growth_model(G, inf_distribution, p_severe, R_e):
 
     total_severe_infections = 0
     total_infections = 0
-    for g in range(0, G):
+    for g in arange(G+1):
         total_infections += sum(R_e ** g)
         total_severe_infections += sum(R_e ** g * inf_distribution * p_severe)
 
