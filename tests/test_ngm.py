@@ -158,5 +158,4 @@ def test_exp_growth():
     p_severe = np.array([0.02, 0.06, 0.02])
     distribution = np.array([0.25, 0.25, 0.5])
     G = 7
-
-    assert ngm.severity(r0, distribution, p_severe, G).sum() == ngm.exp_growth_model_severity(r0, distribution, p_severe, G)[2, -1]
+    assert ngm.severity(r0, distribution, p_severe, G).sum() == ngm.exp_growth_model_severity(r0, distribution, p_severe, G)[-1, 2]

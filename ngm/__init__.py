@@ -194,7 +194,7 @@ def exp_growth_model_severity(R_e, inf_distribution, p_severe, G) -> np.ndarray:
         [:,2] is the number of severe infections
     """
     gens = np.arange(G+1)
-    infections = R_e ** gens
+    infections = np.cumsum(R_e ** gens)
     severe = np.outer(infections, inf_distribution * p_severe).sum(axis=1)
 
     return np.stack((gens, infections, severe), 1)
