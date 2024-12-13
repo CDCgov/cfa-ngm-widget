@@ -171,7 +171,7 @@ def distribute_vaccines(
                 0.0
             )
 
-            n_vax += remaining_doses * remaining_proportions
+            n_vax += remaining_doses * np.array(remaining_proportions)
 
     assert sum(n_vax) == V
     assert len(n_vax) == n_groups
