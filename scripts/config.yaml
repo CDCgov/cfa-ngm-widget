@@ -1,16 +1,19 @@
 baseline_parameters:
-  # total population size
-  n_total: !!float 1e7
-  # population proportions
-  # convention is: [core, children, non-core adult]
-  pop_props: [0.05, 0.45, 0.5]
-  # Next generation matrix: number of infections in row i generated
-  # by an infection in column j
-  M_novax: [[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]]
+  n_total: !!float  1e7
   ve: 0.74
-  p_severe: [0.02, 0.06, 0.02]
   G: 10
 grid_parameters:
   n_vax_total: [0.0, !!float 2e5, !!float 1e6]
-  # vaccination strategy
-  vax_strategy: ["0", "1", "even"]
+  vax_strategy: ["0", "1", "0_1", "2", "even"]
+  scenario: [three_group]
+nested_parameters:
+  - scenario: three_group
+    pop_names: ["core", "children", "adults"]
+    pop_props: [0.05, 0.45, 0.5]
+    M_novax: [[3.0, 0.0, 0.2], [0.10, 1.0, 0.5], [0.25, 1.0, 1.5]]
+    p_severe: [0.02, 0.06, 0.02]
+  - scenario: four_group
+    pop_names: ["core", "core_children", "children", "adults"]
+    pop_props: [0.05, 0.05, 0.4, 0.5]
+    M_novax: [[3.0, 0.0, 0.0, 0.2], [0.5, 0.5, 0.5, 0.5], [0.0, 0.5, 0.5, 0.5], [0.25, 1.0, 1.0, 1.5]]
+    p_severe: [0.02, 0.06, 0.6, 0.02]
