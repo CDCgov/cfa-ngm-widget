@@ -148,50 +148,30 @@ def distribute_vaccines(
     if strategy == "even":
         # Distribute doses according to the proportion in each group
         n_vax = V * population_proportions
-    elif strategy == "0_1":
-        # Distribute to core kids and core first
-        N_0_1 = N_i[0] + N_i[1]
-        if V <= N_0_1:
-            n_vax = np.zeros(n_groups)
-            n_vax[0:2] = V / 2
-        else:
-            # Fill up 0 and 1
-            n_vax = np.zeros(n_groups)
-            n_vax[0:2] = N_i[0:2]
-            remaining_doses = V - sum(N_i[0:2])
+    else:
+        target_indices = list(map(int, strategy.split("_")))
+        N_prioritized = sum(N_i[i] for i in target_indices)
 
-            # Exclude indices 0 and 1
-            exclude_indices = [0, 1]
-            remaining_population = np.sum(np.delete(N_i, exclude_indices))
+        if V <= N_prioritized:
+            n_vax = np.zeros(n_groups)
+            for i in target_indices:
+                n_vax[i] = V * (N_i[i] / N_prioritized)
+        else:
+            # Fill up the selected groups
+            n_vax = np.zeros(n_groups)
+            for i in target_indices:
+                n_vax[i] = N_i[i]
+            remaining_doses = V - N_prioritized
+
+            # Exclude the selected indices
+            remaining_population = np.sum(np.delete(N_i, target_indices))
             remaining_proportions = np.where(
-                np.isin(np.arange(n_groups), exclude_indices, invert=True),
+                np.isin(np.arange(n_groups), target_indices, invert=True),
                 N_i / remaining_population,
                 0.0
             )
 
             n_vax += remaining_doses * remaining_proportions
-    else:
-        target_i = int(strategy)
-        if V <= N_i[target_i]:
-            # if there aren't enough vaccines for the target group, then
-            # other groups get nothing
-            n_vax = np.zeros(n_groups)
-            n_vax[target_i] = V
-        else:
-            # fill up that group
-            n_vax = np.zeros(n_groups)
-            n_vax[target_i] = N_i[target_i]
-            remaining_doses = V - N_i[target_i]
-
-            remaining_population = sum(
-                [N_i[i] for i in range(n_groups) if i != target_i]
-            )
-            remaining_proportions = [
-                N_i[i] / remaining_population if i != target_i else 0.0
-                for i in range(n_groups)
-            ]
-
-            n_vax += remaining_doses * np.array(remaining_proportions)
 
     assert sum(n_vax) == V
     assert len(n_vax) == n_groups
