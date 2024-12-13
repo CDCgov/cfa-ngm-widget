@@ -149,27 +149,27 @@ def distribute_vaccines(
         # Distribute doses according to the proportion in each group
         n_vax = V * population_proportions
     elif strategy == "0_1":
-        # distribute to core kids and core first
+        # Distribute to core kids and core first
         N_0_1 = N_i[0] + N_i[1]
         if V <= N_0_1:
             n_vax = np.zeros(n_groups)
             n_vax[0:2] = V / 2
         else:
-            # fill up 0 and 1
+            # Fill up 0 and 1
             n_vax = np.zeros(n_groups)
             n_vax[0:2] = N_i[0:2]
             remaining_doses = V - sum(N_i[0:2])
 
-            remaining_population = sum(
-                [N_i[i] for i in range(n_groups) if i != 0 and i != 1]
+            # Exclude indices 0 and 1
+            exclude_indices = [0, 1]
+            remaining_population = np.sum(np.delete(N_i, exclude_indices))
+            remaining_proportions = np.where(
+                np.isin(np.arange(n_groups), exclude_indices, invert=True),
+                N_i / remaining_population,
+                0.0
             )
-            remaining_proportions = [
-                N_i[i] / remaining_population if i != 0 and i != 1 else 0.0
-                for i in range(n_groups)
-            ]
 
-            n_vax += remaining_doses * np.array(remaining_proportions)
-
+            n_vax += remaining_doses * remaining_proportions
     else:
         target_i = int(strategy)
         if V <= N_i[target_i]:

@@ -126,6 +126,12 @@ def test_distribute_vaccine_even():
     n_vax = ngm.distribute_vaccines(V, N_i, strategy="even")
     assert_allclose(n_vax, np.array([1.0 / 6, 2.0 / 6, 3.0 / 6]))
 
+def test_distribute_vaccine_01():
+    N_i = np.array([10.0, 20.0, 30.0, 40.0])
+    V = 40.0
+    n_vax = ngm.distribute_vaccines(V, N_i, strategy="0_1")
+    assert_allclose(n_vax, np.array([10.0, 20.0, 10.0 * (30.0/70.0), 10.0 * (40.0/70.0)]))
+
 
 def test_distribute_vaccine():
     N_i = np.array([1.0, 2.0, 3.0])
