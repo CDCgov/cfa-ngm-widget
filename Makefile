@@ -15,4 +15,4 @@ build_container:
 	$(ENGINE) build -t $(TARGET) -f Dockerfile
 
 run_container:
-	$(ENGINE) run -p 8501:8501 --rm $(TARGET) 
+	$(ENGINE) run -p 8501:8501 --rm $(TARGET)
