@@ -158,3 +158,10 @@ def test_distribute_zero_doses():
     for strategy in ["even", "0"]:
         n_vax = ngm.distribute_vaccines(V=0.0, N_i=N_i, strategy=strategy)
         assert_allclose(n_vax, np.array([0.0, 0.0, 0.0]))
+
+def test_exp_growth():
+    r0 = 2.3
+    p_severe = np.array([0.02, 0.06, 0.02])
+    distribution = np.array([0.25, 0.25, 0.5])
+    G = 7
+    assert ngm.severity(r0, distribution, p_severe, G).sum() == ngm.exp_growth_model_severity(r0, distribution, p_severe, G)[-1, 2]

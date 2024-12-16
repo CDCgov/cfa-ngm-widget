@@ -1,7 +1,7 @@
 import numpy as np
 import polars as pl
 import streamlit as st
-
+import altair as alt
 import ngm
 from scripts.simulate import simulate_scenario
 
@@ -64,7 +64,6 @@ def summarize_scenario(
             pl.concat([
                 extract_vector(disp, result, disp_name, sigdigs, groups = groups) for disp,disp_name in zip(display, display_names)
             ])
-            #.rename(group_display_names)
         )
     )
     st.write(summary_help)
@@ -90,6 +89,33 @@ def summarize_scenario(
 
     ifr_help = "The probability that a random infection will result in the severe outcome of interest, e.g. death, accounting for the specified administration of vaccines in this scenario. Here \"random\" means drawing uniformly across all infections, so the probability that one draws an infection in any class is given by the distribution specified in the summary table above."
     st.subheader(f"Severe infection ratio: {result['ifr'].round_sig_figs(sigdigs)[0]}", help=ifr_help)
+
+    st.subheader("Cumulative infections after G generations of infection", help="This plot shows how many infections (in total across groups) there will be, both severe and otherwise, cumulatively, up to and including G generations of infection. The first generation is the generation produced by the index case, so G = 1 includes the index infection (generation 0) and one generation of spread")
+
+    percent_infections = np.array(res_table.select(["Core", "Children", "General"]).row(0)) /100
+
+    growth_df = (
+        pl.from_numpy(
+            ngm.exp_growth_model_severity(result["Re"], percent_infections, params["p_severe"], params["G"],),
+            schema=["Generation", "All Infections", "Severe Infections"]
+        )
+        .with_columns(
+            (pl.col("All Infections") - pl.col("Severe Infections")).alias("Non-Severe Infections")
+        )
+        .drop("All Infections")
+        .unpivot(index="Generation", variable_name="Infection Type", value_name="Count")
+    )
+
+    # Bar plot
+    chart = alt.Chart(growth_df).mark_bar().encode(
+        x='Generation:O',
+        y='Count:Q',
+        color='Infection Type:N'
+    ).properties(
+        title=''
+    )
+
+    st.altair_chart(chart, use_container_width=True)
 
 
 def app():
