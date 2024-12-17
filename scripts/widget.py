@@ -5,7 +5,6 @@ import altair as alt
 import ngm
 from scripts.simulate import simulate_scenario
 
-
 def extract_vector(prefix: str, df: pl.DataFrame, index_name: str, sigdigs, groups=["core", "children", "adults"]):
     assert df.shape[0] == 1
     cols = [prefix + grp for grp in groups]
@@ -59,13 +58,12 @@ def summarize_scenario(
         "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
     )
     st.subheader("Summaries of Infections:")
-    st.dataframe(
-        (
-            pl.concat([
-                extract_vector(disp, result, disp_name, sigdigs, groups = groups) for disp,disp_name in zip(display, display_names)
-            ])
-        )
-    )
+
+    res = pl.concat([
+            extract_vector(disp, result, disp_name, sigdigs, groups = params["group_names"]) for disp,disp_name in zip(display, display_names)
+        ])
+
+    st.dataframe(res)
     st.write(summary_help)
 
     ngm_help = "This is the Next Generation Matrix accounting for the specified administration of vaccines in this scenario."
@@ -92,7 +90,7 @@ def summarize_scenario(
 
     st.subheader("Cumulative infections after G generations of infection", help="This plot shows how many infections (in total across groups) there will be, both severe and otherwise, cumulatively, up to and including G generations of infection. The first generation is the generation produced by the index case, so G = 1 includes the index infection (generation 0) and one generation of spread")
 
-    percent_infections = np.array(res_table.select(["Core", "Children", "General"]).row(0)) /100
+    percent_infections = np.array(res.select(list(params["group_names"]))[0] / 100)
 
     growth_df = (
         pl.from_numpy(
