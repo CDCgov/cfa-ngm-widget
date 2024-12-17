@@ -1,5 +1,6 @@
 import griddler
 import griddler.griddle
+<<<<<<< HEAD
 import numpy as np
 import polars as pl
 import polars.selectors as cs
@@ -71,6 +72,12 @@ def simulate_scenario(params, distributions_as_percents=False):
     }
     return pl.DataFrame(results_dict)
 
+=======
+import polars as pl
+import polars.selectors as cs
+
+from ngm.widget import simulate_scenario
+>>>>>>> 7a882cc (Adding an app test)
 
 if __name__ == "__main__":
     parameter_sets = griddler.griddle.read("scripts/config.yaml")
