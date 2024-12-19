@@ -12,7 +12,16 @@ approach.
 ## Getting started
 
 - Enable poetry with `poetry install`
-- To run the app: `streamlit run scripts/widget.py`
+- To run the app: `make`, which calls `streamlit run scripts/widget.py`
+
+### Using containers
+
+- Build and tag the image: `podman build -t ngm .`
+- Run the container: `podman run -p 8501:8501 --rm ngm`
+- Note the port 8501 is hard-coded in the `Dockerfile`
+- In a browser, visit: `http://localhost:8501/`
+
+The build and run process can also be executed using the `build_container` and `run_container` targets in the included [Makefile](Makefile).
 
 ## Model Description
 
