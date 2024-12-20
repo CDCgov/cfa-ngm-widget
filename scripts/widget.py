@@ -36,10 +36,10 @@ def summarize_scenario(
     # Run the simulation with vaccination
     result = simulate_scenario(params, distributions_as_percents=True)
 
-    st.header(f"**{params['scenario_title']}**")
+    st.header(f"*{params['scenario_title']}*")
 
-    prop_vax_help = f"Vaccination of 100% does not guarantee complete immunity if VE is less than 1. VE is {params['ve']}"
-    st.subheader("Percent of each group vaccinated:", help=prop_vax_help)
+    prop_vax_help = f"Based on allocated doses, what percent of each group is vaccinated? In the counter factual scenario, we assume no vaccines are administered. Vaccination of 100% does not guarantee complete immunity if VE is less than 1. VE is {params['ve']}"
+    st.subheader("\% of each group vaccinated:", help=prop_vax_help)
     st.dataframe(
         (
             pl.DataFrame({
@@ -51,23 +51,16 @@ def summarize_scenario(
             )
         )
     )
-    summary_help = (
-        "The summaries are:\n"
-        "- Percent of infections: The percent among all infections which are in the given group.\n"
-        "- Severe infections per prior infection: If there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
-        "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
-    )
-    st.subheader("Summaries of Infections:")
+    st.subheader("Summary of Infections:")
 
     res = pl.concat([
             extract_vector(disp, result, disp_name, sigdigs, groups = params["group_names"]) for disp,disp_name in zip(display, display_names)
         ])
 
     st.dataframe(res)
-    st.write(summary_help)
 
     ngm_help = "This is the Next Generation Matrix accounting for the specified administration of vaccines in this scenario."
-    st.subheader("Next Generation Matrix:")
+    st.subheader("Next Generation Matrix given vaccine scenario:")
     m_vax = ngm.vaccinate_M(params["M_novax"], p_vax, params["ve"])
     ngm_df = (
         pl.DataFrame({
@@ -117,7 +110,7 @@ def summarize_scenario(
 
 
 def app():
-    st.title("NGM Calculator")
+    st.title("Vaccine Allocation Widget")
     st.write("Uses a Next Generation Matrix (NGM) approach to approximate the dynamics of disease spread around the disease-free equilibrium.")
 
     params_default = pl.DataFrame(
@@ -163,7 +156,7 @@ def app():
     p_severe = params["Prob. severe"].to_numpy()
 
     scenario = {
-        "scenario_title": "Results with vaccination",
+        "scenario_title": "Scenario: Vaccination",
         "group_names": group_names,
         "n_total": N.sum(),
         "pop_props": N/N.sum(),
@@ -175,7 +168,7 @@ def app():
     }
 
     counterfactual = scenario.copy()
-    counterfactual["scenario_title"] = "Counterfactual (no vaccination)"
+    counterfactual["scenario_title"] = "Scenario: Counterfactual (no vaccination)"
     counterfactual["n_vax"] = 0 * V
     counterfactual["p_vax"] = 0.0 * V
 
@@ -183,6 +176,15 @@ def app():
         scenario,
         counterfactual,
     ]
+
+    # text outside scenarios
+    summary_help = (
+        "Each scenario below gives a summary of infections, including:\n"
+        "- Percent of infections: The percent of all infections which are in the given group.\n"
+        "- Severe infections per prior infection: If there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
+        "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
+    )
+    st.write(summary_help)
 
     # present results ------------------------------------------------------------
     for s in scenarios:
