@@ -200,6 +200,9 @@ def summarize_scenario(
 def app():
     import streamlit as st
 
+    with st.container():
+        st.text("[DISCLAIMER PLACEHOLDER]")
+
     st.title("Vaccine Allocation Widget")
     st.write(
         "Uses a Next Generation Matrix (NGM) approach to approximate the dynamics of disease spread around the disease-free equilibrium."
