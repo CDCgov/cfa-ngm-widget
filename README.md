@@ -1,7 +1,5 @@
 # Next generation matrix widget
 
-⚠️ This is a work in progress
-
 ## Overview
 
 This repo contains code for investigating the potential efficacy of vaccination allocation for a disease interactively via a [streamlit](https://streamlit.io/) app using a next generation matrix approach.
