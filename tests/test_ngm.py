@@ -1,8 +1,8 @@
 import numpy as np
-import ngm
-from numpy.testing import assert_array_equal
-from numpy.testing import assert_allclose
 import pytest
+from numpy.testing import assert_allclose, assert_array_equal
+
+import ngm
 
 
 def test_dominant_eigen_simple():
@@ -76,14 +76,20 @@ def test_simulate():
         np.array([0.44507246, 0.10853944, 0.17503951, 0.2713486]),
     )
 
+
 def test_severe():
     p_severe = np.array([0.01, 0.0])
     distribution = np.array([0.25, 0.75])
 
     g_0 = p_severe * distribution
     assert (ngm.severity(10.0, distribution, p_severe, 0) == g_0).all()
-    assert (ngm.severity(2.0, distribution, p_severe, 3) == 15.0 * distribution * p_severe).all()
-    assert np.isclose(ngm.severity(0.5, distribution, p_severe, 3000), 2.0 * distribution * p_severe).all()
+    assert (
+        ngm.severity(2.0, distribution, p_severe, 3) == 15.0 * distribution * p_severe
+    ).all()
+    assert np.isclose(
+        ngm.severity(0.5, distribution, p_severe, 3000), 2.0 * distribution * p_severe
+    ).all()
+
 
 def test_ensure_positive():
     assert_array_equal(
@@ -126,11 +132,14 @@ def test_distribute_vaccine_even():
     n_vax = ngm.distribute_vaccines(V, N_i, strategy="even")
     assert_allclose(n_vax, np.array([1.0 / 6, 2.0 / 6, 3.0 / 6]))
 
+
 def test_distribute_vaccine_01():
     N_i = np.array([10.0, 20.0, 30.0, 40.0])
     V = 40.0
     n_vax = ngm.distribute_vaccines(V, N_i, strategy="0_1")
-    assert_allclose(n_vax, np.array([10.0, 20.0, 10.0 * (30.0/70.0), 10.0 * (40.0/70.0)]))
+    assert_allclose(
+        n_vax, np.array([10.0, 20.0, 10.0 * (30.0 / 70.0), 10.0 * (40.0 / 70.0)])
+    )
 
 
 def test_distribute_vaccine():
@@ -159,9 +168,13 @@ def test_distribute_zero_doses():
         n_vax = ngm.distribute_vaccines(V=0.0, N_i=N_i, strategy=strategy)
         assert_allclose(n_vax, np.array([0.0, 0.0, 0.0]))
 
+
 def test_exp_growth():
     r0 = 2.3
     p_severe = np.array([0.02, 0.06, 0.02])
     distribution = np.array([0.25, 0.25, 0.5])
     G = 7
-    assert ngm.severity(r0, distribution, p_severe, G).sum() == ngm.exp_growth_model_severity(r0, distribution, p_severe, G)[-1, 2]
+    assert (
+        ngm.severity(r0, distribution, p_severe, G).sum()
+        == ngm.exp_growth_model_severity(r0, distribution, p_severe, G)[-1, 2]
+    )

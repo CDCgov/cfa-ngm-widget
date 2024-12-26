@@ -1,6 +1,7 @@
 from collections import namedtuple
-import numpy as np
 from typing import Any
+
+import numpy as np
 
 DominantEigen = namedtuple("DominantEigen", ["value", "vector"])
 
@@ -36,9 +37,9 @@ def run_ngm(
     return {"M": M_vax, "Re": eigen.value, "infection_distribution": eigen.vector}
 
 
-def severity(eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G: int
+def severity(
+    eigenvalue: float, eigenvector: np.ndarray, p_severe: np.ndarray, G: int
 ) -> np.ndarray:
-
     """
     Calculate cumulative severe infections up to and including the Gth generation.
 
@@ -168,7 +169,7 @@ def distribute_vaccines(
             remaining_proportions = np.where(
                 np.isin(np.arange(n_groups), target_indices, invert=True),
                 N_i / remaining_population,
-                0.0
+                0.0,
             )
 
             n_vax += remaining_doses * np.array(remaining_proportions)
@@ -177,6 +178,7 @@ def distribute_vaccines(
     assert len(n_vax) == n_groups
 
     return n_vax
+
 
 def exp_growth_model_severity(R_e, inf_distribution, p_severe, G) -> np.ndarray:
     """
@@ -195,8 +197,8 @@ def exp_growth_model_severity(R_e, inf_distribution, p_severe, G) -> np.ndarray:
         [:,1] is the number of infections
         [:,2] is the number of severe infections
     """
-    gens = np.arange(G+1)
-    infections = np.cumsum(R_e ** gens)
+    gens = np.arange(G + 1)
+    infections = np.cumsum(R_e**gens)
     severe = np.outer(infections, inf_distribution * p_severe).sum(axis=1)
 
     return np.stack((gens, infections, severe), 1)
