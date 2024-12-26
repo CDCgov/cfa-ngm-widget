@@ -138,7 +138,7 @@ def summarize_scenario(
 
 
 def app():
-    with st.container():
+    with st.container(border=True):
         st.text("[DISCLAIMER PLACEHOLDER]")
 
     st.title("Vaccine Allocation Widget")
