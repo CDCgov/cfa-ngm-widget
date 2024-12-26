@@ -200,7 +200,7 @@ def summarize_scenario(
 def app():
     import streamlit as st
 
-    with st.container():
+    with st.container(border=True):
         st.text("[DISCLAIMER PLACEHOLDER]")
 
     st.title("Vaccine Allocation Widget")
