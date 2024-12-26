@@ -1,7 +1,5 @@
 # Next generation matrix widget
 
-⚠️ This is a work in progress
-
 ## Overview
 
 This repo contains code for investigating the potential efficacy of
