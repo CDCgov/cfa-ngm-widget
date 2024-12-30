@@ -4,7 +4,7 @@ TARGET = ngm
 .PHONY: run build_container run_container
 
 run:
-	streamlit run scripts/widget.py
+	streamlit run ngm/widget.py
 
 build_container:
 	$(ENGINE) build -t $(TARGET) -f Dockerfile

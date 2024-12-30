@@ -1,10 +1,74 @@
 import altair as alt
 import numpy as np
 import polars as pl
-import streamlit as st
+import streamlit.delta_generator
 
 import ngm
-from scripts.simulate import simulate_scenario
+
+
+def simulate_scenario(params, distributions_as_percents=False):
+    assert sum(params["pop_props"]) == 1.0
+
+    mult = 1.0
+    if distributions_as_percents:
+        mult = 100.0
+
+    # population sizes
+    N_i = params["n_total"] * np.array(params["pop_props"])
+
+    M_novax = np.array(params["M_novax"])
+    p_severe = np.array(params["p_severe"])
+
+    if "n_vax" in params:
+        n_vax = params["n_vax"]
+    else:
+        n_vax = ngm.distribute_vaccines(
+            params["n_vax_total"], N_i, strategy=params["vax_strategy"]
+        )
+
+    result = ngm.run_ngm(M_novax=M_novax, n=N_i, n_vax=n_vax, ve=params["ve"])
+
+    Re = result["Re"]
+    ifr = np.dot(result["infection_distribution"], p_severe)
+    fatalities_per_prior_infection = ngm.severity(
+        eigenvalue=Re,
+        eigenvector=result["infection_distribution"],
+        p_severe=p_severe,
+        G=1,
+    )
+    fatalities_after_G_generations = ngm.severity(
+        eigenvalue=Re,
+        eigenvector=result["infection_distribution"],
+        p_severe=p_severe,
+        G=params["G"],
+    )
+
+    infection_distribution_dict = {
+        f"infections_{group}": result["infection_distribution"][i] * mult
+        for i, group in enumerate(params["group_names"])
+    }
+
+    deaths_per_prior_infection_dict = {
+        f"deaths_per_prior_infection_{group}": fatalities_per_prior_infection[i]
+        for i, group in enumerate(params["group_names"])
+    }
+
+    deaths_after_G_generations_dict = {
+        f"deaths_after_G_generations_{group}": fatalities_after_G_generations[i]
+        for i, group in enumerate(params["group_names"])
+    }
+
+    # Combine all dictionaries into results_dict
+    results_dict = {
+        "Re": Re,
+        "ifr": ifr,
+        "deaths_per_prior_infection": fatalities_per_prior_infection.sum(),
+        "deaths_after_G_generations": fatalities_after_G_generations.sum(),
+        **infection_distribution_dict,
+        **deaths_per_prior_infection_dict,
+        **deaths_after_G_generations_dict,
+    }
+    return pl.DataFrame(results_dict)
 
 
 def extract_vector(
@@ -31,7 +95,8 @@ def extract_vector(
 
 
 def summarize_scenario(
-    params,
+    c: streamlit.delta_generator.DeltaGenerator,
+    params: dict,
     sigdigs,
     groups,
     display=[
@@ -50,11 +115,11 @@ def summarize_scenario(
     # Run the simulation with vaccination
     result = simulate_scenario(params, distributions_as_percents=True)
 
-    st.header(f"*{params['scenario_title']}*")
+    c.header(f"*{params['scenario_title']}*")
 
     prop_vax_help = f"Based on allocated doses, what percent of each group is vaccinated? In the counter factual scenario, we assume no vaccines are administered. Vaccination of 100% does not guarantee complete immunity if VE is less than 1. VE is {params['ve']}"
-    st.subheader("\% of each group vaccinated:", help=prop_vax_help)
-    st.dataframe(
+    c.subheader("% of each group vaccinated:", help=prop_vax_help)
+    c.dataframe(
         (
             pl.DataFrame(
                 {grp: [prob * 100] for grp, prob in zip(params["group_names"], p_vax)}
@@ -63,21 +128,18 @@ def summarize_scenario(
             )
         )
     )
-    st.subheader("Summary of Infections:")
+    c.subheader("Summaries of Infections:")
 
     res = pl.concat(
         [
-            extract_vector(
-                disp, result, disp_name, sigdigs, groups=params["group_names"]
-            )
+            extract_vector(disp, result, disp_name, sigdigs, groups=groups)
             for disp, disp_name in zip(display, display_names)
         ]
     )
-
-    st.dataframe(res)
+    c.dataframe(res)
 
     ngm_help = "This is the Next Generation Matrix accounting for the specified administration of vaccines in this scenario."
-    st.subheader("Next Generation Matrix given vaccine scenario:")
+    c.subheader("Next Generation Matrix given vaccine scenario:")
     m_vax = ngm.vaccinate_M(params["M_novax"], p_vax, params["ve"])
     ngm_df = (
         pl.DataFrame(
@@ -86,21 +148,19 @@ def summarize_scenario(
         .with_columns(pl.Series("", [f"to {grp}" for grp in params["group_names"]]))
         .select(["", *[f"from {grp}" for grp in params["group_names"]]])
     )
-    st.dataframe(ngm_df)
-    st.write(ngm_help)
+    c.dataframe(ngm_df)
+    c.write(ngm_help)
 
     re_help = "The effective reproductive number accounting for the specified administration of vaccines in this scenario."
-    st.subheader(
-        f"R-effective: {result['Re'].round_sig_figs(sigdigs)[0]}", help=re_help
-    )
+    c.subheader(f"R-effective: {result['Re'].round_sig_figs(sigdigs)[0]}", help=re_help)
 
     ifr_help = 'The probability that a random infection will result in the severe outcome of interest, e.g. death, accounting for the specified administration of vaccines in this scenario. Here "random" means drawing uniformly across all infections, so the probability that one draws an infection in any class is given by the distribution specified in the summary table above.'
-    st.subheader(
+    c.subheader(
         f"Severe infection ratio: {result['ifr'].round_sig_figs(sigdigs)[0]}",
         help=ifr_help,
     )
 
-    st.subheader(
+    c.subheader(
         "Cumulative infections after G generations of infection",
         help="This plot shows how many infections (in total across groups) there will be, both severe and otherwise, cumulatively, up to and including G generations of infection. The first generation is the generation produced by the index case, so G = 1 includes the index infection (generation 0) and one generation of spread",
     )
@@ -134,10 +194,12 @@ def summarize_scenario(
         .properties(title="")
     )
 
-    st.altair_chart(chart, use_container_width=True)
+    c.altair_chart(chart, use_container_width=True)
 
 
 def app():
+    import streamlit as st
+
     st.title("Vaccine Allocation Widget")
     st.write(
         "Uses a Next Generation Matrix (NGM) approach to approximate the dynamics of disease spread around the disease-free equilibrium."
@@ -248,8 +310,9 @@ def app():
     st.write(summary_help)
 
     # present results ------------------------------------------------------------
+    c = st.container()
     for s in scenarios:
-        summarize_scenario(s, sigdigs, groups=params["Group name"])
+        summarize_scenario(c=c, params=s, sigdigs=sigdigs, groups=params["Group name"])
 
 
 if __name__ == "__main__":
