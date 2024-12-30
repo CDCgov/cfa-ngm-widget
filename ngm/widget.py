@@ -118,7 +118,7 @@ def summarize_scenario(
     c.header(f"*{params['scenario_title']}*")
 
     prop_vax_help = f"Based on allocated doses, what percent of each group is vaccinated? In the counter factual scenario, we assume no vaccines are administered. Vaccination of 100% does not guarantee complete immunity if VE is less than 1. VE is {params['ve']}"
-    c.subheader("\% of each group vaccinated:", help=prop_vax_help)
+    c.subheader("% of each group vaccinated:", help=prop_vax_help)
     c.dataframe(
         (
             pl.DataFrame(
