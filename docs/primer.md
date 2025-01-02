@@ -22,7 +22,6 @@ Imagine we have an NGM, **K** = [$k_{ij}$]. The elements $k_{ij}$ of this matrix
 
 ## Conditions and limitations
 
-<!-- NGMs can be used to estimate $R_0$ under certain conditions.  -->
 Some conditions and limitations apply for NGM models to be a valid tool for estimating $R_0$ or as a simulation tool.
 
 ### Discrete states
@@ -57,7 +56,7 @@ We denote the number of individuals in the high-risk group as $N_H$, and the num
 
 We also assume that average mixing holds for all pairs of individuals between the groups and within. Individuals in the two risk groups can interact with each other in some way such that an infectious individual would generate some number of new infections in the two groups. More specifically, an average infected individual in group $j$ generates $\beta_{ij}$ infections per unit time in group $i$ in a fully susceptible population. Unlike the example in Keeling & Rohani, here we model the counts of the population in each state rather than the proportion. This model form has the advantage of being useful at modeling dynamics for various population sizes with the same values of $\beta_{ij}$. This follows from the frequency dependent assumption of transmission where effective contact structure that generates transmission is independent in size (the interested reader can refer to see Keeling & Rohani, 2008 pp17-18 for more details).
 
-At any given time, there is some fraction of group $i$ that is susceptible and can be infected through interaction with an average infected individual in group $j$. Then, the average infected individual in group $j$ generates $\beta_{ij}\frac{S_i}{N_i}$ infections in group i per unit time. Assuming no collision of transmission events, $I_j$ infected individuals produces $\beta_{ij}\frac{S_i}{N_i}{I_j}$ infections per unit time.
+At any given time, there is some fraction of group $i$ that is susceptible and can be infected through interaction with an average infected individual in group $j$. Then, the average infected individual in group $j$ generates $\frac{\beta_{ij}S_i}{N_i}$ infections in group i per unit time. Assuming no collision of transmission events, $I_j$ infected individuals produces $\frac{\beta_{ij}S_i I_j}{N_i}$ infections per unit time.
 
 Individuals in each risk group also recover from infection at some rate $\gamma$ (here we assume that high-risk and low-risk individuals recover at the same rate, however the following can be generalized to scenarios where average recovery rates of the two groups are different).
 
@@ -113,10 +112,3 @@ Then the NGM $K$ can be computed as $K = -E'T\Sigma^{-1}E = \frac{1}{\gamma}\bol
 ## NGM model in this repository
 
 In this repository we utilized an NGM to model consecutive generations of new infections. We made the simplifying assumptions that infections last exactly one generation and that generations have not overlap. Without loss of generality, the NGM from the two-risk group example can be defined for multiple subpopulations as $K = \frac{1}{\gamma}\boldsymbol{\beta}$. Rescaling by the generation interval $\gamma^{-1}$ produces $K = \boldsymbol{\beta'}$, where the elements $\beta'_{ij}$ are the average number of new infections generated in group $i$ by an typical infected individual in group $j$ per generation.
-
-## When population sizes are different
-<!-- In this repository, the NGM model can be used for different population sizes as a result of the frequency dependent modeling assumption.  -->
-<!-- The elements $k_{ij}$ are the number of new infections in group $i$ generated per infected individual in group $j$ per generation.  -->
-<!-- If the total population size is scaled up by a factor X then the model produces $X \cdot k_{ij}$ new infections. -->
-
-## When distributions of population groups vary
