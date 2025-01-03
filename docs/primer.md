@@ -10,15 +10,17 @@ Diekmann, O., Heesterbeek, J.A.P. & Metz, J.A.J. On the definition and the compu
 
 Diekmann O, Heesterbeek JA, Roberts MG. The construction of next-generation matrices for compartmental epidemic models. J R Soc Interface. 2010 Jun 6;7(47):873-85. https://doi.org/10.1098/rsif.2009.0386. Epub 2009 Nov 5. PMID: 19892718; PMCID: PMC2871801.
 
+van den Driessche P, Watmough J. Reproduction numbers and sub-threshold endemic equilibria for compartmental models of disease transmission. Math Biosci. 2002 Nov-Dec;180:29-48. doi: https://doi.org/10.1016/s0025-5564(02)00108-6. PMID: 12387915.
+
 This primer is meant to supplement these works and articulate how the NGM can be used in a transmission model in addition to being an analytical tool.
 
 ## Use of NGM as a model
-Most commonly, NGMs are used in infectious disease modeling as an analytical tool to estimate the potential for growth of disease in a population. NGMs are particularly useful for this when a population can be split into a finite number of discrete categories with different epidemiologically relevant traits. In that case, we can define the NGM and use it calculate the basic reproduction number $R_0$, an epidemiological quantity that can help provide insight about the early growth of a disease in a population and interventions that may be effective at controlling its growth. $R_0$ can be computed as the spectral radius of the NGM.
+Most commonly, NGMs are used in infectious disease modeling as an analytical tool to estimate the potential for growth of a disease in a population. NGMs are particularly useful for this when a population can be split into a finite number of discrete categories with different epidemiologically relevant traits. In that case, we can define the NGM and use it calculate the basic reproduction number $R_0$, a quantity that can provide insight about the early growth of a disease in a population and interventions that may be effective at controlling its growth. $R_0$ can be computed as the spectral radius of the NGM.
 
 As a result, most modelers familiar with NGMs have experience with using them as an analytical tool rather than as a simulation tool. However, NGMs can also be used to approximately model the ODEs for the subsystem of infected states.
 
 ## Interpretation of matrix elements
-Imagine we have an NGM, **K** = [$k_{ij}$]. The elements $k_{ij}$ of this matrix can be interpreted as the average number of infections in group $i$ caused by an infected individual in group $j$ between consecutive generations in a fully susceptible population. As a rule of thumb, the matrix **K** is not symmetric; some groups may be more susceptible to infection or more transmissive resulting in an asymmetric **K**.
+Imagine we have an NGM, $\mathbf{R} = [R_{ij}]$. The elements $R_{ij}$ of this matrix can be interpreted as the average number of infections in group $i$ caused by an infected individual in group $j$ between consecutive generations in a fully susceptible population. As a rule of thumb, the matrix $\mathbf{R}$ is not symmetric; some groups may be more susceptible to infection or more transmissive resulting in an asymmetric \mathbf{R}.
 
 ## Conditions and limitations
 
@@ -31,71 +33,73 @@ The model population must be able to be divided into discrete compartments or st
 
 The NGM is constructed by identifying transmission and transition dynamics of an infectious disease model near the disease-free equilibrium (DFE) and linearizing the system around that point.
 
-A disease-free equilibrium (DFE) is a point in the epidemiological system where the population is free of disease, i.e. at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined for when the population is fully susceptible. For example, in the classic SIR model, the DFE has the conditions ($S \approx N$, $I \approx 0$, $R = 0$), which leads us to the condition $R_0 = \frac{\beta}{\gamma} \geq 1 $ for growth of disease in the population when we linearize the system around that point. Another DFE exists at the point where ($S = 0$, $I = 0$, $R = N$), however this DFE is not relevant to disease dynamics since infections cannot grow at this point.
+A disease-free equilibrium (DFE) is a point in the epidemiological system where the population is free of disease, i.e. at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined for when the population is fully susceptible. For example, in the classic SIR model, there exists a DFE with the conditions ($S \approx N$, $I \approx 0$, $R = 0$), which leads us to the condition $R_0 = \frac{\beta}{\gamma} \geq 1 $ for growth of disease in the population when we linearize the system around that point. Another DFE exists at the point where ($S = 0$, $I = 0$, $R = N$), however this DFE is not epidemiologically relevant to disease dynamics since disease cannot grow in the population at this point.
 
 ### Depletion of susceptibles
 
-NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for disease dynamics early on when the population can be roughly described as fully susceptible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
+NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on when the population can be roughly described as fully susceptible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
 
 ### Other conditions
-The NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $K$.
+The NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$.
 
 ## Formal definition
-For a system of differential equations describing infectious disease dynamics, we can identify the infected subsystem that describes the production of new infections and other changes in state of infected individuals. After linearizing around the DFE, we can decompose the infected subsystem into 2 parts representating rates of transmission and transition. It is common to see the transmission component referred to as $T$, and the transition component referred to as $\Sigma$. The Next Generation Matrix with Large domain is then defined as $K_L = -T\Sigma^{-1}$.
+For a system of differential equations describing infectious disease dynamics, we can identify the infected subsystem that describes the production of new infections and other changes in state of infected individuals. After linearizing around the DFE, we can decompose the infected subsystem into 2 parts representating rates of transmission and transition. It is common to see the transmission component referred to as $\mathbf{T}$, and the transition component referred to as $\mathbf{\Sigma}$. The Next Generation Matrix with Large domain is then defined as $\mathbf{R_L} = -\mathbf{T}\mathbf{\Sigma}^{-1}$.
 
-The NGM $K$ is the restriction of $K_L$ to the subset of states-at-infection. An auxiliary matrix $E$ can be defined whose columns are unit vectors for each non-zero row of the matrix $T$. The NGM can then be computed as $K = -E'T\Sigma^{-1}E$, $E'$ is the transpose of $E$. It can be shown that the spectral radius of $K_L$ is equal to that of $K$ and that this spectral radius is $R_0$.
+The NGM $\mathbf{K}$ is the restriction of $\mathbf{R_L}$ to the subset of states-at-infection. An auxiliary matrix $\mathbf{E}$ can be defined whose columns are unit vectors for each non-zero row of the matrix $T$. The NGM can then be computed as $\mathbf{R} = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$, $\mathbf{E}'$ is the transpose of $\mathbf{E}$. It can be shown that the spectral radius of $\mathbf{R_L}$ is equal to that of $mathbf{R}$ and that this spectral radius is $R_0$.
 
-In most cases, more intuitive approaches can be used to define the NGM, however the formal definition of $K$ has its advantages in being more rigorous and and helping modelers identify relevant information for estimating growth dynamics.
+In most cases, more intuitive approaches can be used to define the NGM, however the formal definition of $mathbf{R}$ has its advantages in being more rigorous and and helping modelers identify relevant information for estimating growth dynamics.
 
 ## A motivating example
-The following is an example borrowed from Keeling & Rohani (2008, pp 57-63). Here, we go into depth of a modified version with additional insights from Diekmann et. al (2010) to arrive at the NGM mode of the system.
+The following is an example borrowed from Keeling & Rohani (2008, pp 57-63). Here, we go into depth of a modified version with additional insights from Diekmann et. al (2010) to arrive at the NGM model of the system.
 
-Consider the dynamics of a disease spreading in a population with two categories of individuals. These two groups are differentiated by their risk for acquiring infection; there is a high-risk (H) and a low-risk (L) group. The disease progression can be described using an SIR compartmental model. An NGM is an effective way of approximating the early disease dynamics for heterogeneous systems like this.
+Consider the scenario of a disease spreading in a population with two categories of individuals. These two groups are differentiated by their risk for acquiring infection; there is a high-risk (H) and a low-risk (L) group. The disease progression can be described using an SIR compartmental model. An NGM is an effective way of approximating the early disease dynamics for heterogeneous systems like this.
 
-We denote the number of individuals in the high-risk group as $N_H$, and the number of individuals in the low-risk group as $N_L$. $X_H$ is the number of people in group $H$ who are in health state $X$, and the total number of people in health state $X$ = $X_H + X_L$. Health states in this model are $S$ for susceptible, $I$ for infected and infectious, and $R$ for recovered. Thus, we have $S_i + I_i + R_i = N_i$ for all subpopulations $i$ and $N = \sum_i N_i$ for a total fixed population size.
+We denote the number of individuals in the high-risk group as $N_H$, and the number of individuals in the low-risk group as $N_L$. $X_H$ is the number of people in group $H$ who are in state $X$, and the total number of people in state $X$ = $X_H + X_L$. States in this model are $S$ for susceptible, $I$ for infected and infectious, and $R$ for recovered. Thus, we have $S_i + I_i + R_i = N_i$ for all subpopulations $i$ and $N = \sum_i N_i$ for a total fixed population size.
 
-We also assume that average mixing holds for all pairs of individuals between the groups and within. Individuals in the two risk groups can interact with each other in some way such that an infectious individual would generate some number of new infections in the two groups. More specifically, an average infected individual in group $j$ generates $\beta_{ij}$ infections per unit time in group $i$ in a fully susceptible population. Unlike the example in Keeling & Rohani, here we model the counts of the population in each state rather than the proportion. This model form has the advantage of being useful at modeling dynamics for various population sizes with the same values of $\beta_{ij}$. This follows from the frequency dependent assumption of transmission where effective contact structure that generates transmission is independent in size (the interested reader can refer to see Keeling & Rohani, 2008 pp17-18 for more details).
+We also assume that average mixing holds for all individuals between the groups and within, i.e. no individual in either group has different contact rates than others in their group. Individuals in the two risk groups can interact with each other in some way such that an infectious individual would generate some number of new infections in the two groups. More specifically, an average infected individual in group $j$ generates $\beta_{ij}$ infections per unit time in group $i$ in a fully susceptible population.
 
-At any given time, there is some fraction of group $i$ that is susceptible and can be infected through interaction with an average infected individual in group $j$. Then, the average infected individual in group $j$ generates $\frac{\beta_{ij}S_i}{N_i}$ infections in group i per unit time. Assuming no collision of transmission events, $I_j$ infected individuals produces $\frac{\beta_{ij}S_i I_j}{N_i}$ infections per unit time.
+Unlike the example in Keeling & Rohani, here we model the counts of the population in each state rather than the proportion. We are also modeling the effective rate of transmission between groups as split into two factors: a rate of transmission from group $j$ to group $i$, $\beta_{ij}$ and a rate of interaction based on the number of people in the population available for contact with infectious individuals, i.e. $\frac{S_i}{N}$. This follows from the frequency dependent assumption where effective contact structure that generates transmission is independent of population size (the interested reader can refer to Keeling & Rohani, 2008 pp 17-18 for more details).
 
-Individuals in each risk group also recover from infection at some rate $\gamma$ (here we assume that high-risk and low-risk individuals recover at the same rate, however the following can be generalized to scenarios where average recovery rates of the two groups are different).
+At any given time, there is some fraction of the population that is susceptible in group $i$ and can be infected through interaction with an infected individual in group $j$. Then the average number of infections generated by this individual in group $i$ is $\frac{\beta_{ij}S_i}{N}$ per unit time. Assuming no collision of transmission events, $I_j$ infected individuals produce $\frac{\beta_{ij}S_i I_j}{N}$ infections per unit time.
 
-Now we can write the system of differential equations as
+Individuals in each risk group also recover from infection at some rate $\gamma_i$. Here we assume that individuals in both groups recover at the same rate, however the following can be generalized to scenarios where average recovery rates of the two groups are different.
 
-$\dot{I_i} = \sum_j \beta_{ij} \frac{S_i}{N_i} I_j - \gamma I_i$
+Now we can write the infected subsystem of differential equations as
 
-In the two risk group scenario, we have the infected subsystem
+$\frac{d I_H}{dt} = \frac{\beta_{HH}S_H I_H}{N} + \frac{\beta_{HL}S_H I_L}{N} - \gamma I_H$
 
-$\dot{I_H} = \beta_{HH}\frac{S_H}{N_H}I_H + \beta_{HL}\frac{S_H}{N_H}I_L - \gamma I_H$
+$\frac{d I_L}{dt} = \frac{\beta_{LH}S_L I_H}{N} + \frac{\beta_{LL}S_L I_L}{N} - \gamma I_L$
 
-$\dot{I_L} = \beta_{LH}\frac{S_L}{N_L}I_H + \beta_{LL}\frac{S_L}{N_L}I_L - \gamma I_L$
+or more concisely as
 
-The NGM is defined in the disease-free equilibrium early in the outbreak, i.e. $I_i \approx 0, S_i \approx N_i, R_i = 0$ for all i. In this limit we can linearize the system to be
+$\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i$
 
-$\dot{I_i} = \sum_j \beta_{ij}I_j - \gamma I_i$
+From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively.
 
-Or with $x =
+Let
+$
+\mathbf{x} =
 \left(\begin{array}{cc}
 I_H\\
 I_L
 \end{array}\right)
-$, $\boldsymbol{\beta} =
-\left(\begin{array}{cc}
-\beta_{HH} & \beta_{HL}\\
-\beta_{LH} & \beta_{LL}
-\end{array}\right)
+$,
+$\mathbf{T} = [T_{ij}]$ with $T_{ij} = \frac{\beta_{ij}N_i}{N}$, and $\mathbf{\Sigma} = \gamma \mathbb{1}$
+
+Then we can write the infected subsystem as $\mathbf{\frac{dx}{dt}} = (\mathbf{T} + \mathbf{\Sigma})\mathbf{x}$. The NGM can be defined as
+
+$R = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$.
+
+For this system, the auxiliary matrix is
 $
-
-we can write  the system as
-
-$\dot{x} = \boldsymbol{\beta} x - \gamma x$
-
-From here we can decompose the system into transmission and transition components, where $T = \boldsymbol{\beta}$ and $\Sigma = \gamma \mathbb{I}$. The auxiliary matrix is $E =
+\mathbf{E} =
 \left(\begin{array}{cc}
 1 & 0\\
 0 & 1
-\end{array}\right)
-$ with unit vector $
+\end{array}\right
+)
+$
+with unit vector $
 \left(\begin{array}{cc}
 1\\
 0
@@ -105,10 +109,6 @@ $ for the state $I_H$ and unit vector $
 0\\
 1
 \end{array}\right)
-$ for the state $I_L$ in the transmission matrix $T$.
+$ for the state $I_L$ in the transmission matrix $\mathbf{T}$.
 
-Then the NGM $K$ can be computed as $K = -E'T\Sigma^{-1}E = \frac{1}{\gamma}\boldsymbol{\beta}$.
-
-## NGM model in this repository
-
-In this repository we utilized an NGM to model consecutive generations of new infections. We made the simplifying assumptions that infections last exactly one generation and that generations have not overlap. Without loss of generality, the NGM from the two-risk group example can be defined for multiple subpopulations as $K = \frac{1}{\gamma}\boldsymbol{\beta}$. Rescaling by the generation interval $\gamma^{-1}$ produces $K = \boldsymbol{\beta'}$, where the elements $\beta'_{ij}$ are the average number of new infections generated in group $i$ by an typical infected individual in group $j$ per generation.
+Then the NGM can be defined as $\mathbf{R}$ with elements $R_{ij} = \frac{\beta_{ij}N_i}{\gamma N}$. This is the formulation used for the NGM model in this repository.
