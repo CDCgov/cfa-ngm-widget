@@ -77,13 +77,11 @@ $\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i$
 From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively.
 
 Let
-$
-\mathbf{x} =
+$\mathbf{x} =
 \left(\begin{array}{cc}
 I_H\\
 I_L
-\end{array}\right)
-$,
+\end{array}\right)$,
 $\mathbf{T} = [T_{ij}]$ with $T_{ij} = \frac{\beta_{ij}N_i}{N}$, and $\mathbf{\Sigma} = \gamma \mathbb{1}$
 
 Then we can write the infected subsystem as $\mathbf{\frac{dx}{dt}} = (\mathbf{T} + \mathbf{\Sigma})\mathbf{x}$. The NGM can be defined as
@@ -91,24 +89,18 @@ Then we can write the infected subsystem as $\mathbf{\frac{dx}{dt}} = (\mathbf{T
 $R = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$.
 
 For this system, the auxiliary matrix is
-$
-\mathbf{E} =
+$\mathbf{E} =
 \left(\begin{array}{cc}
 1 & 0\\
 0 & 1
 \end{array}\right
-)
-$
-with unit vector $
-\left(\begin{array}{cc}
+)$
+with unit vector $\left(\begin{array}{cc}
 1\\
 0
-\end{array}\right)
-$ for the state $I_H$ and unit vector $
-\left(\begin{array}{cc}
+\end{array}\right)$ for the state $I_H$ and unit vector $\left(\begin{array}{cc}
 0\\
 1
-\end{array}\right)
-$ for the state $I_L$ in the transmission matrix $\mathbf{T}$.
+\end{array}\right)$ for the state $I_L$ in the transmission matrix $\mathbf{T}$.
 
 Then the NGM can be defined as $\mathbf{R}$ with elements $R_{ij} = \frac{\beta_{ij}N_i}{\gamma N}$. This is the formulation used for the NGM model in this repository.
