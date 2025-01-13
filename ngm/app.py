@@ -269,8 +269,8 @@ def app():
             sigdigs = st.slider(
                 "Displayed significant figures",
                 1,
-                4,
-                value=3,
+                3,
+                value=2,
                 step=1,
                 help="Values are reported only to this many significant figures.",
             )
