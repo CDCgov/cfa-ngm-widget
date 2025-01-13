@@ -200,8 +200,9 @@ def summarize_scenario(
 def app():
     import streamlit as st
 
-    with st.container(border=True):
-        st.text("[DISCLAIMER PLACEHOLDER]")
+    st.info(
+        "This interactive application is a prototype designed for software testing and educational purposes."
+    )
 
     st.title("Vaccine Allocation Widget")
     st.write(
