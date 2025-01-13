@@ -3,7 +3,7 @@ import griddler.griddle
 import polars as pl
 import polars.selectors as cs
 
-from ngm.widget import simulate_scenario
+from ngm.app import simulate_scenario
 
 if __name__ == "__main__":
     parameter_sets = griddler.griddle.read("scripts/config.yaml")
