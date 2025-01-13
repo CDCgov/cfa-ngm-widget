@@ -7,7 +7,7 @@ This repo contains code for investigating the potential efficacy of vaccination 
 ## Getting started
 
 - Enable [poetry](https://python-poetry.org/) with `poetry install`
-- To run the app: `make`, which calls `streamlit run scripts/widget.py`
+- To run the app: `make`, which calls `streamlit run scripts/app.py`
 - In a browser, visit: `http://localhost:8501/`
 
 ### Using containers
