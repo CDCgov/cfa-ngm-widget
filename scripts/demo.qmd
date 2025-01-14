@@ -76,11 +76,11 @@ Visualize these results in two charts. First, look at the exponential growth in 
 
 ```{python}
 # combine results
-pops = ["children", "core", "adults"]
+pops = ["core", "children", "non-core adults"]
 results = (
     pl.from_numpy(np.stack(xs), schema=pops)
     .with_row_index(name="generation")
-    .unpivot(index="generation")
+    .unpivot(index="generation", variable_name="population")
     .with_columns(fraction=(pl.col("value") / pl.col("value").sum()).over("generation"))
 )
 
@@ -130,19 +130,21 @@ dominant_eigenvector_df = pl.from_dict(
 )
 
 # visualize results
+color = alt.Color("population", sort=["core", "non-core adults", "children"])
+
 fraction_chart = (
     alt.Chart(results)
     .mark_line()
     .encode(
         x="generation",
         y=alt.Y("fraction", title="Fraction of infections"),
-        color=alt.Color("variable", title="Population"),
+        color=color,
     )
 )
 de_chart = (
     alt.Chart(dominant_eigenvector_df)
     .mark_point(shape="triangle-left")
-    .encode(x="generation", y="value", color="population")
+    .encode(x="generation", y="value", color=color)
 )
 
 fraction_chart + de_chart
