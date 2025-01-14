@@ -149,6 +149,9 @@ def summarize_scenario(
         .with_columns(pl.Series("", [f"to {grp}" for grp in params["group_names"]]))
         .select(["", *[f"from {grp}" for grp in params["group_names"]]])
     )
+    ngm_df = ngm_df.with_columns(
+        [pl.col(col).round_sig_figs(sigdigs) for col in ngm_df.columns[1:]]
+    )
     c.dataframe(ngm_df)
     c.write(ngm_help)
 
