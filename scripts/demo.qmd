@@ -5,37 +5,38 @@ format: html
 
 ```{python}
 import numpy as np
+import polars as pl
+import altair as alt
 ```
 
-The next generation matrix $K$ has entries $K_{ij}$. Every infection in group $i$ in this generation will give rise to $K_{ij}$ infections in group $j$ in the next generation.
+The next generation matrix $\mathbf{R}$ has entries $R_{ij}$. Every infection in group $j$ in this generation will give rise to $R_{ij}$ infections in group $i$ in the next generation.
 
 In this example, there are four groups. The core group transmits many infections to themselves and to travelers, who in turn transfer many infections to the core group (but not to themselves). Children and the general public don't transmit very much.
 
 ```{python}
-# high and low transmission rates
-hi = 3.0
-lo = 0.5
-
-K = np.array(
+R = np.array(
     [
-        [hi, lo, hi, lo],  # core
-        [lo, lo, lo, lo],  # children
-        [hi, lo, lo, lo],  # travelers
-        [lo, lo, lo, lo],  # general
+        [3.0, 0.0, 0.2],  # core
+        [0.1, 1.0, 0.5],  # children
+        [0.25, 1.0, 1.5],  # non-core adults
     ]
 )
 ```
 
-Given a length-4 vector of infections $x$, representing the number of infections in each group in some generation, the next generation will have $Kx$ infections in each group.
+Given a length-3 vector of infections $\mathbf{x}$, representing the number of infections in each group in some generation, the next generation will have $\mathbf{Rx}$ infections in each group.
 
-By definition, $v$ and $\lambda$ are an eigenvector and eigenvalue of $K$ if $Kv = \lambda v$:
+By definition, $\mathbf{v}$ and $\lambda$ are an eigenvector and eigenvalue of $\mathbf{R}$ if $\mathbf{Rv} = \lambda \mathbf{v}$:
 
 ```{python}
 # do the eigenvalue analysis
-e = np.linalg.eig(K)
+e = np.linalg.eig(R)
 # which eigenvalue is the dominant one?
 i = np.argmax(e.eigenvalues)
 dominant_eigenvalue = e.eigenvalues[i]
+
+assert dominant_eigenvalue > 0
+assert np.isreal(dominant_eigenvalue)
+
 # get the corresponding eigenvector
 v = e.eigenvectors[:, i]
 
@@ -53,46 +54,96 @@ print("Dominant eigenvector:", dominant_eigenvector)
 Let's do an example, to show how these would play out. Start with a single infection, in the core group:
 
 ```{python}
-x0 = np.array([1.0, 0.0, 0.0, 0.0])
+x0 = np.array([1.0, 0.0, 0.0])
 ```
 
 Then iteratively generate next generations:
 
 ```{python}
-n_generations = 10
+# simulate
+n_generations = 8
 
 x = x0
 
-results = [x0]
+xs = [x0]
 
 for i in range(n_generations - 1):
-  x = np.matmul(K, x)
-  results.append(x)
+    x = np.matmul(R, x)
+    xs.append(x)
 ```
 
-Toward the end of the simulation, $x$ will be large, but it has the same distribution as the L1-normalized dominant eigenvector:
+Visualize these results in two charts. First, look at the exponential growth in numbers of infections, noting that the fold change in numbers of infections quickly approaches the dominant eigenvalue of $\mathbf{R}$:
 
 ```{python}
-print("Final numbers of infections: ", results[-1])
+# combine results
+pops = ["children", "core", "adults"]
+results = (
+    pl.from_numpy(np.stack(xs), schema=pops)
+    .with_row_index(name="generation")
+    .unpivot(index="generation")
+    .with_columns(fraction=(pl.col("value") / pl.col("value").sum()).over("generation"))
+)
 
-print("Same thing, L1-normalized:", results[-1] / sum(results[-1]))
+counts = (
+    results.group_by("generation")
+    .agg(pl.col("value").sum())
+    .sort("generation")
+    .with_columns(fold=pl.col("value").log().diff().exp())
+)
+
+count_chart = (
+    alt.Chart(counts)
+    .mark_line(color="black")
+    .encode(x="generation", y=alt.Y("value", title="No. infections"))
+)
+
+# same chart, on a log scale
+count_log_chart = (
+    alt.Chart(counts)
+    .mark_line(color="black")
+    .encode(
+        x="generation",
+        y=alt.Y("value", title="No. infections (log scale)").scale(type="log"),
+    )
+)
+
+# generation-over-generation fold increase
+count_fold_chart = (
+    alt.Chart(counts)
+    .mark_point(color="black")
+    .encode(x="generation", y=alt.Y("fold", title="Fold change in no. infections"))
+)
+
+count_chart | count_log_chart | count_fold_chart
 ```
 
-Note that this is the same as the L1-normalized dominant eigenvector.
-
-We can also check how the number of infections changes from generation to generation:
+Next, visualize the distribution of infections across populations, noting that the proportions of infections approaches the composition of the dominant eigenvector:
 
 ```{python}
-# get the total number of infections per generation
-total_infections = [sum(x) for x in results]
-print("Total infections per generation:", total_infections)
+# recast dominant eigenvector as data to show on the plot
+dominant_eigenvector_df = pl.from_dict(
+    {
+        "generation": n_generations - 1,
+        "population": pops,
+        "value": dominant_eigenvector,
+    }
+)
 
-# and the ratio of infections between generations
-empirical_r = [
-    total_infections[i + 1] / total_infections[i] for i in range(n_generations - 1)
-]
+# visualize results
+fraction_chart = (
+    alt.Chart(results)
+    .mark_line()
+    .encode(
+        x="generation",
+        y=alt.Y("fraction", title="Fraction of infections"),
+        color=alt.Color("variable", title="Population"),
+    )
+)
+de_chart = (
+    alt.Chart(dominant_eigenvector_df)
+    .mark_point(shape="triangle-left")
+    .encode(x="generation", y="value", color="population")
+)
 
-print("Ratio of infections between generations: ", empirical_r)
+fraction_chart + de_chart
 ```
-
-Note that this stabilizes to the dominant eigenvalue.
