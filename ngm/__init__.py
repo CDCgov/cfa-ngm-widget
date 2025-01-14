@@ -95,10 +95,21 @@ def dominant_eigen(X: np.ndarray, norm: str = "L1") -> DominantEigen:
     value = e.eigenvalues[i]
     vector = _ensure_positive_array(e.eigenvectors[:, i])
 
+    # check for negative values
     if not value > 0:
         raise RuntimeError(f"Negative dominant eigenvalue: {value}")
     if not all(vector >= 0):
         raise RuntimeError(f"Negative dominant eigenvector values: {vector}")
+
+    # check for complex numbers
+    if np.iscomplex(value) and value.imag != 0:
+        raise RuntimeError("Complex numbers in eigenvalue")
+    if np.iscomplex(vector).any() and not np.all(vector.imag == 0):
+        raise RuntimeError("Complex numbers in eigenvector")
+
+    # Ensure the value and vector are real
+    value = value.real
+    vector = vector.real
 
     if norm == "L2":
         pass
