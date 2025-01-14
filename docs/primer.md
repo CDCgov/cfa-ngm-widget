@@ -77,11 +77,13 @@ $\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i$
 From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively.
 
 Let
-$\mathbf{x} =
-\left(\begin{array}{cc}
-I_H\\
+\[
+\mathbf{x} =
+\begin{pmatrix}
+I_H \\
 I_L
-\end{array}\right)$,
+\end{pmatrix}
+\],
 $\mathbf{T} = [T_{ij}]$ with $T_{ij} = \frac{\beta_{ij}N_i}{N}$, and $\mathbf{\Sigma} = \gamma \mathbb{1}$
 
 Then we can write the infected subsystem as $\mathbf{\frac{dx}{dt}} = (\mathbf{T} + \mathbf{\Sigma})\mathbf{x}$. The NGM can be defined as
