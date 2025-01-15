@@ -40,7 +40,7 @@ A disease-free equilibrium (DFE) is a point in the epidemiological system where 
 NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on when the population can be roughly described as fully susceptible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
 
 ### Other conditions
-The NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$.
+Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$.
 
 ## Formal definition
 For a system of differential equations describing infectious disease dynamics, we can identify the infected subsystem that describes the production of new infections and other changes in state of infected individuals. After linearizing around the DFE, we can decompose the infected subsystem into 2 parts representating rates of transmission and transition. It is common to see the transmission component referred to as $\mathbf{T}$, and the transition component referred to as $\mathbf{\Sigma}$. The Next Generation Matrix with Large domain is then defined as $\mathbf{R_L} = -\mathbf{T}\mathbf{\Sigma}^{-1}$.
