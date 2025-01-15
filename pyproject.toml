@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ngm"
-version = "1.0.0"
+version = "1.0.1"
 description = ""
 authors = ["Paige Miller <yub1@cdc.gov>", "Scott Olesen <ulp7@cdc.gov>", "Andy Magee <rzg0@cdc.gov>"]
 readme = "README.md"
