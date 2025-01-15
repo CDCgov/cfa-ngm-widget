@@ -7,7 +7,6 @@ RUN apt-get update \
       build-essential \
       curl \
       software-properties-common \
-      git \
     && rm -rf /var/lib/apt/lists/*
 
 COPY . .
