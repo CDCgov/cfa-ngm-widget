@@ -1,5 +1,4 @@
-import subprocess
-from typing import Optional
+import importlib.metadata
 
 import altair as alt
 import numpy as np
@@ -201,21 +200,6 @@ def summarize_scenario(
     c.altair_chart(chart, use_container_width=True)
 
 
-def get_commit(length: int = 15) -> Optional[str]:
-    try:
-        x = subprocess.run(
-            ["git", "rev-parse", f"--short={length}", "HEAD"], capture_output=True
-        )
-        if x.returncode == 0:
-            commit = x.stdout.decode().strip()
-            assert len(commit) == length
-            return commit
-        else:
-            return None
-    except FileNotFoundError:
-        return None
-
-
 def app():
     st.info(
         "This interactive application is a prototype designed for software testing and educational purposes."
@@ -293,9 +277,7 @@ def app():
                 help="Values are reported only to this many significant figures.",
             )
 
-        commit = get_commit()
-        if commit is not None:
-            st.caption(f"App version: {commit}")
+        st.caption(f"App version: {importlib.metadata.version('ngm')}")
 
     # # make and run scenarios ------------------------------------------------------------
     group_names = params["Group name"]
