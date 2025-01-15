@@ -104,7 +104,7 @@ def dominant_eigen(X: np.ndarray, norm: str = "L1") -> DominantEigen:
     # check for complex numbers
     if not np.isreal(value):
         raise RuntimeError("Complex eigenvalue")
-    if np.iscomplex(vector).any() and not np.all(vector.imag == 0):
+    if not all(np.isreal(vector)):
         raise RuntimeError("Complex numbers in eigenvector")
 
     # Ensure the value and vector are real
