@@ -179,11 +179,13 @@ def test_exp_growth():
         == ngm.exp_growth_model_severity(r0, distribution, p_severe, G)[-1, 2]
     )
 
+
 def test_eigen_returns_real():
     M = [[3.0, 0.0, 0.2], [40.0, 1.0, 500], [0.25, 1.0, 1.5]]
     eigen = ngm.dominant_eigen(M)
     assert np.isreal(eigen.value)
     assert all(np.isreal(eigen.vector))
+
 
 def test_eigen_returns_error():
     M = [[0, -1], [1, 0]]
