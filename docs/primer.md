@@ -20,7 +20,7 @@ Most commonly, NGMs are used in infectious disease modeling as an analytical too
 As a result, most modelers familiar with NGMs have experience with using them as an analytical tool rather than as a simulation tool. However, NGMs can also be used to approximately model the ODEs for the subsystem of infected states.
 
 ## Interpretation of matrix elements
-Imagine we have an NGM, $\mathbf{R} = [R_{ij}]$. The elements $R_{ij}$ of this matrix can be interpreted as the average number of infections in group $i$ caused by an infected individual in group $j$ between consecutive generations in a fully susceptible population. As a rule of thumb, the matrix $\mathbf{R}$ is not symmetric; some groups may be more susceptible to infection or more transmissive resulting in an asymmetric \mathbf{R}.
+Imagine we have an NGM, $\mathbf{R} = [R_{ij}]$. The elements $R_{ij}$ of this matrix can be interpreted as the average number of infections in group $i$ caused by an infected individual in group $j$ between consecutive generations in a fully susceptible population. As a rule of thumb, the matrix $\mathbf{R}$ is not symmetric; some groups may be more susceptible to infection or more transmissive resulting in an asymmetric $\mathbf{R}$.
 
 ## Conditions and limitations
 
@@ -37,7 +37,7 @@ A disease-free equilibrium (DFE) is a point in the epidemiological system where 
 
 ### Depletion of susceptibles
 
-NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on when the population can be roughly described as fully susceptible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
+NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
 
 ### Other conditions
 Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$.
