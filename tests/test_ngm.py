@@ -91,17 +91,51 @@ def test_severe():
     ).all()
 
 
-def test_ensure_positive():
-    assert_array_equal(
-        np.array([1, 2, 3]), ngm._ensure_positive_array(np.array([1, 2, 3]))
-    )
+class TestEnsureReal:
+    def test_trivial(self):
+        e = ngm.Eigen(value=2.0, vector=np.array([1, 2, 3]))
+        assert ngm._ensure_real_eigen(e) == e
 
-    assert_array_equal(
-        ngm._ensure_positive_array(np.array([-1, -2, -3])), np.array([1, 2, 3])
-    )
+    def test_success(self):
+        e_in = ngm.Eigen(value=2.0 + 0j, vector=np.array([1 + 0j, 2 + 0j, 3 + 0j]))
+        e_out = ngm._ensure_real_eigen(e_in)
 
-    with pytest.raises(RuntimeError, match="all positive"):
-        ngm._ensure_positive_array(np.array([1, -1]))
+        assert e_out.value == 2.0
+        assert_array_equal(e_out.vector, np.array([1, 2, 3]))
+
+    def test_fail_complex_value(self):
+        with pytest.raises(RuntimeError, match="Complex-valued"):
+            ngm._ensure_real_eigen(ngm.Eigen(value=0 + 1j, vector=np.array([0 + 0j])))
+
+    def test_fail_complex_vector(self):
+        with pytest.raises(RuntimeError, match="Complex-valued"):
+            ngm._ensure_real_eigen(ngm.Eigen(value=1 + 0j, vector=np.array([0 + 1j])))
+
+
+class TestProbVectorEigen:
+    def test_simple(self):
+        e = ngm.Eigen(value=2.0, vector=np.array([1, 2, 3]))
+        out = ngm._ensure_prob_vector_eigen(e)
+        assert_array_equal(out.vector, np.array([1 / 6, 2 / 6, 3 / 6]))
+
+    def test_flip(self):
+        e = ngm.Eigen(value=2.0, vector=np.array([-1, -2, -3]))
+        out = ngm._ensure_prob_vector_eigen(e)
+        assert_array_equal(out.vector, np.array([1 / 6, 2 / 6, 3 / 6]))
+
+
+class TestEnsurePositive:
+    def test_trivial(self):
+        e = ngm.Eigen(value=1, vector=np.array([1, 2, 3]))
+        assert ngm._ensure_positive_eigen(e) == e
+
+    def test_fail_mixed(self):
+        with pytest.raises(RuntimeError, match="mixed"):
+            ngm._ensure_positive_eigen(ngm.Eigen(value=1, vector=np.array([1, -1])))
+
+    def test_fail_negative_value(self):
+        with pytest.raises(RuntimeError, match="Negative eigenvalue"):
+            ngm._ensure_positive_eigen(ngm.Eigen(value=-1, vector=np.array([1])))
 
 
 def test_kr():
@@ -188,7 +222,7 @@ def test_eigen_returns_real():
 
 
 def test_eigen_returns_error():
-    M = [[0, -1], [1, 0]]
+    M = np.array([[0, -1], [1, 0]])
     # eigenvalue here is i, so we can't coerce to positive dtype
-    with pytest.raises(RuntimeError, match="Cannot make vector all positive"):
+    with pytest.raises(RuntimeError, match="Complex-valued eigenvalue"):
         ngm.dominant_eigen(M)
