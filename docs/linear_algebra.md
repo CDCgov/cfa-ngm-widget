@@ -62,13 +62,25 @@ so long as $\alpha_1 > 0$. Thus, the population-wide reproduction number will ap
 
 ## Caveats to this interpretation
 
-### Eigenvector/eigenvalue pairs can be rescaled
+### Eigenvectors can be rescaled
 
 There are standard algorithms for finding matrices' eigenvectors and eigenvalues (e.g., Python's [`numpy.linalg.eig`](https://numpy.org/doc/2.1/reference/generated/numpy.linalg.eig.html) and R's [`eigen`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/eigen.html)), which may yield confusing results.
 
-If $\mathbf{M}$ has eigenvector $\vec{v}$ with corresponding eigenvalue $\lambda$, then for any nonzero scalar $\alpha$, $\alpha \vec{v}$ and $\alpha \lambda$ are also an eigenvector/eigenvalue pair. To be interpretable for an NGM, the eigenvalue and all entries of the eigenvector must have the same sign. If they are all negative, we can simply swap them all to positive. (To emphasize this point, some analyses do not refer to the _dominant eigenvalue_ of a matrix, which is the eigenvalue with the largest absolute value, but rather the _spectral radius_ of a matrix, which is the absolute value of the dominant eigenvalue.)
+If $\mathbf{M}$ has eigenvector $\vec{v}$ with corresponding eigenvalue $\lambda$, then:
 
-The eigenvectors returned by an algorithm are likely L2-normed (i.e., the squares of the entries sum to 1) to form an orthnormal basis. Because a stable _distribution_ of infections should be L1-normed, you may need to rescale the eigenvector and eigenvalue.
+$$
+\mathbf{M} \vec{v} = \lambda \vec{v}
+$$
+
+For any scalar $\alpha$, it follows that:
+
+$$
+\mathbf{M} (\alpha \vec{v}) = \lambda (\alpha \vec{v})
+$$
+
+Thus, eigenvectors can be rescaled (including having their signs all changed). To be interpretable for an NGM, the dominant eigenvalue must be real and positive, and all entries of the eigenvector must have the same sign. If they are all negative, we can simply swap them all to positive.
+
+The eigenvectors returned by an algorithm are likely L2-normed (i.e., the square root of the sum of squares of the entries sum to 1), to form an orthnormal basis. Because a stable _distribution_ of infections should be a probability vector (i.e., entries sum to 1), you may need to rescale the eigenvector.
 
 ### Disease-free equilibrium but also sufficient generations
 
