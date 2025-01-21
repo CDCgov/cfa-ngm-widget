@@ -73,6 +73,11 @@ or more concisely as
 
 $\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i$
 
+Linearizing the system at the DFE where $S_i \approx N_i$, we can write
+
+$\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}N_i I_j}{N} - \gamma I_i$
+
+
 From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively.
 
 Let
