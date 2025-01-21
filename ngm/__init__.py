@@ -1,9 +1,9 @@
 from collections import namedtuple
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 
-DominantEigen = namedtuple("DominantEigen", ["value", "vector"])
+Eigen = namedtuple("Eigen", ["value", "vector"])
 
 
 def run_ngm(
@@ -75,7 +75,7 @@ def vaccinate_M(M: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
     return (M.T * (1 - p_vax * ve)).T
 
 
-def dominant_eigen(X: np.ndarray, norm: str = "L1") -> DominantEigen:
+def dominant_eigen(X: np.ndarray, norm: str = "L1") -> Eigen:
     """Dominant eigenvalue and eigenvector of a matrix
 
     Args:
@@ -87,48 +87,63 @@ def dominant_eigen(X: np.ndarray, norm: str = "L1") -> DominantEigen:
     Returns:
         namedtuple: with entries `value` and `vector`
     """
-    # do the eigenvalue analysis
-    e = np.linalg.eig(X)
+    # do the eigenvalue analysis, getting all eigenvalues and eigenvectors
+    eigen_all = np.linalg.eig(X)
     # which eigenvalue is the dominant one?
-    i = np.argmax(np.abs(e.eigenvalues))
+    i = np.argmax(np.abs(eigen_all.eigenvalues))
+    # note that the i-th eigenvector is the i-th column of a matrix; i.e.,
+    # eig().eigenvectors is a matrix not a list
+    eigen = Eigen(value=eigen_all.eigenvalues[i], vector=eigen_all.eigenvectors[:, i])
 
-    value = e.eigenvalues[i]
-    vector = _ensure_positive_array(e.eigenvectors[:, i])
+    # ensure the dominant eigenvalue and eigenvector are real and positive
+    eigen = _ensure_real_eigen(eigen)
+    eigen = _ensure_positive_eigen(eigen)
+    # ensure eigenvector is a distribution
+    assert eigen is not None
+    eigen = _ensure_prob_vector_eigen(eigen)
 
-    # check for negative values
-    if not value > 0:
-        raise RuntimeError(f"Negative dominant eigenvalue: {value}")
-    if not all(vector >= 0):
-        raise RuntimeError(f"Negative dominant eigenvector values: {vector}")
+    return eigen
 
-    # check for complex numbers
-    if not np.isreal(value):
-        raise RuntimeError("Complex eigenvalue")
-    if not all(np.isreal(vector)):
-        raise RuntimeError("Complex numbers in eigenvector")
 
-    # Ensure the value and vector are dtype float (not complex)
-    value = value.real
-    vector = vector.real
+def _ensure_real_eigen(e: Eigen) -> Eigen:
+    """Verify that eigenvalue/vector are real-valued. Then ensure that they
+    are also real-typed."""
+    is_real_typed = np.isrealobj(e.value) and np.isrealobj(e.vector)
+    is_complex_typed = np.iscomplexobj(e.value) and np.iscomplexobj(e.vector)
+    is_real_valued = np.isreal(e.value) and all(np.isreal(e.vector))
+    is_complex_valued = np.iscomplex(e.value) or any(np.iscomplex(e.vector))
 
-    if norm == "L2":
-        pass
-    elif norm == "L1":
-        vector /= sum(vector)
+    if is_real_typed:
+        # if value and vector are real-typed, nothing to do
+        return e
+    elif is_complex_typed and is_real_valued:
+        # cast from complex to real type
+        return Eigen(value=np.real(e.value), vector=np.real(e.vector))
+    elif is_complex_typed and is_complex_valued:
+        raise RuntimeError("Complex-valued eigenvalue or eigenvector")
     else:
-        raise RuntimeError(f"Unknown norm '{norm}'")
-
-    return DominantEigen(value=value, vector=vector)
+        raise RuntimeError("Unexpected types or values")
 
 
-def _ensure_positive_array(x: np.ndarray) -> np.ndarray:
-    """Ensure all entries of an array are positive"""
-    if all(x >= 0):
-        return x
-    elif all(x < 0):
-        return -x
-    else:
-        raise RuntimeError(f"Cannot make vector all positive: {x}")
+def _ensure_positive_eigen(e: Eigen) -> Optional[Eigen]:
+    """Ensure eigenvalue and eigenvector have positive sign"""
+    assert np.isrealobj(e.value)
+    assert np.isrealobj(e.vector)
+
+    positive_value = e.value > 0.0
+    one_sign_vector = all(e.vector >= 0.0) or all(e.vector <= 0.0)
+
+    if positive_value and one_sign_vector:
+        return e
+    elif positive_value and not one_sign_vector:
+        raise RuntimeError("Eigenvector has mixed signs")
+    elif not positive_value:
+        raise RuntimeError("Negative eigenvalue")
+
+
+def _ensure_prob_vector_eigen(e: Eigen) -> Eigen:
+    """Ensure the eigenvector is a probability vector (i.e., entries sum to 1)"""
+    return Eigen(value=e.value, vector=e.vector / sum(e.vector))
 
 
 def distribute_vaccines(
