@@ -32,7 +32,7 @@ def run_ngm(
 
     # eigen analysis
     M_vax = vaccinate_M(M=M_novax, p_vax=n_vax / n, ve=ve)
-    eigen = dominant_eigen(M_vax, norm="L1")
+    eigen = dominant_eigen(M_vax)
 
     return {"M": M_vax, "Re": eigen.value, "infection_distribution": eigen.vector}
 
@@ -75,14 +75,15 @@ def vaccinate_M(M: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
     return (M.T * (1 - p_vax * ve)).T
 
 
-def dominant_eigen(X: np.ndarray, norm: str = "L1") -> Eigen:
+def dominant_eigen(X: np.ndarray) -> Eigen:
     """Dominant eigenvalue and eigenvector of a matrix
+
+    Ensure that:
+    - Dominant eigenvalue is real and positive
+    - Returned eigenvector is a probability vector
 
     Args:
         X (np.array): matrix
-        norm (str, optional): Vector norm. `np.linalg.eig()` returns
-          a result with `"L2"` norm. Defaults to "L1", in which case
-          the sum of the vector values is 1.
 
     Returns:
         namedtuple: with entries `value` and `vector`
