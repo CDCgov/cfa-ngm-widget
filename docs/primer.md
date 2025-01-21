@@ -83,22 +83,17 @@ $$\mathbf{\Sigma} = -\gamma \mathbb{I}_2$$
 where $\mathbb{I}_2$ is the identity matrix with dimension 2. Then we can write the infected subsystem as $\mathbf{\frac{dx}{dt}} = (\mathbf{T} + \mathbf{\Sigma})\mathbf{x}$. The NGM can be defined as $R = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$.
 
 For this system, the auxiliary matrix is
-$$\mathbf{E} =
-\left(\begin{array}{cc}
-1 & 0\\
-0 & 1
-\end{array}\right
-)$$
+```math
+\mathbf{E} = \begin{pmatrix}1 & 0\\0 & 1\end{pmatrix}
+```
 with unit vector
-$$\left(\begin{array}{cc}
-1\\
-0
-\end{array}\right)$$
+```math
+\begin{pmatrix}1\\0\end{pmatrix}
+```
 for the state $I_H$ and unit vector
-$$\left(\begin{array}{cc}
-0\\
-1
-\end{array}\right)$$
+```math
+\begin{pmatrix}0\\1\end{pmatrix}
+```
 for the state $I_L$ in the transmission matrix $\mathbf{T}$.
 
 Then the NGM can be defined as $\mathbf{R}$ with elements $R_{ij} = \frac{\beta_{ij}N_i}{\gamma N}$. This is the formulation used for the input NGM in the widget, noting the implicit assumption that the user has provided entries to the input NGM that factor in population sizes. Vaccination alters the proportion of susceptible individuals that may become infected in each group, thus the rows of the input NGM are multiplied by the remaining proportion susceptible after vaccination.
