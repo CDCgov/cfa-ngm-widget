@@ -38,16 +38,6 @@ Some conditions and limitations apply for NGM models to be a valid tool for esti
 * __Depletion of susceptibles__: NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generatino produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
 * __Other conditions__: Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$. In Diekmann et al. (2010), the authors note additional requirements: `For completeness we remark that in the decomposition T + Σ it is essential only that T is a non-negative matrix and that Σ is a positive off-diagonal matrix with spectral bound s(Σ)< 0`.
 
-<!-- ### Discrete states -->
-<!-- The model population must be able to be divided into discrete compartments or states that are epidemiologically relevant. These strata may reflect heterogeneities in susceptibility, such as age, or health state, such as infectious and symptomatic vs. infectious and asymptomatic. -->
-<!-- ### Disease free equilibrium -->
-<!-- The NGM is constructed by identifying transmission and transition dynamics of an infectious disease model near the disease-free equilibrium (DFE) and linearizing the system around that point. -->
-<!-- A disease-free equilibrium (DFE) is a point in the epidemiological system where the population is free of disease, i.e. at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined for when the population is fully susceptible. For example, in the classic SIR model, there exists a DFE with the conditions ($S \approx N$, $I \approx 0$, $R = 0$), which leads us to the condition $$R_0 = \frac{\beta}{\gamma} \geq 1 $$ for growth of disease in the population when we linearize the system around that point. Another DFE exists at the point where ($S = 0$, $I = 0$, $R = N$), however this DFE is not epidemiologically relevant to disease dynamics since disease cannot grow in the population at this point. -->
-<!-- ### Depletion of susceptibles -->
-<!-- NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time. -->
-<!-- ### Other conditions -->
-<!-- Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$. -->
-
 ## A motivating example
 The following is an example borrowed from Keeling & Rohani (2008, pp 57-63). Here, we go into depth of a modified version with additional insights from Diekmann et. al (2010) to arrive at the NGM model of the system.
 
@@ -81,15 +71,18 @@ $\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}N_i I_j}{N} - \gamma I_i$
 From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively.
 
 Let
-$$\mathbf{x} = \left(\begin{array}{c}
+<!-- $$\mathbf{x} = \left(\begin{array}{c}
 I_H\\
 I_L
-\end{array}\right)$$
+\end{array}\right)$$ -->
+```math
+\mathbf{x} = \begin{pmatrix}I_H\\I_L\end{pmatrix}
+```
 
 $$\mathbf{T} = \left(T_{ij}\right)$$
 with $T_{ij} = \frac{\beta_{ij}N_i}{N}$
 and
-$$\mathbf{\Sigma} = -\gamma \mathbb{I}$$
+$$\mathbf{\Sigma} = -\gamma \mathbb{I}_2$$
 
 Then we can write the infected subsystem as $\mathbf{\frac{dx}{dt}} = (\mathbf{T} + \mathbf{\Sigma})\mathbf{x}$. The NGM can be defined as $R = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$.
 
