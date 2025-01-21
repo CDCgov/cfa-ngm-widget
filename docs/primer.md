@@ -22,32 +22,31 @@ As a result, most modelers familiar with NGMs have experience with using them as
 ## Interpretation of matrix elements
 Imagine we have an NGM, $\mathbf{R} = [R_{ij}]$. The elements $R_{ij}$ of this matrix can be interpreted as the average number of infections in group $i$ caused by an infected individual in group $j$ between consecutive generations in a fully susceptible population. As a rule of thumb, the matrix $\mathbf{R}$ is not symmetric; some groups may be more susceptible to infection or more transmissive resulting in an asymmetric $\mathbf{R}$.
 
-## Conditions and limitations
-
-Some conditions and limitations apply for NGM models to be a valid tool for estimating $R_0$ or as a simulation tool.
-
-### Discrete states
-The model population must be able to be divided into discrete compartments or states that are epidemiologically relevant. These strata may reflect heterogeneities in susceptibility, such as age, or health state, such as infectious and symptomatic vs. infectious and asymptomatic.
-
-### The disease free equilibrium
-
-The NGM is constructed by identifying transmission and transition dynamics of an infectious disease model near the disease-free equilibrium (DFE) and linearizing the system around that point.
-
-A disease-free equilibrium (DFE) is a point in the epidemiological system where the population is free of disease, i.e. at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined for when the population is fully susceptible. For example, in the classic SIR model, there exists a DFE with the conditions ($S \approx N$, $I \approx 0$, $R = 0$), which leads us to the condition $$R_0 = \frac{\beta}{\gamma} \geq 1 $$ for growth of disease in the population when we linearize the system around that point. Another DFE exists at the point where ($S = 0$, $I = 0$, $R = N$), however this DFE is not epidemiologically relevant to disease dynamics since disease cannot grow in the population at this point.
-
-### Depletion of susceptibles
-
-NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
-
-### Other conditions
-Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$.
-
 ## Formal definition
 For a system of differential equations describing infectious disease dynamics, we can identify the infected subsystem that describes the production of new infections and other changes in state of infected individuals. After linearizing around the DFE, we can decompose the infected subsystem into 2 parts representating rates of transmission and transition. It is common to see the transmission component referred to as $\mathbf{T}$, the transmission matrix, and the transition component referred to as $\mathbf{\Sigma}$, the transition matrix. The Next Generation Matrix with Large domain is then defined as $\mathbf{R_L} = -\mathbf{T}\mathbf{\Sigma}^{-1}$.
 
 The NGM $\mathbf{K}$ is the restriction of $\mathbf{R_L}$ to the subset of states-at-infection. An auxiliary matrix $\mathbf{E}$ can be defined whose columns are unit vectors for each non-zero row of the matrix $T$. The NGM can then be computed as $\mathbf{R} = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$, $\mathbf{E}'$ is the transpose of $\mathbf{E}$. It can be shown that the spectral radius of $\mathbf{R_L}$ is equal to that of $\mathbf{R}$ and that this spectral radius is $R_0$.
 
 In most cases, more intuitive approaches can be used to define the NGM, however the formal definition of $\mathbf{R}$ has its advantages in being more rigorous and and helping modelers identify relevant information for estimating growth dynamics.
+
+## Conditions and limitations
+
+Some conditions and limitations apply for NGM models to be a valid tool for estimating $R_0$ or as a simulation tool.
+
+* __Discrete states__: The model population must be able to be divided into discrete compartments or states that are epidemiologically relevant. These strata may reflect heterogeneities in susceptibility, such as age, or health state, such as infectious and symptomatic vs. infectious and asymptomatic.
+* __Disease-free equilibrium__: The NGM is defined by identifying transmission and transition dynamics of an infectious disease model near the disease-free equilibrium (DFE) and linearizing the system around that point. A disease-free equilibrium is a point the epidemiological system where the population is free of disease, i.e., at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined at the point where the population is fully susceptible. For example, in the classic SIR model, there exists a DFE with the conditions ($S \approx N$, $I \approx 0$, $R = 0$), which leads us to the condition $$R_0 = \frac{\beta}{\gamma} \geq 1$$ for growhth of disease in the population when we linearize the system around that point. Another DFE exists at the point where ($S = 0$, $I = 0$, $R = N$), however this DFE is not epidemiologically relevant to disease dynamics since disease cannot grow at this point.
+* __Depletion of susceptibles__: NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generatino produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
+* __Other conditions__: Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$. In Diekmann et al. (2010), the authors note additional requirements: `For completeness we remark that in the decomposition T + Σ it is essential only that T is a non-negative matrix and that Σ is a positive off-diagonal matrix with spectral bound s(Σ)< 0`.
+
+<!-- ### Discrete states -->
+<!-- The model population must be able to be divided into discrete compartments or states that are epidemiologically relevant. These strata may reflect heterogeneities in susceptibility, such as age, or health state, such as infectious and symptomatic vs. infectious and asymptomatic. -->
+<!-- ### Disease free equilibrium -->
+<!-- The NGM is constructed by identifying transmission and transition dynamics of an infectious disease model near the disease-free equilibrium (DFE) and linearizing the system around that point. -->
+<!-- A disease-free equilibrium (DFE) is a point in the epidemiological system where the population is free of disease, i.e. at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined for when the population is fully susceptible. For example, in the classic SIR model, there exists a DFE with the conditions ($S \approx N$, $I \approx 0$, $R = 0$), which leads us to the condition $$R_0 = \frac{\beta}{\gamma} \geq 1 $$ for growth of disease in the population when we linearize the system around that point. Another DFE exists at the point where ($S = 0$, $I = 0$, $R = N$), however this DFE is not epidemiologically relevant to disease dynamics since disease cannot grow in the population at this point. -->
+<!-- ### Depletion of susceptibles -->
+<!-- NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time. -->
+<!-- ### Other conditions -->
+<!-- Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$. -->
 
 ## A motivating example
 The following is an example borrowed from Keeling & Rohani (2008, pp 57-63). Here, we go into depth of a modified version with additional insights from Diekmann et. al (2010) to arrive at the NGM model of the system.
