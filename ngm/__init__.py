@@ -67,9 +67,9 @@ def vaccinate_M(M: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
     assert len(M.shape) == 2 and M.shape[0] == M.shape[1], "M must be square"
     n_groups = M.shape[0]
     assert len(p_vax) == n_groups, "Input dimensions must match"
-    assert (0 <= p_vax).all() and (
-        p_vax <= 1.0
-    ).all(), "Vaccine coverage must be in [0, 1]"
+    assert (0 <= p_vax).all() and (p_vax <= 1.0).all(), (
+        "Vaccine coverage must be in [0, 1]"
+    )
     assert 0 <= ve <= 1.0
 
     return (M.T * (1 - p_vax * ve)).T
