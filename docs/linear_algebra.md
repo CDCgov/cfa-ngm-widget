@@ -6,11 +6,14 @@ For many next-generation matrices $\mathbf{R}$, the population-wide reproduction
 
 ## Motivation: Reproduction numbers in a single population
 
-The basic reproduction number $R_0$ is the average number of infections caused by each infected person in an otherwise fully susceptible population. The effective reproduction number $R_\mathrm{eff} < R_0$ is the average number of infections caused by each infected person, which is time-varying and depends on the number of remaining susceptibles.
+The basic reproduction number $R_0$ is the average number of infections caused by each infected person in an otherwise fully susceptible population. The effective reproduction number $R_\mathrm{eff} \leq R_0$ is the average number of infections caused by each infected person, which is time-varying and depends on the number of remaining susceptibles.
 
-Assume the population is large compared to the number of infections. In this limit, stochastic effects are unimportant and the actual number of infections caused by each infected person approaches $R_0$. This is the _disease-free equilibrium_ approximation: to model early dynamics of an outbreak, we assume that, to a first-order approximation, the number of susceptibles is not declining, so that $R_\mathrm{eff} \approx R_0$.
+Make two assumptions:
 
-Let $I(0)$ be the number of people infected at some point in time. The number of people in the next generation of infections will then be $I(1) = R_0 \times I(0)$. The number of infections grows exponentially with the number of generations $g$:
+1. The number of infected people is much greater than 1, so that the actual number of secondary infections per infection approaches the theoretical mean $R_\mathrm{eff}$.
+2. _Disease-free equilibrium_: The number of infected people is small compared to the population so that $R_\mathrm{eff}$ approaches $R_0$.
+
+Let $I(0)$ be the number of people infected at some point in time. Under these two assumptions, the number of people in the next generation of infections will then be $I(1) = R_0 \times I(0)$. The number of infections grows exponentially with the number of generations $g$:
 
 $$
 I(g) = I(0) \times R_0^g
@@ -20,25 +23,53 @@ $$
 
 In a structured population, with multiple subpopulations, the effective reproduction number is replaced by the _next-generation matrix_ $\mathbf{R}$ with entries $R_{ij}$, which are the number of infections in subpopulation $i$ caused by an infected person in subpopulation $j$. Note that the sum of entries in column $j$, i.e. $\sum_k R_{kj}$, is the number of infections caused by an infected person in subpopulation $j$.
 
-Let $\mathbf{R}_0$ be the next-generation matrix at the disease-free equilibrium. In this limit, the number of infections in each subpopulation in generation $g$ follows $\vec{I}(g) = \mathbf{R}_0^g \vec{I}(0)$, that is, the matrix $\mathbf{R}_0$ is applied $g$ times to the initial vector of infections $\vec{I}(0)$. Note that this is mathematically equivalent to a deterministic multi-type branching process model: each infection in each type $j$ gives rise to exactly $R_{ij}$ infections in subpopulation $i$ in the next generation.
+Make two assumptions similar to the above:
+
+1. $I_k(0) \gg 1$, where $I_k$ is the number infected in subpopulation $k$, for each subpopulation $k$.
+2. The total number of infected $\sum_k I_k(0)$ is small compared to the size of every subpopulation.
+
+Let $\mathbf{R}_0$ be the next-generation matrix under the two assumptions above. Then the number of infections in each subpopulation in generation $g$ follows $\vec{I}(g) = \mathbf{R}_0^g \vec{I}(0)$, that is, the matrix $\mathbf{R}_0$ is applied $g$ times to the initial vector of infections $\vec{I}(0)$. Note that this is mathematically equivalent to a deterministic multi-type branching process model: each infection in each type $j$ gives rise to exactly $R_{ij}$ infections in subpopulation $i$ in the next generation.
 
 ## Eigen analysis for growth rates under a stable distribution of infections
 
 A vector $\vec{v}$ is an _eigenvector_ of matrix $\mathbf{M}$ with _eigenvalue_ $\lambda$ if $\mathbf{M} \vec{v} = \lambda \vec{v}$. In other words, the application of a matrix to one of its eigenvectors is to simply multiply that eigenvector by its corresponding eigenvalue.
 
-If a next-generation matrix $\mathbf{R}$ has a nonnegative eigenvector $\vec{v}$ (i.e., with no negative entries) with a positive eigenvalue $\lambda$, then we can interpret $\vec{v}$ as a stable distribution of infections across populations and $\lambda$ as the corresponding population-wide reproduction number $R_0$, since:
+If a next-generation matrix $\mathbf{R}$ has a positive eigenvalue $\lambda$ with a corresponding non-negative eigenvector $\vec{v}$ (i.e., a vector with no negative entries), then we can interpret $\vec{v}$ as a stable distribution of infections across populations and $\lambda$ as the corresponding population-wide reproduction number, since:
 
 $$
 \mathbf{R}^g \vec{v} = \lambda^g \vec{v}
 $$
 
-## Infections tend to approach the dominant eigenvalue and eigenvector
+## All NGMs have a dominant eigenvalue and eigenvector
 
-In certain cases (e.g., if $\mathbf{R}$ is a [positive semi-definite matrix](https://en.wikipedia.org/wiki/Definite_matrix)):
+NGMs are square with non-negative entries. By the [Perron-Frobenius theorem](https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem), these matrices have these properties:
 
-1. the matrix $\mathbf{R}$ has a number of eigenvalues and eigenvectors equal to the number of populations,
-2. the eigenvalues are all nonnegative, and
-3. the eigenvectors will form a _basis_, such that any distribution $\vec{x}$ of infections can be written as a linear combination of the eigenvectors $\vec{v}_i$:
+1. There is a _dominant eigenvalue_, a real, non-negative eigenvalue that is greater than or equal to the absolute value of any other eigenvalue (i.e., is equal to the spectral radius).
+2. The eigenvector corresponding to the dominant eigenvalue, called the _dominant eigenvector_, is non-negative.
+
+NGMs can furthermore be _irreducible_, meaning that there is a way for an infection in any subpopulation to eventually cause an infection in every other subpopulation. (This is a sensible requirement for our analyses. If there were separate "blocks" of subpopulations that were epidemiologically independent, we could model them in separate NGMs.)
+
+Irreducible NGMs, by the same theorem, have these additional properties:
+
+1. The dominant eigenvalue is positive.
+2. All other eigenvalues have absolute values smaller than the dominant eigenvalue.
+3. The dominant eigenvector has a least one positive entry.
+
+## The dominant eigenvalue is a proxy for population-wide $R_0$
+
+If the numbers of infections $\vec{x}$ across subpopulations were equal to the dominant eigenvector, then $R_0$ is the dominant eigenvalue.
+
+This is also about as fast as the dynamics can get, regardless of the starting vector of infections $\vec{x}$. For all NGMs (irreducible or not), the Perron-Fobenius theorem also shows that the dominant eigenvalue is equal to:
+
+$$
+\max_{\vec{x}} \min_{i, x_i \neq 0} \frac{[\mathbf{R}\vec{x}]_i}{x_i}
+$$
+
+The term $[\mathbf{R}\vec{x}]_i / x_i$ is the growth in subpopulation $i$ that will occur after one generation, starting from the vector of infection counts $\vec{x}$. The minimum is over the subpopulations (excluding those that had no infections to start with). The maximum is over all possible vectors of infection counts.
+
+## For diagonalizable NGMs, infections tend to approach the dominant eigenvector
+
+An NGM may also be [_diagonalizable_](https://en.wikipedia.org/wiki/Diagonalizable_matrix), in which case its eigenvectors [form a basis](https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix#Eigendecomposition_of_a_matrix). In this case, any distribution of infections $\vec{x}$ can be written as a linear combination of the eigenvectors $\vec{v}_i$:
 
 $$
 \vec{x} = \sum_i \alpha_i \vec{v}_i
@@ -52,19 +83,25 @@ $$
 
 where $\lambda_i$ are the corresponding eigenvalues.
 
-Without loss of generality, let $\lambda_1$ be the largest eigenvalue. Then, after a sufficiently large number $g$ of generations, the growth in the first eigenvector will outpace the others: $\lambda_1^g \gg \lambda_i^g$ for any other $i \neq 1$. In that limit:
+Without loss of generality, let $\lambda_1$ be the largest eigenvalue. Then, after a sufficiently large number $g$ of generations, the growth in the first eigenvector will outpace the others, that is, $\lambda_1^g \gg \lambda_i^g$ for any other $i \neq 1$. In that limit:
 
 $$
 \mathbf{R}_0^g \vec{x} \approx \lambda_1^g \vec{v}_1
 $$
 
-so long as $\alpha_1 > 0$. Thus, the population-wide reproduction number will approach $\lambda_1$ and the distribution of infections will approach $\vec{v}_1$.
+so long as we actually begin with a vector $\vec{x}$ such that $\alpha_1 > 0$. Thus, the population-wide reproduction number will approach $\lambda_1$ and the distribution of infections will approach $\vec{v}_1$.
 
 ## Caveats to this interpretation
 
-### Eigenvectors can be rescaled
+### Disease-free equilibrium but also approaching the stable distribution
+
+We need the number of generations to be small enough that exponential growth has not depleted a meaningful number of susceptibles, but also large enough that the population-wide reproduction number approaches the dominant eigenvalue of $\mathbf{R}$.
+
+## Computational notes
 
 There are standard algorithms for finding matrices' eigenvectors and eigenvalues (e.g., Python's [`numpy.linalg.eig`](https://numpy.org/doc/2.1/reference/generated/numpy.linalg.eig.html) and R's [`eigen`](https://stat.ethz.ch/R-manual/R-devel/library/base/html/eigen.html)), which may yield confusing results.
+
+### Eigenvectors can be rescaled
 
 If $\mathbf{M}$ has eigenvector $\vec{v}$ with corresponding eigenvalue $\lambda$, then:
 
@@ -78,40 +115,35 @@ $$
 \mathbf{M} (\alpha \vec{v}) = \lambda (\alpha \vec{v})
 $$
 
-Thus, eigenvectors can be rescaled (including having their signs all changed). To be interpretable for an NGM, the dominant eigenvalue must be real and positive, and all entries of the eigenvector must have the same sign. If they are all negative, we can simply swap them all to positive.
+Thus, eigenvectors can be rescaled (including having their signs all changed). For example, an algorithm might return an eigenvector with all negative entries, but we would consider this a "positive" eigenvector, because we can swap the signs.
 
 The eigenvectors returned by an algorithm are likely L2-normed (i.e., the square root of the sum of squares of the entries sum to 1), to form an orthnormal basis. Because a stable _distribution_ of infections should be a probability vector (i.e., entries sum to 1), you may need to rescale the eigenvector.
 
-### Disease-free equilibrium but also sufficient generations
+### Real-valued vs. real-typed
 
-We need the number of generations to be small enough that exponential growth has not depleted a meaningful number of susceptibles, but also large enough that the population-wide reproduction number approaches the spectral radius of $\mathbf{R}$.
+An algorithm might return a eigenvalues or eigenvectors that are real-valued but have a complex type. Be sure to check for the value, not the type, of the dominant eigenvalue and eigenvector. For example:
 
-### Matrices that don't work nicely
+```
+>>> np.isreal(1+0j)
+True
+>>> np.isrealobj(1+0j)
+False
+```
 
-In the case of diagonal (or block-diagonal) NGM, it is easy to see why the $\alpha_1 > 0$ caveat matters: if you have totally independent subpopulations, and don't start with an infection in the subpopulation with the largest reproduction number, the population-wide dynamics will not approach the dynamics of that subpopulation.
+### Determining if a matrix is irreducible
 
-Not all relevant matrices are positive semi-definite. Consider a toy model of a sexually transmitted disease, in which each male infects exactly one female, and each female infects exactly one male:
-
-$$
-\mathbf{R} = \begin{pmatrix}
-0 & 1 \\
-1 & 0
-\end{pmatrix}
-$$
-
-This matrix has two eigenvectors: $[\tfrac{1}{2}, \tfrac{1}{2}]$ with eigenvalue $1$, and $[\tfrac{1}{2}, -\tfrac{1}{2}]$ with eigenvalue $-1$. Both eigenvalues have the same absolute value, but only the positive eigenvector and eigenvalue are interpretable for us. We should filter only for positive eigenvalues and eigenvectors.
-
-The matrix
+An $n \times n$ non-negative matrix $\mathbf{R}$ is irreducible if all entries of the matrix
 
 $$
-\begin{pmatrix}
-2 & 1 \\
-1 & 1
-\end{pmatrix}
+(\mathbb{I} + \mathbf{R})^{n-1}
 $$
 
-has two eigenvalues, but the dominant one has an eigenvector with mixed positive and negative values.
+are positive, where $\mathbb{I}$ is the identity matrix.
 
-## Eigenvalues and eigenvectors can be complex
+### Determining if a matrix is diagonalizable
 
-[Example of a matrix that has a sensible dominant eigenvalue but then has complex eigenvectors.]
+An $n \times n$ matrix is diagonalizable if it has $n$ distinct eigenvalues. This is easy to check during an eigen analysis.
+
+## Further reading
+
+- [_Matrix Analysis_](https://epubs.siam.org/doi/book/10.1137/1.9781611977448), which has a [free pdf](http://matrixanalysis.com/ErrataPdfFiles/Sections8.2_8.3.pdf) of the most relevant section
