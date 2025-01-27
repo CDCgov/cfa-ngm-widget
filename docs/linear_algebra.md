@@ -83,7 +83,7 @@ $$
 
 where $\lambda_i$ are the corresponding eigenvalues.
 
-Without loss of generality, let $\lambda_1$ be the largest eigenvalue. Then, after a sufficiently large number $g$ of generations, the growth in the first eigenvector will outpace the others, that is, $\lambda_1^g \gg \lambda_i^g$ for any other $i \neq 1$. In that limit:
+Without loss of generality, let $\lambda_1$ be the dominant eigenvalue. Then, after a sufficiently large number $g$ of generations, the growth in the first eigenvector will outpace the others, that is, $\lambda_1^g \gg \lambda_i^g$ for any other $i \neq 1$. In that limit:
 
 $$
 \mathbf{R}_0^g \vec{x} \approx \lambda_1^g \vec{v}_1
