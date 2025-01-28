@@ -3,6 +3,7 @@ site_name: cfa-ngm-widget
 nav:
   - index.md
   - approach.md
+  - primer.md
 
 theme:
   name: "material"
