@@ -34,7 +34,10 @@ markdown_extensions:
           format: !!python/name:pymdownx.superfences.fence_code_format
         - name: math
           class: arithmatex
-          format: !!python/name:ngm.utils.math_block_format
+          format:
+            !!python/object/apply:pymdownx.arithmatex.arithmatex_fenced_format {
+              kwds: { mode: generic, tag: div },
+            }
 
 extra_javascript:
   - javascript/katex.js
