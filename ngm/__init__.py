@@ -2,6 +2,7 @@ from collections import namedtuple
 from typing import Any, Optional
 
 import numpy as np
+import numpy.linalg as la
 
 Eigen = namedtuple("Eigen", ["value", "vector"])
 
@@ -75,6 +76,53 @@ def vaccinate_M(M: np.ndarray, p_vax: np.ndarray, ve: float) -> np.ndarray:
     return (M.T * (1 - p_vax * ve)).T
 
 
+def is_irreducible(X: np.ndarray) -> bool:
+    """Is a matrix irreducible?
+
+    Args:
+        X (np.ndarray): square matrix
+
+    Returns:
+        bool: is irreducible?
+    """
+    assert X.shape[0] == X.shape[1], "Matrix must be square"
+    n = X.shape[0]
+
+    x = la.matrix_power(np.identity(n=n) + X, n - 1)
+    return bool((x > 0.0).all())
+
+
+def is_diagonalizable(X: np.ndarray) -> Optional[bool]:
+    """Is the matrix diagonalizable?
+
+    If an nxn matrix has n unique eigenvalues, it is diagonalizable.
+    But this is not iff, so we might return `None` to mean "don't know."
+
+    Args:
+        X (np.ndarray): square matrix
+
+    Returns:
+        bool: is diagonalizable?
+    """
+    assert X.shape[0] == X.shape[1], "Matrix must be square"
+    n = X.shape[0]
+
+    eigen = la.eig(X)
+    if len(set(eigen.eigenvalues)) == n:
+        return True
+    else:
+        return None
+
+
+def _is_nonnegative_vector(x: np.ndarray) -> bool:
+    return all(x >= 0.0) or all(x <= 0.0)
+
+
+def _square_n(X: np.ndarray) -> int:
+    assert X.shape[0] == X.shape[1], "Matrix must be square"
+    return X.shape[0]
+
+
 def dominant_eigen(X: np.ndarray) -> Eigen:
     """Dominant eigenvalue and eigenvector of a matrix
 
@@ -88,13 +136,32 @@ def dominant_eigen(X: np.ndarray) -> Eigen:
     Returns:
         namedtuple: with entries `value` and `vector`
     """
+
+    if not (X >= 0.0).all():
+        raise RuntimeError("Matrix must be non-negative")
+
+    n = _square_n(X)
+
     # do the eigenvalue analysis, getting all eigenvalues and eigenvectors
-    eigen_all = np.linalg.eig(X)
-    # which eigenvalue is the dominant one?
-    i = np.argmax(np.abs(eigen_all.eigenvalues))
+    eigen_all = la.eig(X)
+
+    # find the index of the dominant eigenvalue
     # note that the i-th eigenvector is the i-th column of a matrix; i.e.,
     # eig().eigenvectors is a matrix not a list
-    eigen = Eigen(value=eigen_all.eigenvalues[i], vector=eigen_all.eigenvectors[:, i])
+    spectral_radius = np.max(np.abs(eigen_all.eigenvalues))
+    idx = [
+        i
+        for i in range(n)
+        if eigen_all.eigenvalues[i] == spectral_radius
+        and _is_nonnegative_vector(eigen_all.eigenvectors[:, i])
+    ]
+
+    assert len(idx) == 1
+    idx = idx[0]
+
+    eigen = Eigen(
+        value=eigen_all.eigenvalues[idx], vector=eigen_all.eigenvectors[:, idx]
+    )
 
     # ensure the dominant eigenvalue and eigenvector are real and positive
     eigen = _ensure_real_eigen(eigen)
