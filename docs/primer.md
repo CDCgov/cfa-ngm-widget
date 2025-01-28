@@ -6,11 +6,9 @@ An NGM model is related to the branching process concept of an offspring distrib
 
 Some classic works on NGMs are:
 
-Diekmann, O., Heesterbeek, J.A.P. & Metz, J.A.J. On the definition and the computation of the basic reproduction ratio $R_0$ in models for infectious diseases in heterogeneous populations. J. Math. Biol. 28, 365–382 (1990). https://doi.org/10.1007/BF00178324
-
-Diekmann O, Heesterbeek JA, Roberts MG. The construction of next-generation matrices for compartmental epidemic models. J R Soc Interface. 2010 Jun 6;7(47):873-85. https://doi.org/10.1098/rsif.2009.0386. Epub 2009 Nov 5. PMID: 19892718; PMCID: PMC2871801.
-
-van den Driessche P, Watmough J. Reproduction numbers and sub-threshold endemic equilibria for compartmental models of disease transmission. Math Biosci. 2002 Nov-Dec;180:29-48. doi: https://doi.org/10.1016/s0025-5564(02)00108-6. PMID: 12387915.
+- Diekmann, O., Heesterbeek, J.A.P. & Metz, J.A.J. On the definition and the computation of the basic reproduction ratio $R_0$ in models for infectious diseases in heterogeneous populations. J. Math. Biol. 28, 365–382 (1990). <https://doi.org/10.1007/BF00178324>
+- Diekmann O, Heesterbeek JA, Roberts MG. The construction of next-generation matrices for compartmental epidemic models. J R Soc Interface. 2010 Jun 6;7(47):873-85. <https://doi.org/10.1098/rsif.2009.0386>. Epub 2009 Nov 5. PMID: 19892718; PMCID: PMC2871801.
+- van den Driessche P, Watmough J. Reproduction numbers and sub-threshold endemic equilibria for compartmental models of disease transmission. Math Biosci. 2002 Nov-Dec;180:29-48. doi: <https://doi.org/10.1016/s0025-5564(02)00108-6>. PMID: 12387915.
 
 This primer is meant to supplement these works and articulate how the NGM can be used in a transmission model in addition to being an analytical tool.
 
@@ -60,32 +58,40 @@ Individuals in each risk group also recover from infection at some rate $\gamma_
 
 Now we can write the infected subsystem of differential equations as
 
-$\frac{d I_H}{dt} = \frac{\beta_{HH}S_H I_H}{N} + \frac{\beta_{HL}S_H I_L}{N} - \gamma I_H$
+$$
+\begin{align*}
+\frac{d I_H}{dt} &= \frac{\beta_{HH}S_H I_H}{N} + \frac{\beta_{HL}S_H I_L}{N} - \gamma I_H \\
+\frac{d I_L}{dt} &= \frac{\beta_{LH}S_L I_H}{N} + \frac{\beta_{LL}S_L I_L}{N} - \gamma I_L
+\end{align*}
+$$
 
-$\frac{d I_L}{dt} = \frac{\beta_{LH}S_L I_H}{N} + \frac{\beta_{LL}S_L I_L}{N} - \gamma I_L$
+or more concisely as:
 
-or more concisely as
-
-$\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i$
+$$
+\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i
+$$
 
 Linearizing the system at the DFE where $S_i \approx N_i$, we can write
 
-$\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}N_i I_j}{N} - \gamma I_i$
+$$
+\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}N_i I_j}{N} - \gamma I_i
+$$
 
-From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively.
-
-Let
+From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively. Let:
 
 ```math
+\begin{gather*}
 \mathbf{x} = \begin{pmatrix}
   I_H \\
   I_L
-\end{pmatrix}
-```
+\end{pmatrix} \\
 
-$$
-\mathbf{T} = \left(T_{ij}\right)$$ with $T_{ij} = \frac{\beta_{ij}N_i}{N}$ and $$\mathbf{\Sigma} = -\gamma \mathbb{I}_2
-$$
+T_{ij} = \frac{\beta_{ij}N_i}{N} \\
+
+\mathbf{\Sigma} = -\gamma \mathbb{I}_2
+
+\end{gather*}
+```
 
 where $\mathbb{I}_2$ is the identity matrix with dimension 2. Then we can write the infected subsystem as $\mathbf{\frac{dx}{dt}} = (\mathbf{T} + \mathbf{\Sigma})\mathbf{x}$. The NGM can be defined as $R = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$.
 

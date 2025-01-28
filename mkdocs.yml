@@ -24,7 +24,6 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true
   - mdx_truly_sane_lists
@@ -33,6 +32,9 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: math
+          class: arithmatex
+          format: !!python/name:ngm.utils.math_block_format
 
 extra_javascript:
   - javascript/katex.js
