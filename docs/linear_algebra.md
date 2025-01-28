@@ -42,24 +42,25 @@ $$
 
 ## All NGMs have a dominant eigenvalue and eigenvector
 
-NGMs are square with non-negative entries. By the [Perron-Frobenius theorem](https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem), these matrices have these properties:
+NGMs are square matrices with non-negative entries. By the [Perron-Frobenius theorem](https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem), these matrices have these properties:
 
-1. There is a _dominant eigenvalue_, a real, non-negative eigenvalue that is greater than or equal to the absolute value of any other eigenvalue (i.e., is equal to the spectral radius).
-2. The eigenvector corresponding to the dominant eigenvalue, called the _dominant eigenvector_, is non-negative.
+1. There is a _dominant eigenvalue_, which is a real, non-negative eigenvalue that is greater than or equal to the absolute value of any other eigenvalue (i.e., is equal to the spectral radius).
+2. The eigenvector corresponding to the dominant eigenvalue, called the _dominant eigenvector_, is non-negative (i.e., does not have a mix of positive and negative entries).
 
-NGMs can furthermore be _irreducible_, meaning that there is a way for an infection in any subpopulation to eventually cause an infection in every other subpopulation. (This is a sensible requirement for our analyses. If there were separate "blocks" of subpopulations that were epidemiologically independent, we could model them in separate NGMs.)
+NGMs can furthermore be _irreducible_, meaning that there is a way for an infection in any subpopulation to eventually cause an infection in every other subpopulation. (This is a sensible requirement for our analyses. If there were separate "blocks" of subpopulations that were epidemiologically independent, we could model them in separate NGMs.) All positive matrices (i.e., with no zeros) are irreducible.
 
 Irreducible NGMs, by the same theorem, have these additional properties:
 
 1. The dominant eigenvalue is positive.
 2. All other eigenvalues have absolute values smaller than the dominant eigenvalue.
-3. The dominant eigenvector has a least one positive entry.
+3. The dominant eigenvector has at least one positive entry.
+4. There are no other non-negative eigenvectors.
 
 ## The dominant eigenvalue is a proxy for population-wide $R_0$
 
 If the numbers of infections $\vec{x}$ across subpopulations were equal to the dominant eigenvector, then $R_0$ is the dominant eigenvalue.
 
-This is also about as fast as the dynamics can get, regardless of the starting vector of infections $\vec{x}$. For all NGMs (irreducible or not), the Perron-Fobenius theorem also shows that the dominant eigenvalue is equal to:
+This is also about as fast as the dynamics can get, regardless of the starting vector of infections $\vec{x}$. For all NGMs (i.e., square, non-negative matrices, whether irreducible or not), the Perron-Frobenius theorem also shows that the dominant eigenvalue is equal to:
 
 $$
 \max_{\vec{x}} \min_{i, x_i \neq 0} \frac{[\mathbf{R}\vec{x}]_i}{x_i}
@@ -69,7 +70,7 @@ The term $[\mathbf{R}\vec{x}]_i / x_i$ is the growth in subpopulation $i$ that w
 
 ## For diagonalizable NGMs, infections tend to approach the dominant eigenvector
 
-An NGM may also be [_diagonalizable_](https://en.wikipedia.org/wiki/Diagonalizable_matrix), in which case its eigenvectors [form a basis](https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix#Eigendecomposition_of_a_matrix). In this case, any distribution of infections $\vec{x}$ can be written as a linear combination of the eigenvectors $\vec{v}_i$:
+An NGM may also be [_diagonalizable_](https://en.wikipedia.org/wiki/Diagonalizable_matrix), in which case its eigenvectors [form a basis](https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix#Eigendecomposition_of_a_matrix). (All positive matrices are both irreducible and diagonalizable.) In this case, any distribution of infections $\vec{x}$ can be written as a linear combination of the eigenvectors $\vec{v}_i$:
 
 $$
 \vec{x} = \sum_i \alpha_i \vec{v}_i
