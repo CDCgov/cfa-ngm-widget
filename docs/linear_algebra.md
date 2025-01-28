@@ -45,7 +45,7 @@ $$
 NGMs are square matrices with non-negative entries. By the [Perron-Frobenius theorem](https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem), these matrices have these properties:
 
 1. There is a _dominant eigenvalue_, which is a real, non-negative eigenvalue that is greater than or equal to the absolute value of any other eigenvalue (i.e., is equal to the spectral radius).
-2. The eigenvector corresponding to the dominant eigenvalue, called the _dominant eigenvector_, is non-negative (i.e., does not have a mix of positive and negative entries).
+2. The eigenvector (or one of the eigenvectors) corresponding to the dominant eigenvalue, called the _dominant eigenvector_, is non-negative (i.e., does not have a mix of positive and negative entries).
 
 NGMs can furthermore be _irreducible_, meaning that there is a way for an infection in any subpopulation to eventually cause an infection in every other subpopulation. (This is a sensible requirement for our analyses. If there were separate "blocks" of subpopulations that were epidemiologically independent, we could model them in separate NGMs.) All positive matrices (i.e., with no zeros) are irreducible.
 
@@ -97,6 +97,38 @@ so long as we actually begin with a vector $\vec{x}$ such that $\alpha_1 > 0$. (
 ### Disease-free equilibrium but also approaching the stable distribution
 
 We need the number of generations to be small enough that exponential growth has not depleted a meaningful number of susceptibles, but also large enough that the population-wide reproduction number approaches the dominant eigenvalue of $\mathbf{R}$.
+
+### Counterexample matrices
+
+An example of a non-negative, reducible, non-diagonalizable matrix is the "L" matrix:
+
+$$
+\begin{pmatrix}
+1 & 0 & 0 \\
+1 & 0 & 0 \\
+1 & 1 & 1
+\end{pmatrix}
+$$
+
+These are curious dynamics:
+
+- Each infection in subpopulation 1 produces 1 infection in each of the 3 subpopulations.
+- Each infection in subpopulation 2 and 3 produces 1 infection in subpopulation 3.
+
+This matrix has two distinct eigenvalues: 1 and 0. Eigenvalue 1 has two eigenvectors that are multiples of one another: $(0, 0, 1)$ and $(0, 0, -1)$. Eigenvalue 0 has eigenvector $(0, \tfrac{1}{2}, -\tfrac{1}{2})$. As per the Perron-Frobenius theorem, there is a dominant eigenvalue 1 and dominant eigenvector $(0, 0, 1)$. However, because the matrix is reducible, the dominant eigenvalue is not larger than the absolute values of all other eigenvectors.
+
+Because the matrix is non-diagonalizable, we were not guaranteed that the eigenvectors would form a basis. In this particular case, any infection in any subpopulation would indeed lead to dynamics that approach the dominant eigenvalue and eigenvector.
+
+An example of a non-negative and irreducible matrix with multiple eigenvalues equal to the spectral radius is:
+
+$$
+\begin{pmatrix}
+0 & 1 \\
+1 & 0
+\end{pmatrix}
+$$
+
+This NGM might very roughly model, for example, a sexually-transmitted disease in which each infected man infects one woman, and each infected woman infects one man. It has two eigenvalues: $1$ and $-1$, with corresponding eigenvectors $(\tfrac{1}{2}, \tfrac{1}{2})$ and $(\tfrac{1}{2}, -\tfrac{1}{2})$. Note that, as per the Perron-Frobenius theorem, there is a single non-negative eigenvalue that is greater than the absolute value of all other eigenvalues, and the corresponding eigenvector is non-negative.
 
 ## Computational notes
 
