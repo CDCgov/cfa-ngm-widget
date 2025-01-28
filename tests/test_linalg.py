@@ -49,6 +49,14 @@ class TestDominantEigen:
         with pytest.raises(RuntimeError, match="non-negative"):
             ngm.linalg.dominant_eigen(M)
 
+    def test_weird_shape(self):
+        M = np.array([[0, 1, 0], [1, 1, 0], [0, 0, 0]])
+        eig = ngm.linalg.dominant_eigen(M)
+        assert np.isclose(eig.value, 1.6180, rtol=0.0, atol=1e-3)
+        assert np.allclose(
+            eig.vector, np.array([[0.3820, 0.6180, 0.0]]), rtol=0.0, atol=1e-3
+        )
+
 
 class TestEnsureReal:
     def test_trivial(self):
