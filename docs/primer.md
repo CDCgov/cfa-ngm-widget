@@ -6,23 +6,24 @@ An NGM model is related to the branching process concept of an offspring distrib
 
 Some classic works on NGMs are:
 
-Diekmann, O., Heesterbeek, J.A.P. & Metz, J.A.J. On the definition and the computation of the basic reproduction ratio $R_0$ in models for infectious diseases in heterogeneous populations. J. Math. Biol. 28, 365–382 (1990). https://doi.org/10.1007/BF00178324
-
-Diekmann O, Heesterbeek JA, Roberts MG. The construction of next-generation matrices for compartmental epidemic models. J R Soc Interface. 2010 Jun 6;7(47):873-85. https://doi.org/10.1098/rsif.2009.0386. Epub 2009 Nov 5. PMID: 19892718; PMCID: PMC2871801.
-
-van den Driessche P, Watmough J. Reproduction numbers and sub-threshold endemic equilibria for compartmental models of disease transmission. Math Biosci. 2002 Nov-Dec;180:29-48. doi: https://doi.org/10.1016/s0025-5564(02)00108-6. PMID: 12387915.
+- Diekmann, O., Heesterbeek, J.A.P. & Metz, J.A.J. On the definition and the computation of the basic reproduction ratio $R_0$ in models for infectious diseases in heterogeneous populations. J. Math. Biol. 28, 365–382 (1990). <https://doi.org/10.1007/BF00178324>
+- Diekmann O, Heesterbeek JA, Roberts MG. The construction of next-generation matrices for compartmental epidemic models. J R Soc Interface. 2010 Jun 6;7(47):873-85. <https://doi.org/10.1098/rsif.2009.0386>. Epub 2009 Nov 5. PMID: 19892718; PMCID: PMC2871801.
+- van den Driessche P, Watmough J. Reproduction numbers and sub-threshold endemic equilibria for compartmental models of disease transmission. Math Biosci. 2002 Nov-Dec;180:29-48. doi: <https://doi.org/10.1016/s0025-5564(02)00108-6>. PMID: 12387915.
 
 This primer is meant to supplement these works and articulate how the NGM can be used in a transmission model in addition to being an analytical tool.
 
 ## Use of NGM as a model
+
 Most commonly, NGMs are used in infectious disease modeling as an analytical tool to estimate the potential for growth of a disease in a population. NGMs are particularly useful for this when a population can be split into a finite number of discrete categories with different epidemiologically relevant traits. In that case, we can define the NGM and use it calculate the basic reproduction number $R_0$, a quantity that can provide insight about the early growth of a disease in a population and interventions that may be effective at controlling its growth. $R_0$ can be computed as the spectral radius of the NGM.
 
 As a result, most modelers familiar with NGMs have experience with using them as an analytical tool rather than as a simulation tool. However, NGMs can also be used to approximately model the ODEs for the subsystem of infected states.
 
 ## Interpretation of matrix elements
+
 Imagine we have an NGM, $\mathbf{R} = \left(R_{ij}\right)$. The elements $R_{ij}$ of this matrix can be interpreted as the average number of infections in group $i$ caused by an infected individual in group $j$ between consecutive generations in a fully susceptible population. As a rule of thumb, the matrix $\mathbf{R}$ is not symmetric; some groups may be more susceptible to infection or more transmissive resulting in an asymmetric $\mathbf{R}$.
 
 ## Formal definition
+
 For a system of differential equations describing infectious disease dynamics, we can identify the infected subsystem that describes the production of new infections and other changes in state of infected individuals. After linearizing around the DFE, we can decompose the infected subsystem into 2 parts representating rates of transmission and transition. It is common to see the transmission component referred to as $\mathbf{T}$, the transmission matrix, and the transition component referred to as $\mathbf{\Sigma}$, the transition matrix. The Next Generation Matrix with Large domain ([see Diekmann et al. 2010, Section 3.1](https://pmc.ncbi.nlm.nih.gov/articles/PMC2871801/#:~:text=As%20a%20rule%2C%20several%20traits,NGM%20for%20any%20such%20system.)) is then defined as $\mathbf{R_L} = -\mathbf{T}\mathbf{\Sigma}^{-1}$.
 
 The NGM $\mathbf{R}$ is the restriction of $\mathbf{R_L}$ to the subset of states-at-infection. An auxiliary matrix $\mathbf{E}$ can be defined whose columns are unit vectors for each non-zero row of the matrix $T$. The NGM can then be computed as $\mathbf{R} = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$, $\mathbf{E}'$ is the transpose of $\mathbf{E}$. It can be shown that the spectral radius of $\mathbf{R_L}$ is equal to that of $\mathbf{R}$ and that this spectral radius is $R_0$.
@@ -33,12 +34,14 @@ In most cases, more intuitive approaches can be used to define the NGM, however 
 
 Some conditions and limitations apply for NGM models to be a valid tool for estimating $R_0$ or as a simulation tool.
 
-* __Discrete states__: The model population must be able to be divided into discrete compartments or states that are epidemiologically relevant. These strata may reflect heterogeneities in susceptibility, such as age, or health state, such as infectious and symptomatic vs. infectious and asymptomatic.
-* __Disease-free equilibrium__: The NGM is defined by identifying transmission and transition dynamics of an infectious disease model near the disease-free equilibrium (DFE) and linearizing the system around that point. A disease-free equilibrium is a point the epidemiological system where the population is free of disease, i.e., at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined at the point where the population is fully susceptible. For example, in the classic SIR model, there exists a DFE with the conditions ($S \approx N$, $I \approx 0$, $R = 0$), which leads us to the condition $$R_0 = \frac{\beta}{\gamma} \geq 1$$ for growhth of disease in the population when we linearize the system around that point. Another DFE exists at the point where ($S = 0$, $I = 0$, $R = N$), however this DFE is not epidemiologically relevant to disease dynamics since disease cannot grow at this point.
-* __Depletion of susceptibles__: NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
-* __Other conditions__: Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$. In Diekmann et al. (2010), the authors note additional requirements: `For completeness we remark that in the decomposition T + Σ it is essential only that T is a non-negative matrix and that Σ is a positive off-diagonal matrix with spectral bound s(Σ)< 0`.
+- **Discrete states**: The model population must be able to be divided into discrete compartments or states that are epidemiologically relevant. These strata may reflect heterogeneities in susceptibility, such as age, or health state, such as infectious and symptomatic vs. infectious and asymptomatic.
+- **Disease-free equilibrium**: The NGM is defined by identifying transmission and transition dynamics of an infectious disease model near the disease-free equilibrium (DFE) and linearizing the system around that point. A disease-free equilibrium is a point the epidemiological system where the population is free of disease, i.e., at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined at the point where the population is fully susceptible. For example, in the classic SIR model, there exists a DFE with the conditions ($S \approx N$, $I \approx 0$, $R = 0$), which leads us to the condition $$R_0 = \frac{\beta}{\gamma} \geq 1$$ for growhth of disease in the population when we linearize the system around that point. Another DFE exists at the point where ($S = 0$, $I = 0$, $R = N$), however this DFE is not epidemiologically relevant to disease dynamics since disease cannot grow at this point.
+- **Depletion of susceptibles**: NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.
+- **Other conditions**: Entries of the NGM must be non-negative to guarantee that $R_0$ will be a single unique, positive real-valued eigenvalue of $\mathbf{R}$. In Diekmann et al. (2010), the authors note additional requirements:
+  > For completeness we remark that in the decomposition T + Σ it is essential only that T is a non-negative matrix and that Σ is a positive off-diagonal matrix with spectral bound s(Σ)< 0`.
 
 ## A motivating example
+
 The following is an example borrowed from Keeling & Rohani (2008, pp 57-63). Here, we go into depth of a modified version with additional insights from Diekmann et. al (2010) to arrive at the NGM model of the system.
 
 Consider the scenario of a disease spreading in a population with two categories of individuals. These two groups are differentiated by their risk for acquiring infection; there is a high-risk (H) and a low-risk (L) group. The disease progression can be described using an SIR compartmental model. An NGM is an effective way of approximating the early disease dynamics for heterogeneous systems like this. For the purposes of this example, we are considering a model with only one infectious state, but an NGM can written for models with multiple infectious states like asymptomatic and infectious as well as symptomatic and infectious.
@@ -55,45 +58,61 @@ Individuals in each risk group also recover from infection at some rate $\gamma_
 
 Now we can write the infected subsystem of differential equations as
 
-$\frac{d I_H}{dt} = \frac{\beta_{HH}S_H I_H}{N} + \frac{\beta_{HL}S_H I_L}{N} - \gamma I_H$
+$$
+\begin{align*}
+\frac{d I_H}{dt} &= \frac{\beta_{HH}S_H I_H}{N} + \frac{\beta_{HL}S_H I_L}{N} - \gamma I_H \\
+\frac{d I_L}{dt} &= \frac{\beta_{LH}S_L I_H}{N} + \frac{\beta_{LL}S_L I_L}{N} - \gamma I_L
+\end{align*}
+$$
 
-$\frac{d I_L}{dt} = \frac{\beta_{LH}S_L I_H}{N} + \frac{\beta_{LL}S_L I_L}{N} - \gamma I_L$
+or more concisely as:
 
-or more concisely as
-
-$\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i$
+$$
+\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i
+$$
 
 Linearizing the system at the DFE where $S_i \approx N_i$, we can write
 
-$\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}N_i I_j}{N} - \gamma I_i$
+$$
+\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}N_i I_j}{N} - \gamma I_i
+$$
 
+From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively. Let:
 
-From here we can decompose the system into transmission and transition components, $\mathbf{T}$ and $\mathbf{\Sigma}$, respectively.
-
-Let
 ```math
-\mathbf{x} = \begin{pmatrix}I_H\\I_L\end{pmatrix}
-```
+\begin{gather*}
+\mathbf{x} = \begin{pmatrix}
+  I_H \\
+  I_L
+\end{pmatrix} \\
 
-$$\mathbf{T} = \left(T_{ij}\right)$$
-with $T_{ij} = \frac{\beta_{ij}N_i}{N}$
-and
-$$\mathbf{\Sigma} = -\gamma \mathbb{I}_2$$
+T_{ij} = \frac{\beta_{ij}N_i}{N} \\
+
+\mathbf{\Sigma} = -\gamma \mathbb{I}_2
+
+\end{gather*}
+```
 
 where $\mathbb{I}_2$ is the identity matrix with dimension 2. Then we can write the infected subsystem as $\mathbf{\frac{dx}{dt}} = (\mathbf{T} + \mathbf{\Sigma})\mathbf{x}$. The NGM can be defined as $R = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}$.
 
 For this system, the auxiliary matrix is
+
 ```math
 \mathbf{E} = \begin{pmatrix}1 & 0\\0 & 1\end{pmatrix}
 ```
+
 with unit vector
+
 ```math
 \begin{pmatrix}1\\0\end{pmatrix}
 ```
+
 for the state $I_H$ and unit vector
+
 ```math
 \begin{pmatrix}0\\1\end{pmatrix}
 ```
+
 for the state $I_L$ in the transmission matrix $\mathbf{T}$.
 
 Then the NGM can be defined as $\mathbf{R}$ with elements $R_{ij} = \frac{\beta_{ij}N_i}{\gamma N}$. This is the formulation used for the input NGM in the widget, noting the implicit assumption that the user has provided entries to the input NGM that factor in population sizes. Vaccination alters the proportion of susceptible individuals that may become infected in each group, thus the rows of the input NGM are multiplied by the remaining proportion susceptible after vaccination.

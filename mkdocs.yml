@@ -3,6 +3,7 @@ site_name: cfa-ngm-widget
 nav:
   - index.md
   - approach.md
+  - primer.md
 
 theme:
   name: "material"
@@ -23,7 +24,6 @@ markdown_extensions:
       pygments_lang_class: true
   - pymdownx.inlinehilite
   - pymdownx.snippets
-  - pymdownx.superfences
   - pymdownx.arithmatex:
       generic: true
   - mdx_truly_sane_lists
@@ -32,6 +32,12 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+        - name: math
+          class: arithmatex
+          format:
+            !!python/object/apply:pymdownx.arithmatex.arithmatex_fenced_format {
+              kwds: { mode: generic, tag: div },
+            }
 
 extra_javascript:
   - javascript/katex.js
