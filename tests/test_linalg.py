@@ -105,3 +105,21 @@ class TestEnsurePositive:
             ngm.linalg._ensure_positive_eigen(
                 ngm.linalg.Eigen(value=-1, vector=np.array([1]))
             )
+
+
+class TestIsIrreducible:
+    def test_simple_true(self):
+        assert ngm.linalg.is_irreducible(np.array([[1, 2], [3, 4]]))
+
+    def test_simple_false(self):
+        L_matrix = np.array([[1, 0, 0], [1, 0, 0], [1, 1, 1]])
+        assert not ngm.linalg.is_irreducible(L_matrix)
+
+
+class TestIsDiagonalizable:
+    def test_simple_true(self):
+        assert ngm.linalg.is_diagonalizable(np.array([[1, 2], [3, 4]])) is True
+
+    def test_simple_dontknow(self):
+        L_matrix = np.array([[1, 0, 0], [1, 0, 0], [1, 1, 1]])
+        assert ngm.linalg.is_diagonalizable(L_matrix) is None

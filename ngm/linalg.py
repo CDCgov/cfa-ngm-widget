@@ -16,11 +16,9 @@ def is_irreducible(X: np.ndarray) -> bool:
     Returns:
         bool: is irreducible?
     """
-    assert X.shape[0] == X.shape[1], "Matrix must be square"
-    n = X.shape[0]
-
-    x = la.matrix_power(np.identity(n=n) + X, n - 1)
-    return bool((x > 0.0).all())
+    n = _square_n(X)
+    out = la.matrix_power(np.identity(n=n) + X, n - 1)
+    return bool((out > 0.0).all())
 
 
 def is_diagonalizable(X: np.ndarray) -> Optional[bool]:
@@ -35,9 +33,7 @@ def is_diagonalizable(X: np.ndarray) -> Optional[bool]:
     Returns:
         bool: is diagonalizable?
     """
-    assert X.shape[0] == X.shape[1], "Matrix must be square"
-    n = X.shape[0]
-
+    n = _square_n(X)
     eigen = la.eig(X)
     if len(set(eigen.eigenvalues)) == n:
         return True
