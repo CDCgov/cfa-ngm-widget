@@ -46,8 +46,7 @@ class TestDominantEigen:
 
     def test_eigen_returns_error(self):
         M = np.array([[0, -1], [1, 0]])
-        # eigenvalue here is i, so we can't coerce to positive dtype
-        with pytest.raises(RuntimeError, match="Complex-valued eigenvalue"):
+        with pytest.raises(RuntimeError, match="non-negative"):
             ngm.linalg.dominant_eigen(M)
 
 
