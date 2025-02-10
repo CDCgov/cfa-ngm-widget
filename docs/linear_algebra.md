@@ -19,7 +19,7 @@ $$
 I(g) = I(0) \times R_0^g
 $$
 
-## Next-generation matrices: reproduction numbers in multiple population
+## Next-generation matrices: reproduction numbers in multiple subpopulations
 
 In a structured population, with multiple subpopulations, the effective reproduction number is replaced by the _next-generation matrix_ $\mathbf{R}$ with entries $R_{ij}$, which are the number of infections in subpopulation $i$ caused by an infected person in subpopulation $j$. Note that the sum of entries in column $j$, i.e. $\sum_k R_{kj}$, is the number of infections caused by an infected person in subpopulation $j$.
 
@@ -42,14 +42,14 @@ $$
 
 ## All NGMs have a dominant eigenvalue and eigenvector
 
-NGMs are square matrices with non-negative entries. By the [Perron-Frobenius theorem](https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem), these matrices have these properties:
+NGMs are square matrices with non-negative entries. By an extension to the [Perron-Frobenius theorem](https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem), these matrices have these properties:
 
 1. There is a _dominant eigenvalue_, which is a real, non-negative eigenvalue that is greater than or equal to the absolute value of any other eigenvalue (i.e., is equal to the spectral radius).
 2. The eigenvector (or one of the eigenvectors) corresponding to the dominant eigenvalue, called the _dominant eigenvector_, is non-negative (i.e., does not have a mix of positive and negative entries).
 
 NGMs can furthermore be _irreducible_, meaning that there is a way for an infection in any subpopulation to eventually cause an infection in every other subpopulation. (This is a sensible requirement for our analyses. If there were separate "blocks" of subpopulations that were epidemiologically independent, we could model them in separate NGMs.) All positive matrices (i.e., with no zeros) are irreducible.
 
-Irreducible NGMs, by the same theorem, have these additional properties:
+Irreducible NGMs have [these additional properties](https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem#Perron%E2%80%93Frobenius_theorem_for_irreducible_non-negative_matrices):
 
 1. The dominant eigenvalue is positive.
 2. All other eigenvalues have absolute values smaller than the dominant eigenvalue.
