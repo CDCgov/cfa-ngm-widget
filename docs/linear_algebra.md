@@ -90,7 +90,8 @@ $$
 \mathbf{R}_0^g \vec{x} \approx \lambda_1^g \vec{v}_1
 $$
 
-so long as we actually begin with a vector $\vec{x}$ such that $\alpha_1 > 0$. (A proof of why this is reasonable to expect would be helpful here.) Thus, the population-wide reproduction number will approach $\lambda_1$ and the distribution of infections will approach $\vec{v}_1$.
+<!-- A proof of why this is reasonable to expect would be helpful here. -->
+so long as we actually begin with a vector $\vec{x}$ such that $\alpha_1 > 0$. Thus, the population-wide reproduction number will approach $\lambda_1$ and the distribution of infections will approach $\vec{v}_1$.
 
 ## Caveats to this interpretation
 
