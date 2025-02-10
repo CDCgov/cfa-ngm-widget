@@ -60,7 +60,7 @@ Irreducible NGMs have [these additional properties](https://en.wikipedia.org/wik
 
 If the numbers of infections $\vec{x}$ across subpopulations were equal to the dominant eigenvector, then $R_0$ is the dominant eigenvalue.
 
-This is also about as fast as the dynamics can get, regardless of the starting vector of infections $\vec{x}$. For all NGMs (i.e., square, non-negative matrices, whether irreducible or not), the Perron-Frobenius theorem also shows that the dominant eigenvalue is equal to:
+This is also about as fast as the dynamics can get, regardless of the starting vector of infections $\vec{x}$. For all square, non-negative, irreducible NGMs, the Collatz-Wielandt formula also shows that the dominant eigenvalue is equal to:
 
 $$
 \max_{\vec{x}} \min_{i, x_i \neq 0} \frac{[\mathbf{R}\vec{x}]_i}{x_i}
