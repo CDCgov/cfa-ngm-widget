@@ -1,9 +1,9 @@
-site_name: cfa-ngm-widget
+site_name: NGM widget
 
 nav:
   - index.md
-  - approach.md
-  - primer.md
+  - linear_algebra.md
+  - ode_ngm.md
 
 theme:
   name: "material"

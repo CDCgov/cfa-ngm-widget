@@ -34,14 +34,6 @@ The widget is designed to let users modify vaccine allocation choices, measures 
 
 Specific inputs to and outputs from the widget are documented therein.
 
-### References
-
-Diekmann O, Heesterbeek JA, Metz JA. On the definition and the computation of the basic reproduction ratio R0 in models for infectious diseases in heterogeneous populations. J Math Biol. 1990;28(4):365-82. doi: 10.1007/BF00178324. PMID: 2117040.
-
-Diekmann O, Heesterbeek JA, Roberts MG. The construction of next-generation matrices for compartmental epidemic models. J R Soc Interface. 2010 Jun 6;7(47):873-85. doi: 10.1098/rsif.2009.0386. Epub 2009 Nov 5. PMID: 19892718; PMCID: PMC2871801.
-
-van den Driessche P, Watmough J. Reproduction numbers and sub-threshold endemic equilibria for compartmental models of disease transmission. Math Biosci. 2002 Nov-Dec;180:29-48. doi: 10.1016/s0025-5564(02)00108-6. PMID: 12387915.
-
 ## Authors
 
 - Paige Miller <yub1@cdc.gov>
