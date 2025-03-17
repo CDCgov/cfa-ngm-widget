@@ -732,28 +732,6 @@ doc = ["sphinx (==4.3.2)", "sphinx-autodoc-typehints", "sphinx-rtd-theme", "sphi
 test = ["coverage[toml]", "ddt (>=1.1.1,!=1.4.3)", "mock ; python_version < \"3.8\"", "mypy", "pre-commit", "pytest (>=7.3.1)", "pytest-cov", "pytest-instafail", "pytest-mock", "pytest-sugar", "typing-extensions ; python_version < \"3.11\""]
 
 [[package]]
-name = "griddler"
-version = "0.2.0"
-description = ""
-optional = false
-python-versions = "^3.10"
-groups = ["main"]
-files = []
-develop = false
-
-[package.dependencies]
-pyyaml = "^6.0.1"
-
-[package.extras]
-polars = ["polars (>=1.7.1,<2.0.0)"]
-
-[package.source]
-type = "git"
-url = "https://github.com/CDCgov/pygriddler"
-reference = "HEAD"
-resolved_reference = "84b1b04938d6e94eebd950f3ab09d931ba02d602"
-
-[[package]]
 name = "griffe"
 version = "1.5.3"
 description = "Signatures for entire Python programs. Extract the structure, the frame, the skeleton of your project, to generate API documentation or find breaking changes in your API."
@@ -2600,7 +2578,7 @@ version = "6.0.2"
 description = "YAML parser and emitter for Python"
 optional = false
 python-versions = ">=3.8"
-groups = ["main", "dev", "mkdocs"]
+groups = ["dev", "mkdocs"]
 files = [
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0a9a2848a5b7feac301353437eb7d5957887edbf81d56e903999a75a3d743086"},
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:29717114e51c84ddfba879543fb232a6ed60086602313ca38cce623c1d62cfbf"},
@@ -3744,4 +3722,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "d0cd0acd5642e9346e439f727cbb5ad2d35c789f98e2316f707a6e9b83885171"
+content-hash = "0e52e19754e09ef4039d35871181b2b12c435fd95df3529a217cda3849cab486"
