@@ -1,0 +1,13 @@
+name: mkdocs-cache
+description: Cache mkdocs
+runs:
+  using: composite
+  steps:
+    - run: pipx install poetry
+      shell: bash
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.x
+        cache: poetry
+    - run: poetry install --only mkdocs
+      shell: bash
