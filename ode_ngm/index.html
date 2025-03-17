@@ -1,0 +1,621 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../linear_algebra/">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Deriving NGMs from ODEs - NGM widget</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#deriving-ngms-from-odes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="NGM widget" class="md-header__button md-logo" aria-label="NGM widget" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NGM widget
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Deriving NGMs from ODEs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="NGM widget" class="md-nav__button md-logo" aria-label="NGM widget" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NGM widget
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Next generation matrix widget
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../linear_algebra/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Linear algebra of next-generation matrices
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Deriving NGMs from ODEs
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Deriving NGMs from ODEs
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#use-of-ngm-as-a-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use of NGM as a model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interpretation-of-matrix-elements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interpretation of matrix elements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formal-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Formal definition
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conditions-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conditions and limitations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-2-group-sir" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: 2-group SIR
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-multi-group-sir-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application: Multi-group SIR model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#use-of-ngm-as-a-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use of NGM as a model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interpretation-of-matrix-elements" class="md-nav__link">
+    <span class="md-ellipsis">
+      Interpretation of matrix elements
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formal-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      Formal definition
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conditions-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Conditions and limitations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#example-2-group-sir" class="md-nav__link">
+    <span class="md-ellipsis">
+      Example: 2-group SIR
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-multi-group-sir-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      Application: Multi-group SIR model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="deriving-ngms-from-odes">Deriving NGMs from ODEs</h1>
+<p>An NGM model is related to the branching process concept of an offspring distribution generated by an individual. In this context, with multiple types of individuals, the NGM represents the expected value of the (conditional) offspring distributions from each group to each group. That is, it provides the average number of infections a typical individual in one group will cause in another.</p>
+<p>This primer is meant to supplement these works and articulate how the NGM can be used in a transmission model in addition to being an analytical tool.</p>
+<h2 id="use-of-ngm-as-a-model">Use of NGM as a model</h2>
+<p>Most commonly, NGMs are used in infectious disease modeling as an analytical tool to estimate the potential for growth of a disease in a population. NGMs are particularly useful for this when a population can be split into a finite number of discrete categories with different epidemiologically relevant traits. In that case, we can define the NGM and use it calculate the basic reproduction number <span class="arithmatex">\(R_0\)</span>, a quantity that can provide insight about the early growth of a disease in a population and interventions that may be effective at controlling its growth. <span class="arithmatex">\(R_0\)</span> can be computed as the spectral radius of the NGM.</p>
+<p>As a result, most modelers familiar with NGMs have experience with using them as an analytical tool rather than as a simulation tool. However, NGMs can also be used to approximately model the ODEs for the subsystem of infected states.</p>
+<h2 id="interpretation-of-matrix-elements">Interpretation of matrix elements</h2>
+<p>Imagine we have an NGM, <span class="arithmatex">\(\mathbf{R} = \left(R_{ij}\right)\)</span>. The elements <span class="arithmatex">\(R_{ij}\)</span> of this matrix can be interpreted as the average number of infections in group <span class="arithmatex">\(i\)</span> caused by an infected individual in group <span class="arithmatex">\(j\)</span> between consecutive generations in a fully susceptible population. As a rule of thumb, the matrix <span class="arithmatex">\(\mathbf{R}\)</span> is not symmetric; some groups may be more susceptible to infection or more transmissive resulting in an asymmetric <span class="arithmatex">\(\mathbf{R}\)</span>.</p>
+<h2 id="formal-definition">Formal definition</h2>
+<p>For a system of differential equations describing infectious disease dynamics, we can identify the infected subsystem that describes the production of new infections and other changes in state of infected individuals. After linearizing around the DFE, we can decompose the infected subsystem into 2 parts representating rates of transmission and transition. It is common to see the transmission component referred to as <span class="arithmatex">\(\mathbf{T}\)</span>, the transmission matrix, and the transition component referred to as <span class="arithmatex">\(\mathbf{\Sigma}\)</span>, the transition matrix. The next-generation matrix with Large domain (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC2871801/#:~:text=As%20a%20rule%2C%20several%20traits,NGM%20for%20any%20such%20system.">see Diekmann et al. 2010, Section 3.1</a>) is then defined as <span class="arithmatex">\(\mathbf{R_L} = -\mathbf{T}\mathbf{\Sigma}^{-1}\)</span>.</p>
+<p>The NGM <span class="arithmatex">\(\mathbf{R}\)</span> is the restriction of <span class="arithmatex">\(\mathbf{R_L}\)</span> to the subset of states-at-infection. An auxiliary matrix <span class="arithmatex">\(\mathbf{E}\)</span> can be defined whose columns are unit vectors for each non-zero row of the matrix <span class="arithmatex">\(T\)</span>. The NGM can then be computed as <span class="arithmatex">\(\mathbf{R} = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}\)</span>, <span class="arithmatex">\(\mathbf{E}'\)</span> is the transpose of <span class="arithmatex">\(\mathbf{E}\)</span>. It can be shown that the spectral radius of <span class="arithmatex">\(\mathbf{R_L}\)</span> is equal to that of <span class="arithmatex">\(\mathbf{R}\)</span> and that this spectral radius is <span class="arithmatex">\(R_0\)</span>.</p>
+<p>In most cases, more intuitive approaches can be used to define the NGM, however the formal definition of <span class="arithmatex">\(\mathbf{R}\)</span> has its advantages in being more rigorous and and helping modelers identify relevant information for estimating growth dynamics.</p>
+<h2 id="conditions-and-limitations">Conditions and limitations</h2>
+<p>Some conditions and limitations apply for NGM models to be a valid tool for estimating <span class="arithmatex">\(R_0\)</span> or as a simulation tool.</p>
+<ul>
+<li><strong>Discrete states</strong>: The model population must be able to be divided into discrete compartments or states that are epidemiologically relevant. These strata may reflect heterogeneities in susceptibility, such as age, or health state, such as infectious and symptomatic vs. infectious and asymptomatic.</li>
+<li><strong>Disease-free equilibrium</strong>: The NGM is defined by identifying transmission and transition dynamics of an infectious disease model near the disease-free equilibrium (DFE) and linearizing the system around that point. A disease-free equilibrium is a point the epidemiological system where the population is free of disease, i.e., at a DFE the infectious population is zero. There can be multiple DFE for a system; the NGM is defined at the point where the population is fully susceptible. For example, in the classic SIR model, there exists a DFE with the conditions (<span class="arithmatex">\(S \approx N\)</span>, <span class="arithmatex">\(I \approx 0\)</span>, <span class="arithmatex">\(R = 0\)</span>), which leads us to the condition <span class="arithmatex">\(<span class="arithmatex">\(R_0 = \frac{\beta}{\gamma} \geq 1\)</span>\)</span> for growhth of disease in the population when we linearize the system around that point. Another DFE exists at the point where (<span class="arithmatex">\(S = 0\)</span>, <span class="arithmatex">\(I = 0\)</span>, <span class="arithmatex">\(R = N\)</span>), however this DFE is not epidemiologically relevant to disease dynamics since disease cannot grow at this point.</li>
+<li><strong>Depletion of susceptibles</strong>: NGM models describe infectious disease dynamics as a demographic process in the sense that each consecutive generation produces new offspring infections. This can be a good approximation for dynamics early on and in the limit of a large, otherwise fully susceptible population, such that stochastic effects are negligible. However, unlike ODE models, an NGM model does not account for the fixed size of a population and cannot model the depletion of susceptibles over time.</li>
+<li><strong>Other conditions</strong>: Entries of the NGM must be non-negative to guarantee that <span class="arithmatex">\(R_0\)</span> will be a single unique, positive real-valued eigenvalue of <span class="arithmatex">\(\mathbf{R}\)</span>. In Diekmann et al. (2010), the authors note additional requirements:<ul>
+<li>For completeness we remark that in the decomposition T + Σ it is essential only that T is a non-negative matrix and that Σ is a positive off-diagonal matrix with spectral bound s(Σ)&lt; 0`.</li>
+</ul>
+</li>
+</ul>
+<h2 id="example-2-group-sir">Example: 2-group SIR</h2>
+<p>The following is an example borrowed from Keeling &amp; Rohani (2008, pp 57-63). Here, we go into depth of a modified version with additional insights from Diekmann et. al (2010) to arrive at the NGM model of the system.</p>
+<p>Consider the scenario of a disease spreading in a population with two categories of individuals. These two groups are differentiated by their risk for acquiring infection; there is a high-risk (H) and a low-risk (L) group. The disease progression can be described using an SIR compartmental model. An NGM is an effective way of approximating the early disease dynamics for heterogeneous systems like this. For the purposes of this example, we are considering a model with only one infectious state, but an NGM can written for models with multiple infectious states like asymptomatic and infectious as well as symptomatic and infectious.</p>
+<p>We denote the number of individuals in the high-risk group as <span class="arithmatex">\(N_H\)</span>, and the number of individuals in the low-risk group as <span class="arithmatex">\(N_L\)</span>. <span class="arithmatex">\(X_H\)</span> is the number of people in group <span class="arithmatex">\(H\)</span> who are in state <span class="arithmatex">\(X\)</span>, and the total number of people in state <span class="arithmatex">\(X\)</span> = <span class="arithmatex">\(X_H + X_L\)</span>. States in this model are <span class="arithmatex">\(S\)</span> for susceptible, <span class="arithmatex">\(I\)</span> for infected and infectious, and <span class="arithmatex">\(R\)</span> for recovered. Thus, we have <span class="arithmatex">\(S_i + I_i + R_i = N_i\)</span> for all subpopulations <span class="arithmatex">\(i\)</span> and <span class="arithmatex">\(N = \sum_i N_i\)</span> for a total fixed population size.</p>
+<p>We also assume that average mixing holds for all individuals between the groups and within, i.e. no individual in either group has different contact rates than others in their group. Individuals in the two risk groups can interact with each other in some way such that an infectious individual would generate some number of new infections in the two groups. More specifically, an average infected individual in group <span class="arithmatex">\(j\)</span> generates <span class="arithmatex">\(\beta_{ij}\)</span> infections per unit time in group <span class="arithmatex">\(i\)</span> in a fully susceptible population.</p>
+<p>Unlike the example in Keeling &amp; Rohani, here we model the counts of the population in each state rather than the proportion. We are also modeling the effective rate of transmission between groups as split into two factors: a rate of transmission from group <span class="arithmatex">\(j\)</span> to group <span class="arithmatex">\(i\)</span>, <span class="arithmatex">\(\beta_{ij}\)</span> and a rate of interaction based on the number of people in the population available for contact with infectious individuals, i.e., <span class="arithmatex">\(\frac{S_i}{N}\)</span>. This follows from the frequency dependent assumption where effective contact structure that generates transmission is independent of population size (the interested reader can refer to Keeling &amp; Rohani, 2008 pp 17-18 for more details).</p>
+<p>At any given time, there is some fraction of the population that is susceptible in group <span class="arithmatex">\(i\)</span> and can be infected through interaction with an infected individual in group <span class="arithmatex">\(j\)</span>. Then the average number of infections generated in group <span class="arithmatex">\(i\)</span> by an infected individual in group <span class="arithmatex">\(j\)</span> is <span class="arithmatex">\(\frac{\beta_{ij}S_i}{N}\)</span> per unit time. Assuming no collision of transmission events, <span class="arithmatex">\(I_j\)</span> infected individuals produce <span class="arithmatex">\(\frac{\beta_{ij}S_i I_j}{N}\)</span> infections per unit time.</p>
+<p>Individuals in each risk group also recover from infection at some rate <span class="arithmatex">\(\gamma_i\)</span>. Here we assume that individuals in both groups recover at the same rate, however the following can be generalized to scenarios where average recovery rates of the two groups are different.</p>
+<p>Now we can write the infected subsystem of differential equations as</p>
+<div class="arithmatex">\[
+\begin{align*}
+\frac{d I_H}{dt} &amp;= \frac{\beta_{HH}S_H I_H}{N} + \frac{\beta_{HL}S_H I_L}{N} - \gamma I_H \\
+\frac{d I_L}{dt} &amp;= \frac{\beta_{LH}S_L I_H}{N} + \frac{\beta_{LL}S_L I_L}{N} - \gamma I_L
+\end{align*}
+\]</div>
+<p>or more concisely as:</p>
+<div class="arithmatex">\[
+\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}S_i I_j}{N} - \gamma I_i
+\]</div>
+<p>Linearizing the system at the DFE where <span class="arithmatex">\(S_i \approx N_i\)</span>, we can write</p>
+<div class="arithmatex">\[
+\frac{d I_i}{dt} = \sum_{j} \frac{\beta_{ij}N_i I_j}{N} - \gamma I_i
+\]</div>
+<p>From here we can decompose the system into transmission and transition components, <span class="arithmatex">\(\mathbf{T}\)</span> and <span class="arithmatex">\(\mathbf{\Sigma}\)</span>, respectively. Let:</p>
+<div class="arithmatex">\[
+\begin{gather*}
+\mathbf{x} = \begin{pmatrix}
+  I_H \\
+  I_L
+\end{pmatrix} \\
+
+T_{ij} = \frac{\beta_{ij}N_i}{N} \\
+
+\mathbf{\Sigma} = -\gamma \mathbb{I}_2
+
+\end{gather*}
+\]</div>
+<p>where <span class="arithmatex">\(\mathbb{I}_2\)</span> is the identity matrix with dimension 2. Then we can write the infected subsystem as <span class="arithmatex">\(\mathbf{\frac{dx}{dt}} = (\mathbf{T} + \mathbf{\Sigma})\mathbf{x}\)</span>. The NGM can be defined as <span class="arithmatex">\(R = -\mathbf{E}'\mathbf{T}\mathbf{\Sigma}^{-1}\mathbf{E}\)</span>.</p>
+<p>For this system, the auxiliary matrix is</p>
+<div class="arithmatex">\[
+\mathbf{E} = \begin{pmatrix}1 & 0\\0 & 1\end{pmatrix}
+\]</div>
+<p>with unit vector</p>
+<div class="arithmatex">\[
+\begin{pmatrix}1\\0\end{pmatrix}
+\]</div>
+<p>for the state <span class="arithmatex">\(I_H\)</span> and unit vector</p>
+<div class="arithmatex">\[
+\begin{pmatrix}0\\1\end{pmatrix}
+\]</div>
+<p>for the state <span class="arithmatex">\(I_L\)</span> in the transmission matrix <span class="arithmatex">\(\mathbf{T}\)</span>.</p>
+<p>Then the NGM can be defined as <span class="arithmatex">\(\mathbf{R}\)</span> with elements <span class="arithmatex">\(R_{ij} = \frac{\beta_{ij}N_i}{\gamma N}\)</span>. This is the formulation used for the input NGM in the widget, noting the implicit assumption that the user has provided entries to the input NGM that factor in population sizes. Vaccination alters the proportion of susceptible individuals that may become infected in each group, thus the rows of the input NGM are multiplied by the remaining proportion susceptible after vaccination.</p>
+<h2 id="application-multi-group-sir-model">Application: Multi-group SIR model</h2>
+<p>We can generalize the model above by indexing by group <span class="arithmatex">\(i\)</span>, so that:</p>
+<div class="arithmatex">\[
+\frac{d I_i}{dt} = \sum_{j} \beta_{ij} \frac{S_i}{N_i} I_j - \gamma I_i
+\]</div>
+<p>where:</p>
+<ul>
+<li><span class="arithmatex">\(\beta_{ij}\)</span> is the transmission rate from group <span class="arithmatex">\(j\)</span> to group <span class="arithmatex">\(i\)</span>,</li>
+<li><span class="arithmatex">\(S_j\)</span> is the number of susceptible people in group <span class="arithmatex">\(j\)</span>,</li>
+<li><span class="arithmatex">\(N_j\)</span> is the number of people in group <span class="arithmatex">\(j\)</span>, and</li>
+<li><span class="arithmatex">\(\gamma\)</span> is the recovery rate, assumed equal for all groups.</li>
+</ul>
+<p>The NGM is calculated at the disease free equilibrium, that is, where <span class="arithmatex">\(I_i \to 0\)</span> and <span class="arithmatex">\(S_i \to N_i\)</span> for all <span class="arithmatex">\(i\)</span>. Then the NGM is:</p>
+<div class="arithmatex">\[
+\mathbf{R}_{ij} = \frac{\beta_{ij} S_{i}}{\gamma N_i}
+\]</div>
+<p>The model incorporates vaccination by asserting that vaccination changes a proportion of the susceptible people to resistant, based on the proportion <span class="arithmatex">\(v_i\)</span> of people vaccinated in group <span class="arithmatex">\(i\)</span> and the vaccine efficacy VE:</p>
+<div class="arithmatex">\[
+S_i^\mathrm{vax} = S_i \times (1 - v_i \times \mathrm{VE})
+\]</div>
+<p>Then the entries in the NGM are reduced:</p>
+<div class="arithmatex">\[
+\mathbf{R}_{ij}^\mathrm{vax} = \mathbf{R}_{ij} (1 - v_i \times \mathrm{VE})
+\]</div>
+<p>The dominant eigenvalue of this reduced NGM is the effective reproduction number.</p>
+<h2 id="references">References</h2>
+<ul>
+<li>Diekmann, O., Heesterbeek, J.A.P. &amp; Metz, J.A.J. On the definition and the computation of the basic reproduction ratio <span class="arithmatex">\(R_0\)</span> in models for infectious diseases in heterogeneous populations. J. Math. Biol. 28, 365–382 (1990). <a href="https://doi.org/10.1007/BF00178324">https://doi.org/10.1007/BF00178324</a></li>
+<li>Diekmann O, Heesterbeek JA, Roberts MG. The construction of next-generation matrices for compartmental epidemic models. J R Soc Interface. 2010 Jun 6;7(47):873-85. <a href="https://doi.org/10.1098/rsif.2009.0386">https://doi.org/10.1098/rsif.2009.0386</a>. Epub 2009 Nov 5. PMID: 19892718; PMCID: PMC2871801.</li>
+<li>van den Driessche P, Watmough J. Reproduction numbers and sub-threshold endemic equilibria for compartmental models of disease transmission. Math Biosci. 2002 Nov-Dec;180:29-48. doi: <a href="https://doi.org/10.1016/s0025-5564(02)00108-6">https://doi.org/10.1016/s0025-5564(02)00108-6</a>. PMID: 12387915.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+        <script src="../javascript/katex.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>
