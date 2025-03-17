@@ -141,8 +141,8 @@ def summarize_scenario(
     )
     c.dataframe(res)
 
-    ngm_help = "This is the Next Generation Matrix accounting for the specified administration of vaccines in this scenario."
-    c.subheader("Next Generation Matrix given vaccine scenario:")
+    ngm_help = "This is the next-generation matrix accounting for the specified administration of vaccines in this scenario."
+    c.subheader("Next-generation matrix given vaccine scenario:")
     m_vax = ngm.vaccinate_M(params["M_novax"], p_vax, params["ve"])
     ngm_df = (
         pl.DataFrame(
@@ -210,7 +210,7 @@ def app():
 
     st.title("Vaccine Allocation Widget")
     st.write(
-        "Uses a Next Generation Matrix (NGM) approach to approximate the dynamics of disease spread around the disease-free equilibrium."
+        "Uses a next-generation matrix (NGM) approach to approximate the dynamics of disease spread around the disease-free equilibrium."
     )
 
     params_default = pl.DataFrame(
@@ -256,7 +256,7 @@ def app():
         )
 
         st.subheader(
-            "Next Generation Matrix",
+            "Next-generation matrix",
             help="For a single new infection of category `from`, specify how many infections it will generate of category `to` by editing the corresponding entry in the matrix.",
         )
         M_df = st.data_editor(M_default, disabled=["to"], hide_index=True)
