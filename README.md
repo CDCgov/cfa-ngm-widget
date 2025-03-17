@@ -1,38 +1,34 @@
-# Next generation matrix widget
+# Next-generation matrix widget
 
 ## Overview
 
-This repo contains code for investigating the potential efficacy of vaccination allocation for a disease interactively via a [streamlit](https://streamlit.io/) app using a next generation matrix approach.
+This repo contains code for investigating the utility of vaccination allocation, including trade-offs between reducing transmission and reducing severe disease, in a next-generation matrix (NGM) model via an interactive [streamlit](https://streamlit.io/) app.
+
+The widget allows users to modify vaccine allocation choices, between- and within-group transmission, and population composition. The widget computes the effective reproduction number $R_e$ and other key quantities.
 
 ## Getting started
 
-- Enable [poetry](https://python-poetry.org/) with `poetry install`
-- To run the app: `make`, which calls `streamlit run scripts/app.py`
-- In a browser, visit: `http://localhost:8501/`
+### Read the documentation
 
-### Using containers
+[Read the docs online](https://cdcgov.github.io/cfa-ngm-widget/) or see the raw documentation files in `docs/`.
 
-- Build and tag the image: `make build_container`
-- Run the container: `make run_container`
-- Note the port 8501 is hard-coded in the `Dockerfile`
+### Run the app locally
 
-## Model Description
+1. Enable [poetry](https://python-poetry.org/) with `poetry install`
+2. To run the app: `make`, which calls `streamlit run scripts/app.py`
+3. In a browser, visit: `http://localhost:8501/`
 
-This repo contains code to apply the next-generation method of Diekman et al. (1990) to calculate R0 for an SIR model with 3 risk groups and flexible inputs for varying vaccine allocation to each group.
+### Run the app locally using containers
 
-### Next generation matrix calculation
+1. Install [podman](https://podman.io/)
+2. Build and tag the image: `make build_container`
+3. Run the container: `make run_container`
 
-The next-generation matrix approach (NGM) is described in `docs/ngm.md`. The documentation is best viewed off of GitHub, either by opening in VSCode and using the built in [markdown preview](https://code.visualstudio.com/Docs/languages/markdown#_markdown-preview) or by building with `mkdocs` using `mkdocs serve` (this requires installing `mkdocs`).
+Note the port 8501 is hard-coded in the `Dockerfile`.
 
-### Model assumptions
+### Build the documentation locally
 
-Vaccination is assumed to be all or nothing -- each individual's immunity is determined by a coin flip with probability of being immune equal to the vaccine efficacy.
-
-### Widget
-
-The widget is designed to let users modify vaccine allocation choices, measures of between- and within-group spread, population composition, and see how this effects $R_e$ and other key quantities.
-
-Specific inputs to and outputs from the widget are documented therein.
+This repo uses [mkdocs](https://www.mkdocs.org/). Relevant commands include `mkdocs serve` and `mkdocs build`.
 
 ## Authors
 
