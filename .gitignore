@@ -381,3 +381,7 @@ docs/site/
 #Manifest.toml
 *_ipynb
 *_files/
+
+# Posit deployment files
+manifest.json
+requirements.txt
