@@ -3,7 +3,6 @@ site_name: NGM widget
 nav:
   - index.md
   - linear_algebra.md
-  - ode_ngm.md
 
 theme:
   name: "material"

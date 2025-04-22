@@ -28,4 +28,3 @@ Let $x_i$ be the proportion of infections in group $i$ at equilibrium (i.e., so 
 ## Further reading
 
 - [Linear algebra properties](linear_algebra.md) of NGMs
-- [Deriving NGMs from ODEs](ode_ngm.md)
