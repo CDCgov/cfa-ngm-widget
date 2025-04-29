@@ -1,6 +1,7 @@
 from typing import Any
 
 import numpy as np
+import numpy.random
 
 import ngm.linalg
 
@@ -156,3 +157,55 @@ def exp_growth_model_severity(R_e, inf_distribution, p_severe, G) -> np.ndarray:
     severe = np.outer(infections, inf_distribution * p_severe).sum(axis=1)
 
     return np.stack((gens, infections, severe), 1)
+
+
+def run_stochastic(
+    M: np.ndarray,
+    x: np.ndarray,
+    max_generations: int,
+    rng: None | int | np.random.Generator = None,
+) -> np.ndarray:
+    """
+    Run a stochastic simulation using a given next generation matrix and initial conditions.
+
+    Args:
+        M (np.ndarray): Next generation matrix
+        x (np.ndarray): Initial number of infections
+        max_generations (int): Maximum number of generations to simulate
+        rng (None | int | np.random.Generator): Random number generator or seed. If
+            None, uses the default random number generator. If an int, uses it as a seed.
+            If a Generator, uses it directly. Default is None.
+
+    Returns:
+        np.ndarray: Array of infections over time
+    """
+
+    n = M.shape[0]
+    assert M.shape[1] == n, "M must be square"
+    assert len(x) == n, "Input dimensions must match"
+    assert (x >= 0).all(), "Initial infections must be non-negative"
+    assert x.sum() > 0, "Must start with nonzero number of infections"
+    assert max_generations > 0, "Must simulate at least one generation"
+
+    if rng is None:
+        rng = np.random.default_rng()
+    elif isinstance(rng, int):
+        rng = np.random.default_rng(rng)
+    elif isinstance(rng, np.random.Generator):
+        pass
+    else:
+        raise ValueError(f"rng {rng} is not one of None, int, or np.random.Generator")
+
+    out = np.zeros((max_generations, n))
+    out[0, :] = x
+
+    for g in range(1, max_generations):
+        rates = M @ out[g - 1, :]
+        x = rng.poisson(lam=rates, size=None)
+
+        if x.sum() == 0:
+            break
+
+        out[g, :] = x
+
+    return out

@@ -97,6 +97,41 @@ def extract_vector(
     return vec
 
 
+def stochastic(M):
+    st.subheader("Stochastic simulations")
+
+    seed = st.number_input("Random seed", min_value=0, value=1)
+
+    # run the stochastic simulations
+    n = M.shape[0]
+    n_simulations = 10
+    n_generations = 5
+    base_rng = np.random.default_rng(seed)
+    x0s = base_rng.multinomial(1, [1.0 / n for _ in range(n)], size=n_simulations)
+    rngs = base_rng.spawn(n_simulations)
+    sims = [
+        ngm.run_stochastic(M=M, x=x0s[i, :], rng=rngs[i], max_generations=n_generations)
+        for i in range(n_simulations)
+    ]
+
+    # transform the results into a polars array
+    chart_data = pl.concat(
+        [
+            pl.from_numpy(sim)
+            .with_row_index(name="generation")
+            .with_columns(simulation=i)
+            for i, sim in enumerate(sims)
+        ]
+    ).unpivot(index=["simulation", "generation"])
+
+    chart = (
+        alt.Chart(chart_data)
+        .mark_line()
+        .encode(x="generation", y="value", color="variable", row="simulation")
+    )
+    st.altair_chart(chart, use_container_width=True)
+
+
 def summarize_scenario(
     c: streamlit.delta_generator.DeltaGenerator,
     params: dict,
@@ -282,47 +317,55 @@ def app():
 
         st.caption(f"App version: {importlib.metadata.version('ngm')}")
 
-    # # make and run scenarios ------------------------------------------------------------
-    group_names = params["Group name"]
-    N = params["Pop. size"].to_numpy()
-    V = params["No. vaccines"].to_numpy()
-    p_severe = params["Prob. severe"].to_numpy()
+    # make and run scenarios ------------------------------------------------------------
+    tab_summary, tab_stochastic = st.tabs(["Summary", "Stochastic simulations"])
 
-    scenario = {
-        "scenario_title": "Scenario: Vaccination",
-        "group_names": group_names,
-        "n_total": N.sum(),
-        "pop_props": N / N.sum(),
-        "M_novax": M_novax,
-        "p_severe": p_severe,
-        "n_vax": V,
-        "ve": VE,
-        "G": G,
-    }
+    with tab_summary:
+        group_names = params["Group name"]
+        N = params["Pop. size"].to_numpy()
+        V = params["No. vaccines"].to_numpy()
+        p_severe = params["Prob. severe"].to_numpy()
 
-    counterfactual = scenario.copy()
-    counterfactual["scenario_title"] = "Scenario: Counterfactual (no vaccination)"
-    counterfactual["n_vax"] = 0 * V
-    counterfactual["p_vax"] = 0.0 * V
+        scenario = {
+            "scenario_title": "Scenario: Vaccination",
+            "group_names": group_names,
+            "n_total": N.sum(),
+            "pop_props": N / N.sum(),
+            "M_novax": M_novax,
+            "p_severe": p_severe,
+            "n_vax": V,
+            "ve": VE,
+            "G": G,
+        }
 
-    scenarios = [
-        scenario,
-        counterfactual,
-    ]
+        counterfactual = scenario.copy()
+        counterfactual["scenario_title"] = "Scenario: Counterfactual (no vaccination)"
+        counterfactual["n_vax"] = 0 * V
+        counterfactual["p_vax"] = 0.0 * V
 
-    # text outside scenarios
-    summary_help = (
-        "Each scenario below gives a summary of infections, including:\n"
-        "- Percent of infections: The percent of all infections which are in the given group.\n"
-        "- Severe infections per prior infection: If there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
-        "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
-    )
-    st.write(summary_help)
+        scenarios = [
+            scenario,
+            counterfactual,
+        ]
 
-    # present results ------------------------------------------------------------
-    c = st.container()
-    for s in scenarios:
-        summarize_scenario(c=c, params=s, sigdigs=sigdigs, groups=params["Group name"])
+        # text outside scenarios
+        summary_help = (
+            "Each scenario below gives a summary of infections, including:\n"
+            "- Percent of infections: The percent of all infections which are in the given group.\n"
+            "- Severe infections per prior infection: If there is one infection, how many severe infections in each group will there be in the next generation of infections?\n"
+            "- Severe infections after G generations: Starting with one index infection, how many severe infections will there have been, cumulatively, in each group after G generations of infection? Note that the index infection is marginalized over the the distribution on infections from the table above.\n"
+        )
+        st.write(summary_help)
+
+        # present results ------------------------------------------------------------
+        c = st.container()
+        for s in scenarios:
+            summarize_scenario(
+                c=c, params=s, sigdigs=sigdigs, groups=params["Group name"]
+            )
+
+    with tab_stochastic:
+        stochastic(M_novax)
 
 
 if __name__ == "__main__":

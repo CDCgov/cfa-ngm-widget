@@ -129,3 +129,17 @@ def test_exp_growth():
         ngm.severity(r0, distribution, p_severe, G).sum()
         == ngm.exp_growth_model_severity(r0, distribution, p_severe, G)[-1, 2]
     )
+
+
+def test_stochastic():
+    M = np.array([[1.1, 0.2], [0.3, 1.4]])
+    max_generations = 10
+    out = ngm.run_stochastic(
+        M=M,
+        x=np.array([1, 0]),
+        rng=42,
+        max_generations=max_generations,
+    )
+
+    assert out.shape == (max_generations, M.shape[0])
+    np.testing.assert_array_equal(out[-1, :], [33, 65])
