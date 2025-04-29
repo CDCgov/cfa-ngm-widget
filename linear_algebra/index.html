@@ -1,0 +1,805 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+    
+    
+      
+        <title>Linear algebra of next-generation matrices - NGM widget</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.6f8fc17f.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="https://unpkg.com/katex@0/dist/katex.min.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#linear-algebra-of-next-generation-matrices" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="NGM widget" class="md-header__button md-logo" aria-label="NGM widget" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            NGM widget
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Linear algebra of next-generation matrices
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="NGM widget" class="md-nav__button md-logo" aria-label="NGM widget" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    NGM widget
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Next generation matrix widget
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Linear algebra of next-generation matrices
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Linear algebra of next-generation matrices
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bluf" class="md-nav__link">
+    <span class="md-ellipsis">
+      BLUF
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#motivation-reproduction-numbers-in-a-single-population" class="md-nav__link">
+    <span class="md-ellipsis">
+      Motivation: Reproduction numbers in a single population
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-generation-matrices-reproduction-numbers-in-multiple-subpopulations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next-generation matrices: reproduction numbers in multiple subpopulations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eigen-analysis-for-growth-rates-under-a-stable-distribution-of-infections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Eigen analysis for growth rates under a stable distribution of infections
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#all-ngms-have-a-dominant-eigenvalue-and-eigenvector" class="md-nav__link">
+    <span class="md-ellipsis">
+      All NGMs have a dominant eigenvalue and eigenvector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dominant-eigenvalue-is-a-proxy-for-population-wide-r_0" class="md-nav__link">
+    <span class="md-ellipsis">
+      The dominant eigenvalue is a proxy for population-wide \(R_0\)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-diagonalizable-ngms-infections-tend-to-approach-the-dominant-eigenvector" class="md-nav__link">
+    <span class="md-ellipsis">
+      For diagonalizable NGMs, infections tend to approach the dominant eigenvector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caveats-to-this-interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Caveats to this interpretation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Caveats to this interpretation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disease-free-equilibrium-but-also-approaching-the-stable-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Disease-free equilibrium but also approaching the stable distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#counterexample-matrices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Counterexample matrices
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#computational-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computational notes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computational notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eigenvectors-can-be-rescaled" class="md-nav__link">
+    <span class="md-ellipsis">
+      Eigenvectors can be rescaled
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#real-valued-vs-real-typed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-valued vs. real-typed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#determining-if-a-matrix-is-irreducible" class="md-nav__link">
+    <span class="md-ellipsis">
+      Determining if a matrix is irreducible
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#determining-if-a-matrix-is-diagonalizable" class="md-nav__link">
+    <span class="md-ellipsis">
+      Determining if a matrix is diagonalizable
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Further reading
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#bluf" class="md-nav__link">
+    <span class="md-ellipsis">
+      BLUF
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#motivation-reproduction-numbers-in-a-single-population" class="md-nav__link">
+    <span class="md-ellipsis">
+      Motivation: Reproduction numbers in a single population
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#next-generation-matrices-reproduction-numbers-in-multiple-subpopulations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Next-generation matrices: reproduction numbers in multiple subpopulations
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eigen-analysis-for-growth-rates-under-a-stable-distribution-of-infections" class="md-nav__link">
+    <span class="md-ellipsis">
+      Eigen analysis for growth rates under a stable distribution of infections
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#all-ngms-have-a-dominant-eigenvalue-and-eigenvector" class="md-nav__link">
+    <span class="md-ellipsis">
+      All NGMs have a dominant eigenvalue and eigenvector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-dominant-eigenvalue-is-a-proxy-for-population-wide-r_0" class="md-nav__link">
+    <span class="md-ellipsis">
+      The dominant eigenvalue is a proxy for population-wide \(R_0\)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#for-diagonalizable-ngms-infections-tend-to-approach-the-dominant-eigenvector" class="md-nav__link">
+    <span class="md-ellipsis">
+      For diagonalizable NGMs, infections tend to approach the dominant eigenvector
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#caveats-to-this-interpretation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Caveats to this interpretation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Caveats to this interpretation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disease-free-equilibrium-but-also-approaching-the-stable-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Disease-free equilibrium but also approaching the stable distribution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#counterexample-matrices" class="md-nav__link">
+    <span class="md-ellipsis">
+      Counterexample matrices
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#computational-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Computational notes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Computational notes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#eigenvectors-can-be-rescaled" class="md-nav__link">
+    <span class="md-ellipsis">
+      Eigenvectors can be rescaled
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#real-valued-vs-real-typed" class="md-nav__link">
+    <span class="md-ellipsis">
+      Real-valued vs. real-typed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#determining-if-a-matrix-is-irreducible" class="md-nav__link">
+    <span class="md-ellipsis">
+      Determining if a matrix is irreducible
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#determining-if-a-matrix-is-diagonalizable" class="md-nav__link">
+    <span class="md-ellipsis">
+      Determining if a matrix is diagonalizable
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#further-reading" class="md-nav__link">
+    <span class="md-ellipsis">
+      Further reading
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="linear-algebra-of-next-generation-matrices">Linear algebra of next-generation matrices</h1>
+<h2 id="bluf">BLUF</h2>
+<p>For many next-generation matrices <span class="arithmatex">\(\mathbf{R}\)</span>, the population-wide reproduction number will approach the spectral radius of <span class="arithmatex">\(\mathbf{R}\)</span> (i.e., the absolute value of the eigenvector with the largest absolute value) and the distribution of infections will approach the corresponding eigenvector.</p>
+<h2 id="motivation-reproduction-numbers-in-a-single-population">Motivation: Reproduction numbers in a single population</h2>
+<p>The basic reproduction number <span class="arithmatex">\(R_0\)</span> is the average number of infections caused by each infected person in an otherwise fully susceptible population. The effective reproduction number <span class="arithmatex">\(R_\mathrm{eff} \leq R_0\)</span> is the average number of infections caused by each infected person, which is time-varying and depends on the number of remaining susceptibles.</p>
+<p>Make two assumptions:</p>
+<ol>
+<li>The number of infected people is much greater than 1, so that the actual number of secondary infections per infection approaches the theoretical mean <span class="arithmatex">\(R_\mathrm{eff}\)</span>.</li>
+<li><em>Disease-free equilibrium</em>: The number of infected people is small compared to the population so that <span class="arithmatex">\(R_\mathrm{eff}\)</span> approaches <span class="arithmatex">\(R_0\)</span>.</li>
+</ol>
+<p>Let <span class="arithmatex">\(I(0)\)</span> be the number of people infected at some point in time. Under these two assumptions, the number of people in the next generation of infections will then be <span class="arithmatex">\(I(1) = R_0 \times I(0)\)</span>. The number of infections grows exponentially with the number of generations <span class="arithmatex">\(g\)</span>:</p>
+<div class="arithmatex">\[
+I(g) = I(0) \times R_0^g
+\]</div>
+<h2 id="next-generation-matrices-reproduction-numbers-in-multiple-subpopulations">Next-generation matrices: reproduction numbers in multiple subpopulations</h2>
+<p>In a structured population, with multiple subpopulations, the effective reproduction number is replaced by the <em>next-generation matrix</em> <span class="arithmatex">\(\mathbf{R}\)</span> with entries <span class="arithmatex">\(R_{ij}\)</span>, which are the number of infections in subpopulation <span class="arithmatex">\(i\)</span> caused by an infected person in subpopulation <span class="arithmatex">\(j\)</span>. Note that the sum of entries in column <span class="arithmatex">\(j\)</span>, i.e. <span class="arithmatex">\(\sum_k R_{kj}\)</span>, is the number of infections caused by an infected person in subpopulation <span class="arithmatex">\(j\)</span>.</p>
+<p>Make two assumptions similar to the above:</p>
+<ol>
+<li><span class="arithmatex">\(I_k(0) \gg 1\)</span>, where <span class="arithmatex">\(I_k\)</span> is the number infected in subpopulation <span class="arithmatex">\(k\)</span>, for each subpopulation <span class="arithmatex">\(k\)</span>.</li>
+<li>The total number of infected <span class="arithmatex">\(\sum_k I_k(0)\)</span> is small compared to the size of every subpopulation.</li>
+</ol>
+<p>Let <span class="arithmatex">\(\mathbf{R}_0\)</span> be the next-generation matrix under the two assumptions above. Then the number of infections in each subpopulation in generation <span class="arithmatex">\(g\)</span> follows <span class="arithmatex">\(\vec{I}(g) = \mathbf{R}_0^g \vec{I}(0)\)</span>, that is, the matrix <span class="arithmatex">\(\mathbf{R}_0\)</span> is applied <span class="arithmatex">\(g\)</span> times to the initial vector of infections <span class="arithmatex">\(\vec{I}(0)\)</span>. Note that this is mathematically equivalent to a deterministic multi-type branching process model: each infection in each type <span class="arithmatex">\(j\)</span> gives rise to exactly <span class="arithmatex">\(R_{ij}\)</span> infections in subpopulation <span class="arithmatex">\(i\)</span> in the next generation.</p>
+<h2 id="eigen-analysis-for-growth-rates-under-a-stable-distribution-of-infections">Eigen analysis for growth rates under a stable distribution of infections</h2>
+<p>A vector <span class="arithmatex">\(\vec{v}\)</span> is an <em>eigenvector</em> of matrix <span class="arithmatex">\(\mathbf{M}\)</span> with <em>eigenvalue</em> <span class="arithmatex">\(\lambda\)</span> if <span class="arithmatex">\(\mathbf{M} \vec{v} = \lambda \vec{v}\)</span>. In other words, the application of a matrix to one of its eigenvectors is to simply multiply that eigenvector by its corresponding eigenvalue.</p>
+<p>If a next-generation matrix <span class="arithmatex">\(\mathbf{R}\)</span> has a positive eigenvalue <span class="arithmatex">\(\lambda\)</span> with a corresponding non-negative eigenvector <span class="arithmatex">\(\vec{v}\)</span> (i.e., a vector with no negative entries), then we can interpret <span class="arithmatex">\(\vec{v}\)</span> as a stable distribution of infections across populations and <span class="arithmatex">\(\lambda\)</span> as the corresponding population-wide reproduction number, since:</p>
+<div class="arithmatex">\[
+\mathbf{R}^g \vec{v} = \lambda^g \vec{v}
+\]</div>
+<h2 id="all-ngms-have-a-dominant-eigenvalue-and-eigenvector">All NGMs have a dominant eigenvalue and eigenvector</h2>
+<p>NGMs are square matrices with non-negative entries. By an extension to the <a href="https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem">Perron-Frobenius theorem</a>, these matrices have these properties:</p>
+<ol>
+<li>There is a <em>dominant eigenvalue</em>, which is a real, non-negative eigenvalue that is greater than or equal to the absolute value of any other eigenvalue (i.e., is equal to the spectral radius).</li>
+<li>The eigenvector (or one of the eigenvectors) corresponding to the dominant eigenvalue, called the <em>dominant eigenvector</em>, is non-negative (i.e., does not have a mix of positive and negative entries).</li>
+</ol>
+<p>NGMs can furthermore be <em>irreducible</em>, meaning that there is a way for an infection in any subpopulation to eventually cause an infection in every other subpopulation. (This is a sensible requirement for our analyses. If there were separate "blocks" of subpopulations that were epidemiologically independent, we could model them in separate NGMs.) All positive matrices (i.e., with no zeros) are irreducible.</p>
+<p>Irreducible NGMs have <a href="https://en.wikipedia.org/wiki/Perron%E2%80%93Frobenius_theorem#Perron%E2%80%93Frobenius_theorem_for_irreducible_non-negative_matrices">these additional properties</a>:</p>
+<ol>
+<li>The dominant eigenvalue is positive.</li>
+<li>All other eigenvalues have absolute values smaller than the dominant eigenvalue.</li>
+<li>The dominant eigenvector has at least one positive entry.</li>
+<li>There are no other non-negative eigenvectors.</li>
+</ol>
+<h2 id="the-dominant-eigenvalue-is-a-proxy-for-population-wide-r_0">The dominant eigenvalue is a proxy for population-wide <span class="arithmatex">\(R_0\)</span></h2>
+<p>If the numbers of infections <span class="arithmatex">\(\vec{x}\)</span> across subpopulations were equal to the dominant eigenvector, then <span class="arithmatex">\(R_0\)</span> is the dominant eigenvalue.</p>
+<p>This is also about as fast as the dynamics can get, regardless of the starting vector of infections <span class="arithmatex">\(\vec{x}\)</span>. For all square, non-negative, irreducible NGMs, the Collatz-Wielandt formula also shows that the dominant eigenvalue is equal to:</p>
+<div class="arithmatex">\[
+\max_{\vec{x}} \min_{i, x_i \neq 0} \frac{[\mathbf{R}\vec{x}]_i}{x_i}
+\]</div>
+<p>The term <span class="arithmatex">\([\mathbf{R}\vec{x}]_i / x_i\)</span> is the growth in subpopulation <span class="arithmatex">\(i\)</span> that will occur after one generation, starting from the vector of infection counts <span class="arithmatex">\(\vec{x}\)</span>. The minimum is over the subpopulations (excluding those that had no infections to start with). The maximum is over all possible vectors of infection counts.</p>
+<h2 id="for-diagonalizable-ngms-infections-tend-to-approach-the-dominant-eigenvector">For diagonalizable NGMs, infections tend to approach the dominant eigenvector</h2>
+<p>An NGM may also be <a href="https://en.wikipedia.org/wiki/Diagonalizable_matrix"><em>diagonalizable</em></a>, in which case its eigenvectors <a href="https://en.wikipedia.org/wiki/Eigendecomposition_of_a_matrix#Eigendecomposition_of_a_matrix">form a basis</a>. (All positive matrices are both irreducible and diagonalizable.) In this case, any distribution of infections <span class="arithmatex">\(\vec{x}\)</span> can be written as a linear combination of the eigenvectors <span class="arithmatex">\(\vec{v}_i\)</span>:</p>
+<div class="arithmatex">\[
+\vec{x} = \sum_i \alpha_i \vec{v}_i
+\]</div>
+<p>In these cases, after <span class="arithmatex">\(g\)</span> generations, that vector of infections will become:</p>
+<div class="arithmatex">\[
+\mathbf{R}_0^g \vec{x} = \sum_i \alpha_i \mathbf{R}_0^g \vec{v}_i = \sum_i \alpha_i \lambda_i^g \vec{v}_i
+\]</div>
+<p>where <span class="arithmatex">\(\lambda_i\)</span> are the corresponding eigenvalues.</p>
+<p>Without loss of generality, let <span class="arithmatex">\(\lambda_1\)</span> be the dominant eigenvalue. Then, after a sufficiently large number <span class="arithmatex">\(g\)</span> of generations, the growth in the first eigenvector will outpace the others, that is, <span class="arithmatex">\(\lambda_1^g \gg \lambda_i^g\)</span> for any other <span class="arithmatex">\(i \neq 1\)</span>. In that limit:</p>
+<div class="arithmatex">\[
+\mathbf{R}_0^g \vec{x} \approx \lambda_1^g \vec{v}_1
+\]</div>
+<!-- A proof of why this is reasonable to expect would be helpful here. -->
+<p>so long as we actually begin with a vector <span class="arithmatex">\(\vec{x}\)</span> such that <span class="arithmatex">\(\alpha_1 &gt; 0\)</span>. Thus, the population-wide reproduction number will approach <span class="arithmatex">\(\lambda_1\)</span> and the distribution of infections will approach <span class="arithmatex">\(\vec{v}_1\)</span>.</p>
+<h2 id="caveats-to-this-interpretation">Caveats to this interpretation</h2>
+<h3 id="disease-free-equilibrium-but-also-approaching-the-stable-distribution">Disease-free equilibrium but also approaching the stable distribution</h3>
+<p>We need the number of generations to be small enough that exponential growth has not depleted a meaningful number of susceptibles, but also large enough that the population-wide reproduction number approaches the dominant eigenvalue of <span class="arithmatex">\(\mathbf{R}\)</span>.</p>
+<h3 id="counterexample-matrices">Counterexample matrices</h3>
+<p>An example of a non-negative, reducible, non-diagonalizable matrix is the "L" matrix:</p>
+<div class="arithmatex">\[
+\begin{pmatrix}
+1 &amp; 0 &amp; 0 \\
+1 &amp; 0 &amp; 0 \\
+1 &amp; 1 &amp; 1
+\end{pmatrix}
+\]</div>
+<p>These are curious dynamics:</p>
+<ul>
+<li>Each infection in subpopulation 1 produces 1 infection in each of the 3 subpopulations.</li>
+<li>Each infection in subpopulation 2 and 3 produces 1 infection in subpopulation 3.</li>
+</ul>
+<p>This matrix has two distinct eigenvalues: 1 and 0. Eigenvalue 1 has two eigenvectors that are multiples of one another: <span class="arithmatex">\((0, 0, 1)\)</span> and <span class="arithmatex">\((0, 0, -1)\)</span>. Eigenvalue 0 has eigenvector <span class="arithmatex">\((0, \tfrac{1}{2}, -\tfrac{1}{2})\)</span>. As per the Perron-Frobenius theorem, there is a dominant eigenvalue 1 and dominant eigenvector <span class="arithmatex">\((0, 0, 1)\)</span>. However, because the matrix is reducible, the dominant eigenvalue is not larger than the absolute values of all other eigenvectors.</p>
+<p>Because the matrix is non-diagonalizable, we were not guaranteed that the eigenvectors would form a basis. In this particular case, any infection in any subpopulation would indeed lead to dynamics that approach the dominant eigenvalue and eigenvector.</p>
+<p>An example of a non-negative and irreducible matrix with multiple eigenvalues equal to the spectral radius is:</p>
+<div class="arithmatex">\[
+\begin{pmatrix}
+0 &amp; 1 \\
+1 &amp; 0
+\end{pmatrix}
+\]</div>
+<p>This NGM might very roughly model, for example, a sexually-transmitted disease in which each infected man infects one woman, and each infected woman infects one man. It has two eigenvalues: <span class="arithmatex">\(1\)</span> and <span class="arithmatex">\(-1\)</span>, with corresponding eigenvectors <span class="arithmatex">\((\tfrac{1}{2}, \tfrac{1}{2})\)</span> and <span class="arithmatex">\((\tfrac{1}{2}, -\tfrac{1}{2})\)</span>. Note that, as per the Perron-Frobenius theorem, there is a single non-negative eigenvalue that is greater than the absolute value of all other eigenvalues, and the corresponding eigenvector is non-negative.</p>
+<h2 id="computational-notes">Computational notes</h2>
+<p>There are standard algorithms for finding matrices' eigenvectors and eigenvalues (e.g., Python's <a href="https://numpy.org/doc/2.1/reference/generated/numpy.linalg.eig.html"><code>numpy.linalg.eig</code></a> and R's <a href="https://stat.ethz.ch/R-manual/R-devel/library/base/html/eigen.html"><code>eigen</code></a>), which may yield confusing results.</p>
+<h3 id="eigenvectors-can-be-rescaled">Eigenvectors can be rescaled</h3>
+<p>If <span class="arithmatex">\(\mathbf{M}\)</span> has eigenvector <span class="arithmatex">\(\vec{v}\)</span> with corresponding eigenvalue <span class="arithmatex">\(\lambda\)</span>, then:</p>
+<div class="arithmatex">\[
+\mathbf{M} \vec{v} = \lambda \vec{v}
+\]</div>
+<p>For any scalar <span class="arithmatex">\(\alpha\)</span>, it follows that:</p>
+<div class="arithmatex">\[
+\mathbf{M} (\alpha \vec{v}) = \lambda (\alpha \vec{v})
+\]</div>
+<p>Thus, eigenvectors can be rescaled (including having their signs all changed). For example, an algorithm might return an eigenvector with all negative entries, but we would consider this a "positive" eigenvector, because we can swap the signs.</p>
+<p>The eigenvectors returned by an algorithm are likely L2-normed (i.e., the square root of the sum of squares of the entries sum to 1), to form an orthnormal basis. Because a stable <em>distribution</em> of infections should be a probability vector (i.e., entries sum to 1), you may need to rescale the eigenvector.</p>
+<h3 id="real-valued-vs-real-typed">Real-valued vs. real-typed</h3>
+<p>An algorithm might return a eigenvalues or eigenvectors that are real-valued but have a complex type. Be sure to check for the value, not the type, of the dominant eigenvalue and eigenvector. For example:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&gt;&gt;&gt; np.isreal(1+0j)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>True
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>&gt;&gt;&gt; np.isrealobj(1+0j)
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>False
+</span></code></pre></div>
+<h3 id="determining-if-a-matrix-is-irreducible">Determining if a matrix is irreducible</h3>
+<p>An <span class="arithmatex">\(n \times n\)</span> non-negative matrix <span class="arithmatex">\(\mathbf{R}\)</span> is irreducible if all entries of the matrix</p>
+<div class="arithmatex">\[
+(\mathbb{I} + \mathbf{R})^{n-1}
+\]</div>
+<p>are positive, where <span class="arithmatex">\(\mathbb{I}\)</span> is the identity matrix.</p>
+<h3 id="determining-if-a-matrix-is-diagonalizable">Determining if a matrix is diagonalizable</h3>
+<p>An <span class="arithmatex">\(n \times n\)</span> matrix is diagonalizable if it has <span class="arithmatex">\(n\)</span> distinct eigenvalues. This is easy to check during an eigen analysis.</p>
+<h2 id="further-reading">Further reading</h2>
+<ul>
+<li><a href="https://epubs.siam.org/doi/book/10.1137/1.9781611977448"><em>Matrix Analysis</em></a>, which has a <a href="http://matrixanalysis.com/ErrataPdfFiles/Sections8.2_8.3.pdf">free pdf</a> of the most relevant section</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      
+        <script src="../javascript/katex.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/katex.min.js"></script>
+      
+        <script src="https://unpkg.com/katex@0/dist/contrib/auto-render.min.js"></script>
+      
+    
+  </body>
+</html>
