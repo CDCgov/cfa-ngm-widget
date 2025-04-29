@@ -15,7 +15,7 @@ The widget allows users to modify vaccine allocation choices, between- and withi
 ### Run the app locally
 
 1. Enable [poetry](https://python-poetry.org/) with `poetry install`
-2. To run the app: `make`, which calls `streamlit run scripts/app.py`
+2. To run the app: `make` (or `poetry run make`), which calls `streamlit run scripts/app.py`
 3. In a browser, visit: `http://localhost:8501/`
 
 ### Run the app locally using containers

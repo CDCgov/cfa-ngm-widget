@@ -7,7 +7,7 @@ help: # show help for each of the Makefile recipes
 	@grep -E '^[a-zA-Z0-9 _-]+:.*#'  Makefile | while read -r l; do printf "\033[1;32m$$(echo $$l | cut -f 1 -d':')\033[00m:$$(echo $$l | cut -f 2- -d'#')\n"; done
 
 local: # run app in local environment
-	poetry run streamlit run app.py
+	streamlit run app.py
 
 build_container: # build container locally
 	$(ENGINE) build -t $(TARGET) -f Dockerfile
